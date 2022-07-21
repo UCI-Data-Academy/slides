@@ -1,0 +1,280 @@
+---
+title: "Welcome"
+author: "Babak Shahbaba <br> Sam Behseta <br> Jessica Jaynes"
+output: 
+  xaringan::moon_reader:
+    css: ["slide-style.css", "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"]
+    lib_dir: libs
+    seal: false
+    nature:
+      beforeInit: "cols_macro.js"
+      ratio: 16:9
+      highlightStyle: "pygments"
+      highlightLines: true
+      highlightLanguage: "r"
+
+---
+
+class: title-slide
+
+
+<br>
+<br>
+.right-panel[ 
+<br>
+
+# `r rmarkdown::metadata$title`
+
+## `r rmarkdown::metadata$author`
+
+]
+
+
+---
+
+class: center middle
+
+## Dr. Babak Shahbaba
+
+
+```{r echo=FALSE, fig.align='center', out.width="30%"}
+knitr::include_graphics("img/Babak.jpeg")
+```
+
+---
+
+class: center middle
+
+## Dr. Sam Behseta
+
+
+```{r echo=FALSE, fig.align='center', out.width="30%"}
+knitr::include_graphics("img/Behseta.png")
+```
+
+
+---
+
+class: center middle
+
+## Dr. Jessica Jaynes
+
+
+```{r echo=FALSE, fig.align='center', out.width="30%"}
+knitr::include_graphics("img/Jessica.png")
+```
+
+
+---
+
+class: center middle
+
+## Brian Schetzsle
+
+```{r echo=FALSE, fig.align='center', out.width="30%"}
+knitr::include_graphics("img/Brian.jpg")
+```
+
+---
+
+class: center middle
+
+## Zahra Moslemi
+
+```{r echo=FALSE, fig.align='center', out.width="30%"}
+knitr::include_graphics("img/Zahra.JPG")
+```
+
+---
+
+class: middle class
+
+## Getting to Know Each Other
+
+- Name
+- Location 
+- Grade
+- Interests
+- Pets
+- Fun fact
+
+
+
+---
+
+class: inverse middle center
+
+.font150[Content]
+
+---
+
+class: middle 
+
+![:col_header 
+  <i class="fas fa-square-root-alt" aria-hidden="true" style="font-size:90px;"></i>,
+  <i class="fas fa-laptop-code" aria-hidden="true" style="font-size:90px;"></i>,
+  <i class="fas fa-stethoscope" aria-hidden="true" style="font-size:90px;"></i>
+              ]
+
+---
+
+class:middle center
+
+| Lectures        | Topics 
+|-------------|--------
+| Week 1      |Exploring Data and Statistical Inference
+| Week 2      |Capstone Project
+
+
+
+---
+
+class: center middle
+
+<a href="https://science.sciencemag.org/content/347/6228/1314.long" style="font-size: 50px;">What is the question?</a>
+
+
+---
+
+class: middle center
+
+## Capstone project
+
+```{r echo=FALSE, out.width="50%"}
+knitr::include_graphics("img/Alzheimer.png")
+```
+
+---
+
+class: inverse middle center
+
+.font150[ Policies ]
+
+---
+
+class: middle 
+
+## Learning Environment
+
+This is an inclusive learning environment where everyone is
+- welcome;
+- expected to respect each other; and
+- expected to comply to the UC Irvine as well as ICS rules and regulations.
+
+
+---
+
+class: middle
+
+## Attendance and Participation
+
+You are expected to attend all activities of the ICS program and actively participate.
+
+Please arrive on time.
+
+
+---
+
+
+class: inverse middle center
+
+.font100[ Recommendations ]
+
+---
+
+class: center middle
+
+Ask questions!   
+
+```{r echo=FALSE, out.width="30%"}
+knitr::include_graphics("img/confused.jpeg")
+```
+
+
+
+  
+
+---
+
+class:center middle
+
+Don't compare yourself to others.
+
+```{r echo=FALSE, out.width="30%"}
+knitr::include_graphics("img/thephysicsgirl.png")
+```
+
+
+---
+
+class: middle center
+
+Move your body, stretch, go out (if it is safe) during breaks.
+
+.pull-left[
+
+<img src="img/go-out.jpeg" width=300 height=400>
+
+]
+
+.float-right[
+
+
+<img src="img/stretch.jpeg" width=300 height=400>
+
+
+
+]
+
+
+---
+
+class: middle center
+
+```{r echo=FALSE, fig.align='center', out.width="70%"}
+knitr::include_graphics("img/support.jpeg")
+```
+
+Data science is a collaborative process and it is much more fun and easier when data scientists are kind to one another and support each other.
+
+---
+
+class: middle center
+
+```{r echo=FALSE, fig.align='center', out.width="50%"}
+knitr::include_graphics("img/watch-computer.jpeg")
+```
+
+When we lecture, watch and listen to us carefully. We will dedicate time for you to try everything yourself. 
+
+---
+
+class: middle center
+
+```{r echo=FALSE, fig.align='center', out.width="60%"}
+knitr::include_graphics("img/take-notes.jpeg")
+```
+
+Take half an hour at the end of each day to review the materials and your notes (cheat sheets).
+
+
+---
+
+class: middle center
+
+Do not open too many windows on your computers. Keep e-mail, social media, messaging apps especially turned off. For each session we will tell you what apps/files you will need.
+
+```{r echo=FALSE, fig.align='center', out.width="60%"}
+knitr::include_graphics("img/closed-windows.jpeg")
+```
+
+---
+
+class: middle 
+
+Keep your files organized.   
+
+For example, use numbers (e.g. `01`, `02`) to indicate the day of the program, and use letters (e.g. `a`, `b`) to indicate the sequence of lectures/labs in a given day.
+
+
+

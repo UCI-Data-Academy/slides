@@ -1,0 +1,403 @@
+---
+title: "Introduction to R"
+author: "Dr. Mine Dogucu"
+output: 
+  xaringan::moon_reader:
+    css: ["slide-style.css", "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"]
+    lib_dir: libs
+    seal: false
+    nature:
+      beforeInit: "cols_macro.js"
+      ratio: 16:9
+      highlightStyle: "pygments"
+      highlightLines: true
+      highlightLanguage: "r"
+
+---
+
+class: title-slide
+
+
+<br>
+<br>
+.right-panel[ 
+<br>
+
+# `r rmarkdown::metadata$title`
+
+## `r rmarkdown::metadata$author`
+
+]
+
+---
+
+class: middle
+
+## Reminder
+
+- Close all apps on your computer.  
+- Open slides for this session from the cluster website (https://cosmos-datascience.netlify.app). 
+
+
+---
+
+class: inverse middle center
+
+.font100[hello woRld]
+
+---
+
+
+class: center
+
+<video width="80%" height="50%" align = "center" controls>
+  <source src="screencast/01a-hello-world.mp4" type="video/mp4">
+</video>
+
+*Created by Dr. Mine Dogucu
+---
+
+class: middle
+
+## Practice
+
+Each of you should  
+
+- open RStudio.
+- write the R code you have just seen.
+- help each other with problems.
+- ask TAs/instructors questions.
+- keep RStudio open until the end of the session. We will get back to it.
+
+---
+
+class: inverse middle center
+
+.font100[R review]
+
+---
+
+class: middle 
+
+## Object assignment operator
+
+```{r}
+birth_year <- 1950
+```
+
+
+---
+
+class: 
+
+## R is case-sensitive
+
+
+```{r error=TRUE}
+
+my_age <- 2020 - birth_year
+
+My_age
+```
+
+--
+
+
+---
+
+
+class: middle
+
+If something comes in quotes, it is not defined in R. 
+
+
+```{r}
+
+ages <- c(25, my_age, 32)
+
+names <- c("Menglin", "Mine", "Rafael")
+
+data.frame(age = ages, name = names)
+```
+
+---
+
+
+## Vocabulary
+
+```{r eval=FALSE}
+do(something)
+```
+
+`do()` is a function;   
+`something` is the argument of the function.
+--
+
+```{r eval=FALSE}
+do(something, colorful)
+```
+
+`do()` is a function;   
+`something` is the first argument of the function;   
+`colorful` is the second argument of the function.
+
+---
+
+class: middle
+
+## Getting Help
+
+In order to get any help we can use `?` followed by function (or object) name. 
+
+```{r eval=FALSE}
+?c
+```
+
+
+---
+
+## tidyverse_style_guide
+
+>canyoureadthissentence?
+
+
+--
+    
+.pull-right[
+
+```{r eval = FALSE}
+age <- c(6, 9, 15)
+
+data.frame(age_kid = age)
+```
+
+]
+
+--
+
+.pull-left[
+
+After function names do not leave any spaces.
+
+Before and after operators (e.g. <-, =) leave spaces. 
+
+Put a space after a comma, **not** before. 
+
+Object names are all lower case, with words separated by an underscore.
+
+]
+
+
+---
+class: inverse middle center
+
+.font150[R Markdown]
+
+---
+
+class: middle 
+
+
+.center[
+<table align = "center" style="border-spacing: 60px;">
+
+<tr style="font-size:50px">
+
+<td> .large[Analysis] <br> `r fontawesome::fa(name = "r-project", fill = "#1B3D6D")`</td>
+<td> .large[Communication] <br> `r fontawesome::fa(name = "file-import", fill = "#1B3D6D")` 
+`r fontawesome::fa(name = "file-word", fill = "#1B3D6D")` 
+`r fontawesome::fa(name = "file-powerpoint", fill = "#1B3D6D")` 
+</td>
+
+
+</tr>
+
+</table>
+
+]
+
+- No matter how good a data scientist is, they are prone to make errors when it comes to copying-pasting. 
+- Another data scientist may not be able to replicate the same findings.
+
+---
+
+class:: middle
+
+<table align = "center">
+
+<tr style="font-size:50px">
+
+<td> .large[Analysis]  `r fontawesome::fa(name = "r-project", fill = "#1B3D6D")` 
+&  
+.large[Communication] `r fontawesome::fa(name = "markdown", fill = "#1B3D6D")`</td>
+
+</td>
+
+
+</tr>
+
+</table>
+
+- We will adopt R Markdown, a tool that can support R as well as text (and images) simultaneously. 
+- We can analyze data and communicate findings simultaneously within R Markdown.
+
+
+---
+
+class: inverse middle center
+
+.font150[~~R~~ Markdown]
+
+---
+
+## markdown `r fontawesome::fa(name = "markdown", fill = "#1B3D6D")`
+
+<br>
+
+
+
+.pull-left[
+
+```
+_Hello world_ 
+
+__Hello world__
+
+~~Hello world~~ 
+```
+]
+
+.pull-right[
+
+_Hello world_ 
+
+__Hello world__
+
+~~Hello world~~ 
+]
+
+---
+
+class: subtopic center middle
+
+.sub-topic-note[R .strike[Markdown]]
+
+---
+
+class: inverse middle
+
+.font100[`r fontawesome::fa(name = "r-project", fill = "#1B3D6D")` = .R file]
+
+.font100[`r fontawesome::fa(name = "markdown", fill = "#1B3D6D")` = .md file]
+
+.font100[`r fontawesome::fa(name = "r-project", fill = "#1B3D6D")` + `r fontawesome::fa(name = "markdown", fill = "#1B3D6D")` = .Rmd file]
+
+---
+
+class: center 
+
+
+<video width="80%" height="50%" align = "center" controls>
+  <source src="screencast/01b-intro-rmarkdown.mp4" type="video/mp4">
+</video>
+
+---
+
+```{r echo=FALSE, out.width='100%'}
+knitr::include_graphics('img/rmd-parts.jpeg')
+```
+
+---
+class: center middle
+
+## Add Chunk
+
+```{r echo=FALSE, out.width='50%'}
+knitr::include_graphics('img/code-chunk.png')
+```
+
+---
+
+class: center middle
+
+## Run the Current Chunk
+
+```{r echo=FALSE, out.width='20%'}
+knitr::include_graphics('img/run-code.png')
+```
+
+---
+
+class: center middle 
+
+## Knit
+
+```{r echo=FALSE, out.width='50%'}
+knitr::include_graphics('img/knit.png')
+```
+
+---
+
+class: middle center
+
+
+## Shortcuts
+
+|                            | Windows          | Mac              |
+|----------------------------|------------------|------------------|
+| add chunk                  | Ctrl + Alt + I   | Cmd + Option + I |
+| run the current chunk      | Ctrl + Alt + C   | Cmd + Option + C |
+| run current line/selection | Ctrl + Enter     | Cmd + Return     |
+| knit                       | Ctrl + Shift + K | Cmd + Shift + K  |
+
+
+---
+
+class: middle
+
+## In Breakout Rooms
+
+Each of you should:
+
+- open RStudio.
+- modify a R Markdown file as you have just seen.
+- help each other with problems.
+- ask TAs/instructors questions.
+
+Discuss in groups:
+
+How many panes did have we used in RStudio so far? What is the purpose of each pane?
+---
+
+class: middle
+
+## Fun Fact
+
+Slides that you are currently looking at are also written in R Markdown. 
+You can take a look at them [online](https://github.com/cosmos-uci-dshs/dshs-slides).
+By the end of this cluster you will learn how to make slides using R Markdown. 
+
+---
+
+class: middle
+
+## Summary of our Tools
+
+**R** is a programming language used mainly for statistical computing. 
+
+**markdown** is a markup language for creating formatted text.
+
+**R Markdown** is a file format that can handle R and markdown (and many other languages).
+
+**RStudio** is an integrated development environment (IDE). 
+
+---
+
+class: middle
+
+## R vs. RStudio
+
+- You can write English (a language, so is R) words in a notebook (like RStudio).  
+- But you can also write it elsewhere too (on a napkin, sand etc. or even in different notebooks).   
+- R is a language that can be written in many different places, RStudio is just one of them.   
+- There are many others.  

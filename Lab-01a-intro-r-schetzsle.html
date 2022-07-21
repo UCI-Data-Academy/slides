@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Working with R</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Brian Schetzsle" />
+    <script src="libs/header-attrs-2.14/header-attrs.js"></script>
+    <link rel="stylesheet" href="slide-style.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+class: title-slide
+
+
+
+&lt;br&gt;
+&lt;br&gt;
+.right-panel[ 
+
+# Working with R
+## Brian Schetzsle
+
+Adapted from slides by Mine Dogucu
+]
+
+---
+
+## Reminder
+
+- Close all apps on your computer.  
+- Open slides for this session from the cluster website (https://cosmos-datascience.netlify.app). 
+
+---
+
+# Introductions
+
+---
+
+# First things first:
+- Do you have a computer?
+- Do you have R on your computer?
+- Do you have RStudio on your computer?
+
+---
+
+# A Walkthrough of RStudio
+## Why it's a nice environment for R coding
+
+---
+
+# A Walkthrough of RStudio
+## Create a new document in which to do R coding
+
+---
+
+class: inverse middle center
+
+.font100[hello woRld]
+
+---
+
+class: center
+
+&lt;video width="80%" height="50%" align = "center" controls&gt;
+  &lt;source src="screencast/01a-hello-world.mp4" type="video/mp4"&gt;
+&lt;/video&gt;
+
+.footnote[Created by Dr. Mine Dogucu]
+
+---
+
+## Practice
+
+- open RStudio.
+- write the R code you have just seen.
+- help each other with problems.
+- Explore the relationships between the different quadrants in RStudio
+- Create an R document, type code there and execute it in the console using Command+Enter
+
+---
+
+# R review
+## Object assignment operator
+
+
+```r
+birth_year &lt;- 1950
+```
+
+---
+
+# R review
+
+R is case-sensitive
+
+
+
+```r
+my_age &lt;- 2022 - birth_year
+
+My_age
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'My_age' not found
+```
+
+
+
+---
+
+## Variables in R
+
+`character`: takes string values (e.g. a person's name, address)
+
+--
+
+`integer`: integer (single precision)  
+
+--
+
+`double`: floating decimal (double precision) 
+
+--
+
+`numeric`: integer or double  
+
+--
+
+`factor`: categorical variables with different levels  
+
+--
+
+`logical`: TRUE (1), FALSE (0)  
+
+
+
+---
+
+
+# R review
+
+If something comes in quotes, it is not defined in R. 
+
+
+
+```r
+ages &lt;- c(25, my_age, 32)
+
+names &lt;- c("Menglin", "Mine", "Rafael")
+
+data.frame(age = ages, name = names)
+```
+
+```
+##   age    name
+## 1  25 Menglin
+## 2  72    Mine
+## 3  32  Rafael
+```
+
+---
+
+# R review
+## Functions and Arguments
+
+
+```r
+do(something)
+```
+
+`do()` is a function;   
+`something` is the argument of the function.
+
+--
+
+
+```r
+do(something, colorful)
+```
+
+`do()` is a function;   
+`something` is the first argument of the function;   
+`colorful` is the second argument of the function.
+
+---
+
+# R review
+
+## Getting Help
+
+In order to get any help we can use `?` followed by function (or object) name. 
+
+
+```r
+?c
+```
+
+
+---
+
+# Some basic data structures
+- variables/assignment
+- combine/vector
+- matrix
+
+
+```r
+temp_variable = 1
+temp_vector = c(1, 2, 3)
+temp_matrix = matrix(c(1,2,3,4), nrow=2, ncol=2, 
+                     byrow=TRUE)
+```
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="cols_macro.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "pygments",
+"highlightLines": true,
+"highlightLanguage": "r"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -1,0 +1,800 @@
+---
+title: "Visualizing Data"
+author: "Dr. Mine Dogucu"
+output: 
+  xaringan::moon_reader:
+    css: ["slide-style.css"]
+    lib_dir: libs
+    seal: false
+    nature:
+      ratio: 16:9
+      highlightStyle: "pygments"
+      highlightLines: true
+      highlightLanguage: "r"
+
+---
+
+class: title-slide
+
+```{r echo = FALSE, message=FALSE}
+library(openintro)
+library(tidyverse)
+babies <- babies %>% 
+  mutate(smoke = as.logical(smoke),
+         parity = as.logical(parity))
+
+xaringanExtra::use_panelset()
+theme_set(theme_gray(base_size = 18))
+```
+
+<br>
+<br>
+.right-panel[ 
+<br>
+
+# `r rmarkdown::metadata$title`
+
+## `r rmarkdown::metadata$author`
+
+]
+
+---
+
+class: middle
+
+## Reminder
+
+- Close all apps on your computer other than zoom.  
+- Open slides for this session from the cluster website (https://uci-dshs.netlify.app/). 
+
+
+---
+
+class: middle
+
+## Data 
+
+```{r}
+glimpse(babies)
+```
+
+---
+
+class: middle
+
+__gg__plot is based on __g__rammar of __g__raphics.
+
+```{r echo = FALSE}
+knitr::include_graphics("img/grammar_graphics.jpeg")
+```
+
+---
+
+
+class:inverse middle
+
+.font75[Visualizing a Single Categorical Variable]
+
+---
+
+class: middle
+
+.left-panel[
+<br>
+<br>
+If you could speak to R in English, how would you tell R to make this plot for you?
+
+OR
+
+If you had the data and had to draw this bar plot by hand, what would you do?
+
+]
+
+.right-panel[
+
+```{r echo=FALSE}
+ggplot(babies, aes(x = smoke)) +
+  geom_bar()
+```
+]
+
+---
+
+class: middle
+
+.left-panel[
+<br>
+<br>
+Possible ideas
+
+- Consider the data frame
+- Count number of babies for each type of mothers' `smoke` status
+- Put `smoke` on x-axis.
+- Put `count` on y-axis.
+- Draw the bars.
+]
+
+.right-panel[
+
+```{r echo=FALSE}
+ggplot(babies, aes(x = smoke)) +
+  geom_bar()
+```
+]
+
+---
+
+class: middle
+
+.left-panel[
+<br>
+<br>
+These ideas are all correct but some are not necessary in R
+
+- Consider the data frame
+- ~~Count number of babies for each type of mothers' `smoke` status~~
+- Put `smoke` on x-axis.
+- ~~Put `count` on y-axis.~~
+- Draw the bars.
+
+R will do some of these steps by default. Making a bar plot with another tool might look slightly different.
+
+]
+
+.right-panel[
+
+```{r echo=FALSE}
+ggplot(babies, aes(x = smoke)) +
+  geom_bar()
+```
+]
+
+---
+
+class: middle
+
+**3 steps of making a basic ggplot**
+
+1.Pick data
+
+2.Map data onto aesthetics
+
+3.Add the geometric layer
+
+
+
+---
+class: middle
+
+### Step 1 - Pick Data
+
+.pull-left[
+```{r eval = FALSE}
+ggplot(data = babies)
+```
+]
+
+.pull-right[
+
+```{r echo = FALSE, fig.height=5}
+ggplot(babies)
+```
+
+]
+
+---
+
+class: middle
+
+### Step 2 - Map Data to Aesthetics
+
+.pull-left[
+```{r eval = FALSE}
+ggplot(data = babies,
+       aes(x = smoke)) #<<
+```
+]
+
+.pull-right[
+
+```{r echo = FALSE, fig.height=5}
+ggplot(data = babies,
+       aes(x = smoke))
+```
+
+]
+
+---
+
+class: middle
+
+### Step 3 - Add the Geometric Layer
+
+.pull-left[
+```{r eval = FALSE}
+ggplot(data = babies,
+       aes(x = smoke)) +
+  geom_bar() #<<
+```
+]
+
+.pull-right[
+
+```{r echo = FALSE, fig.height=5}
+ggplot(data = babies,
+       aes(x = smoke)) +
+  geom_bar()
+```
+]
+---
+
+class: middle 
+
+.panelset[
+
+.panel[
+.panel-name[Plot]
+```{r echo = FALSE, fig.height=5, fig.align='center'}
+ggplot(data = babies,
+       aes(x = smoke)) +
+  geom_bar()
+```
+
+]
+
+.panel[
+.panel-name[English]
+
+- Create a ggplot using the `babies` data frame.
+- Map the `smoke` to the x-axis. 
+- Add a layer of a bar plot.
+
+]
+
+.panel[
+.panel-name[R]
+```{r eval = FALSE, fig.height=5}
+ggplot(data = babies,
+       aes(x = smoke)) +
+  geom_bar()
+```
+
+]
+
+]
+---
+
+class:inverse middle
+
+.font75[Visualizing a Single Numeric Variable]
+
+---
+
+class: middle
+
+.panelset[
+
+.panel[
+.panel-name[Plot]
+```{r echo = FALSE, fig.height=5, fig.align='center'}
+ggplot(data = babies,
+       aes(x = bwt)) +
+  geom_histogram() 
+```
+
+]
+
+.panel[
+.panel-name[English]
+
+- Create a ggplot using the `babies` data frame.
+- Map the `bwt` to the x-axis. 
+- Add a layer of a histogram.
+
+]
+
+.panel[
+.panel-name[R]
+```{r eval = FALSE, fig.height=5}
+ggplot(data = babies,
+       aes(x = bwt)) +
+  geom_histogram() 
+```
+
+]
+
+]
+
+---
+class: middle
+
+### Step 1 - Pick Data
+
+.pull-left[
+```{r eval = FALSE}
+ggplot(data = babies)
+```
+]
+
+.pull-right[
+
+```{r echo = FALSE, fig.height=5}
+ggplot(babies)
+```
+
+]
+
+---
+
+class: middle
+
+### Step 2 - Map Data to Aesthetics
+
+.pull-left[
+```{r eval = FALSE}
+ggplot(data = babies,
+       aes(x = bwt)) #<<
+```
+]
+
+.pull-right[
+
+```{r echo = FALSE, fig.height=5}
+ggplot(data = babies,
+       aes(x = bwt))
+```
+
+]
+
+---
+
+class: middle
+
+### Step 3 - Add the Geometric Layer
+
+.pull-left[
+```{r eval = FALSE}
+ggplot(data = babies,
+       aes(x = bwt)) +
+  geom_histogram() #<<
+```
+]
+
+.pull-right[
+
+```{r echo = FALSE, fig.height=5}
+ggplot(data = babies,
+       aes(x = bwt)) +
+  geom_histogram()
+```
+]
+
+---
+
+## What is this warning?
+
+```{r echo = FALSE, fig.height=5, fig.align='center'}
+ggplot(data = babies,
+       aes(x = bwt)) +
+  geom_histogram()
+```
+
+---
+
+
+```{r fig.height=5, fig.align='center'}
+ggplot(data = babies,
+       aes(x = bwt)) +
+  geom_histogram(binwidth = 15) #<<
+```
+
+
+---
+
+class: middle
+
+
+.panelset[
+.panel[.panel-name[binwidth = 15]
+
+.left-panel[
+
+
+]
+
+```{r echo = FALSE, fig.height=5, fig.align='center'}
+ggplot(data = babies,
+       aes(x = bwt)) +
+  geom_histogram(binwidth = 15)
+```
+
+]
+
+.panel[.panel-name[binwidth = 50]
+
+```{r echo = FALSE, fig.height=5, fig.align='center'}
+ggplot(data = babies,
+       aes(x = bwt)) +
+  geom_histogram(binwidth = 50)
+```
+
+]
+
+.panel[.panel-name[binwidth = 100]
+
+```{r echo = FALSE, fig.height=5, fig.align='center'}
+ggplot(data = babies,
+       aes(x = bwt)) +
+  geom_histogram(binwidth = 100)
+```
+
+]
+
+
+]
+
+
+
+
+---
+
+class: middle center
+
+
+.font150[
+`r emojifont::emoji(emojifont::search_emoji('rainbow'))[1]`
+] 
+
+Pick your favorite color(s) from the list at:
+
+[bit.ly/colors-r](https://bit.ly/colors-r)
+
+---
+
+```{r fig.align='center', fig.height=5}
+ggplot(data = babies,
+       aes(x = bwt)) +
+  geom_histogram(binwidth = 15, 
+                 color = "white") #<<
+```
+
+---
+
+```{r fig.align='center', fig.height=5}
+ggplot(data = babies,
+       aes(x = bwt)) +
+  geom_histogram(binwidth = 15, 
+                 fill = "darkred") #<<
+```
+
+---
+
+```{r fig.align='center', fig.height=5}
+ggplot(data = babies,
+       aes(x = bwt)) +
+  geom_histogram(binwidth = 15, 
+                 color = "white", #<<
+                 fill = "darkred") #<<
+```
+
+---
+
+class: inverse middle center
+
+.font75[Visualizing Two Categorical Variables]
+
+---
+
+## Stacked Bar-Plot
+
+.pull-left[
+
+```{r eval = FALSE}
+ggplot(data = babies,
+       aes(x = smoke, 
+           fill = parity)) + #<<
+  geom_bar() 
+```
+]
+
+.pull-right[
+
+```{r echo = FALSE, fig.height=5}
+ggplot(data = babies,
+       aes(x = smoke, 
+           fill = parity)) +
+  geom_bar()
+```
+]
+
+---
+
+## Standardized Bar Plot
+
+.pull-left[
+
+```{r eval = FALSE}
+ggplot(data = babies,
+       aes(x = smoke, 
+           fill = parity)) + 
+  geom_bar(position = "fill") #<<
+```
+]
+
+.pull-right[
+
+```{r echo = FALSE, fig.height=5}
+ggplot(data = babies,
+       aes(x = smoke, fill = parity)) +
+  geom_bar(position = "fill")
+```
+]
+
+.footnote[Note that y-axis is no longer count but we will learn how to change that later.]
+
+---
+
+## Dodged Bar Plot
+
+.pull-left[
+
+```{r eval = FALSE}
+ggplot(data = babies,
+       aes(x = smoke, 
+           fill = parity)) + 
+  geom_bar(position = "dodge") #<<
+```
+]
+
+.pull-right[
+
+```{r echo = FALSE, fig.height=5}
+ggplot(data = babies,
+       aes(x = smoke, fill = parity)) +
+  geom_bar(position = "dodge")
+```
+]
+
+.footnote[Note that y-axis is no longer count but we will change that later.]
+
+
+
+---
+class: middle inverse
+
+.font75[Visualizing a single numerical and single categorical variable.]
+
+---
+
+class: middle 
+
+.panelset[
+
+.panel[
+.panel-name[Plot]
+```{r echo = FALSE, fig.height=5, fig.align='center'}
+ggplot(babies,
+       aes(x = smoke,
+           y = bwt))  +
+  geom_boxplot()
+```
+
+]
+
+.panel[
+.panel-name[English]
+
+- Create a ggplot using the `babies` data frame.
+- Map the `smoke` to the x-axis and `bwt` to the y-axis. 
+- Add a layer of a boxplot plot.
+
+]
+
+.panel[
+.panel-name[R]
+```{r eval = FALSE, fig.height=5}
+ggplot(babies,
+       aes(x = smoke,
+           y = bwt))  +
+  geom_boxplot()
+```
+
+]
+
+]
+
+
+
+---
+
+.pull-left[
+```{r echo = FALSE, message = FALSE, warning = FALSE}
+ggplot(babies,
+       aes(x = smoke,
+           y = bwt))  +
+  geom_boxplot() +
+  theme(text = element_text(size=20))
+
+```
+
+]
+
+.pull-right[
+```{r echo = FALSE, message = FALSE, warning = FALSE}
+ggplot(babies,
+       aes(x = bwt))  +
+  geom_histogram() +
+  facet_grid(smoke~.) +
+  theme(text = element_text(size=20))
+
+```
+]
+
+---
+class: inverse middle
+
+.font75[Visualizing Two Numerical Variables]
+
+---
+
+.left-panel[
+```{r eval = FALSE}
+ggplot(babies,
+       aes(x = gestation,
+           y = bwt))  +
+  geom_point()
+```
+
+]
+
+.right-panel[
+```{r echo = FALSE}
+ggplot(babies,
+       aes(x = gestation,
+           y = bwt))  +
+  geom_point()
+```
+
+]
+
+
+---
+
+class: middle inverse
+
+.font75[Considering More Than Two Variables]
+
+---
+
+.left-panel[
+```{r eval = FALSE}
+ggplot(babies,
+       aes(x = gestation,
+           y = bwt,
+           color = smoke)) +
+  geom_point()
+```
+
+]
+
+.right-panel[
+```{r echo = FALSE}
+ggplot(babies,
+       aes(x = gestation,
+           y = bwt,
+           color= smoke))  +
+  geom_point()
+```
+
+]
+
+
+---
+.left-panel[
+```{r eval = FALSE}
+ggplot(babies,
+       aes(x = gestation,
+           y = bwt,
+           shape = smoke)) +
+  geom_point()
+```
+
+]
+
+.right-panel[
+```{r echo = FALSE}
+ggplot(babies,
+       aes(x = gestation,
+           y = bwt,
+           shape = smoke))  +
+  geom_point()
+```
+
+]
+
+---
+
+
+
+.left-panel[
+```{r eval = FALSE}
+ggplot(babies,
+       aes(x = gestation,
+           y = bwt,
+           shape = smoke)) +
+  geom_point()
+```
+
+]
+
+.right-panel[
+```{r echo = FALSE}
+ggplot(babies,
+       aes(x = gestation,
+           y = bwt,
+           shape = smoke))  +
+  geom_point()
+```
+
+]
+
+---
+
+.left-panel[
+```{r eval = FALSE}
+ggplot(babies,
+       aes(x = gestation,
+           y = bwt,
+           shape = smoke,
+           color = smoke)) +
+  geom_point()
+```
+
+]
+
+.right-panel[
+```{r echo = FALSE}
+ggplot(babies,
+       aes(x = gestation,
+           y = bwt,
+           shape = smoke,
+           color = smoke))  +
+  geom_point()
+```
+
+]
+
+
+---
+
+.left-panel[
+```{r eval = FALSE}
+ggplot(babies,
+       aes(x = gestation,
+           y = bwt,
+           shape = smoke,
+           color = smoke,
+           size = weight)) +
+  geom_point()
+```
+
+]
+
+.right-panel[
+```{r echo = FALSE}
+ggplot(babies,
+       aes(x = gestation,
+           y = bwt,
+           shape = smoke,
+           color = smoke,
+           size = weight))  +
+  geom_point()
+```
+]
+
+---
+
+```{r echo = FALSE, out.width ="95%"}
+knitr::include_graphics("img/ggplot-summary.jpeg")
+```
+

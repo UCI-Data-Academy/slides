@@ -1,0 +1,205 @@
+---
+title: "Working with R"
+author: "Brian Schetzsle"
+output: 
+  xaringan::moon_reader:
+    css: ["slide-style.css", "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"]
+    lib_dir: libs
+    seal: false
+    nature:
+      beforeInit: "cols_macro.js"
+      ratio: 16:9
+      highlightStyle: "pygments"
+      highlightLines: true
+      highlightLanguage: "r"
+
+---
+
+class: title-slide
+
+```{r echo = FALSE, warning=FALSE}
+library(fabricerin)
+```
+
+<br>
+<br>
+.right-panel[ 
+
+# `r rmarkdown::metadata$title`
+## `r rmarkdown::metadata$author`
+
+Adapted from slides by Mine Dogucu
+]
+
+---
+
+## Reminder
+
+- Close all apps on your computer.  
+- Open slides for this session from the cluster website (https://cosmos-datascience.netlify.app). 
+
+---
+
+# Introductions
+
+---
+
+# First things first:
+- Do you have a computer?
+- Do you have R on your computer?
+- Do you have RStudio on your computer?
+
+---
+
+# A Walkthrough of RStudio
+## Why it's a nice environment for R coding
+
+---
+
+# A Walkthrough of RStudio
+## Create a new document in which to do R coding
+
+---
+
+class: inverse middle center
+
+.font100[hello woRld]
+
+---
+
+class: center
+
+<video width="80%" height="50%" align = "center" controls>
+  <source src="screencast/01a-hello-world.mp4" type="video/mp4">
+</video>
+
+.footnote[Created by Dr. Mine Dogucu]
+
+---
+
+## Practice
+
+- open RStudio.
+- write the R code you have just seen.
+- help each other with problems.
+- Explore the relationships between the different quadrants in RStudio
+- Create an R document, type code there and execute it in the console using Command+Enter
+
+---
+
+# R review
+## Object assignment operator
+
+```{r}
+birth_year <- 1950
+```
+
+---
+
+# R review
+
+R is case-sensitive
+
+
+```{r error=TRUE}
+
+my_age <- 2022 - birth_year
+
+My_age
+```
+
+
+
+---
+
+## Variables in R
+
+`character`: takes string values (e.g. a person's name, address)
+
+--
+
+`integer`: integer (single precision)  
+
+--
+
+`double`: floating decimal (double precision) 
+
+--
+
+`numeric`: integer or double  
+
+--
+
+`factor`: categorical variables with different levels  
+
+--
+
+`logical`: TRUE (1), FALSE (0)  
+
+
+
+---
+
+
+# R review
+
+If something comes in quotes, it is not defined in R. 
+
+
+```{r}
+
+ages <- c(25, my_age, 32)
+
+names <- c("Menglin", "Mine", "Rafael")
+
+data.frame(age = ages, name = names)
+```
+
+---
+
+# R review
+## Functions and Arguments
+
+```{r eval=FALSE}
+do(something)
+```
+
+`do()` is a function;   
+`something` is the argument of the function.
+
+--
+
+```{r eval=FALSE}
+do(something, colorful)
+```
+
+`do()` is a function;   
+`something` is the first argument of the function;   
+`colorful` is the second argument of the function.
+
+---
+
+# R review
+
+## Getting Help
+
+In order to get any help we can use `?` followed by function (or object) name. 
+
+```{r eval=FALSE}
+?c
+```
+
+
+---
+
+# Some basic data structures
+- variables/assignment
+- combine/vector
+- matrix
+
+```{r eval=FALSE}
+temp_variable = 1
+temp_vector = c(1, 2, 3)
+temp_matrix = matrix(c(1,2,3,4), nrow=2, ncol=2, 
+                     byrow=TRUE)
+```

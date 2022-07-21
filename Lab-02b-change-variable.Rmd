@@ -1,0 +1,188 @@
+---
+title: "Changing Variables"
+author: "Dr. Mine Dogucu"
+output: 
+  xaringan::moon_reader:
+    css: ["slide-style.css"]
+    seal: false
+    nature:
+      ratio: 16:9
+      highlightStyle: "pygments"
+      highlightLines: true
+      highlightLanguage: "r"
+---
+
+class: title-slide
+
+
+
+```{r echo = FALSE, message = FALSE}
+library(tidyverse)
+options(scipen = 999)
+```
+
+
+<br>
+<br>
+.right-panel[ 
+
+# `r rmarkdown::metadata$title`
+## `r rmarkdown::metadata$author`
+]
+
+---
+
+```{r echo = FALSE, message = FALSE}
+library(tidyverse)
+
+arthritis <- read_csv("https://raw.githubusercontent.com/cosmos-uci-dshs/data/main/RheumArth_Tx_AgeComparisons.csv") %>% 
+  janitor::clean_names() %>% 
+  mutate(sex = case_when(sex == 0 ~ "female",
+                   sex == 1 ~ "male")) %>% 
+  mutate(sex = as.factor(sex)) %>% 
+  mutate(age_gp = case_when(age_gp == 1 ~ "control",
+                   age_gp == 2 ~ "elderly")) %>% 
+  mutate(age_gp = as.factor(age_gp)) %>% 
+  mutate(cdai_yn = case_when(cdai_yn == 1 ~ "no",
+                             cdai_yn == 2 ~ "yes")) %>%
+  mutate(cdai_yn = as.factor(cdai_yn))
+
+
+arthritis <- 
+  arthritis %>% 
+  select(age, age_gp, 
+         sex, yrs_from_dx,
+         cdai)
+```
+
+
+
+```{r}
+glimpse(arthritis)
+```
+
+**Goal**: 
+
+Create a new variable called `age_months` that represents `age` in months.
+
+---
+
+```{r}
+arthritis %>% 
+  mutate(age_months = age*12)
+```
+
+---
+
+```{r}
+glimpse(arthritis)
+```
+
+---
+
+**Goal**: 
+
+Create a new variable called `cdai_level` which reflects the levels in the the data dictionary
+
+- Remission ≤ 2.8
+- Low Disease Activity > 2.8 and ≤ 10
+- Moderate Disease Activity > 10 and ≤ 22
+- High Disease Activity > 22
+
+---
+
+```{r}
+arthritis %>% 
+  mutate(cdai_level = case_when(
+    cdai <=2.8 ~ "Remission", 
+    cdai > 2.8 & cdai <= 10 ~ "Low",
+    cdai > 10 & cdai <=22  ~ "Moderate",
+    cdai > 22 ~ "High")) 
+```
+
+---
+
+We can't really see what we have created 
+
+
+
+
+---
+
+We can use pipes with ggplot too!
+
+.left-panel[
+```{r eval = FALSE}
+arthritis %>% 
+  mutate(cdai_level = case_when(
+    cdai <=2.8 ~ "Remission", 
+    cdai > 2.8 & cdai <= 10 ~ "Low",
+    cdai > 10 & cdai <=22  ~ "Moderate",
+    cdai > 22 ~ "High")) %>% 
+  ggplot(aes(x = cdai_level)) +
+  geom_bar()
+```
+]
+
+.right-panel[
+```{r echo = FALSE}
+arthritis %>% 
+  mutate(cdai_level = case_when(
+    cdai <=2.8 ~ "Remission", 
+    cdai > 2.8 & cdai <= 10 ~ "Low",
+    cdai > 10 & cdai <=22  ~ "Moderate",
+    cdai > 22 ~ "High")) %>% 
+  ggplot(aes(x = cdai_level)) +
+  geom_bar()
+```
+]
+
+---
+
+
+```{r}
+arthritis <- arthritis %>% 
+  mutate(cdai_level = case_when(
+    cdai <=2.8 ~ "Remission", 
+    cdai > 2.8 & cdai <= 10 ~ "Low",
+    cdai > 10 & cdai <=22  ~ "Moderate",
+    cdai > 22 ~ "High")) 
+```
+
+---
+
+```{r}
+glimpse(arthritis)
+```
+
+**Goal**: 
+
+Make `cdai_level` a factor and `age` an integer. 
+
+---
+
+```{r}
+arthritis %>% 
+  mutate(cdai_level = as.factor(cdai_level),
+         age = as.integer(age)) 
+```
+
+---
+
+class: middle
+
+`as.factor()` - makes a vector factor  
+`as.numeric()` - makes a vector numeric  
+`as.integer()` - makes a vector integer  
+`as.double()` - makes a vector double  
+`as.character()` - makes a vector character  
+
+
+
+
+
+
+
+
+
+

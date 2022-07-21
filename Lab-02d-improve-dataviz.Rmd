@@ -1,0 +1,439 @@
+---
+title: "Improving Data Visualizations"
+author: "Dr. Mine Dogucu"
+output: 
+  xaringan::moon_reader:
+    css: ["slide-style.css"]
+    lib_dir: libs
+    seal: false
+    nature:
+      ratio: 16:9
+      highlightStyle: "pygments"
+      highlightLines: true
+      highlightLanguage: "r"
+
+---
+
+class: title-slide
+
+```{r echo = FALSE, message=FALSE}
+library(openintro)
+library(tidyverse)
+babies <- babies %>% 
+  mutate(smoke = as.logical(smoke),
+         parity = as.logical(parity))
+
+xaringanExtra::use_panelset()
+theme_set(theme_gray(base_size = 18))
+```
+
+<br>
+<br>
+.right-panel[ 
+<br>
+
+# `r rmarkdown::metadata$title`
+
+## `r rmarkdown::metadata$author`
+
+]
+
+
+---
+
+class: middle 
+ 
+
+.panelset[
+.panel[
+
+.panel-name[Plot]
+
+```{r echo = FALSE, fig.align='center', warning = FALSE, fig.height=5}
+ggplot(babies,
+       aes(x = gestation,
+           y = bwt,
+           shape = smoke,
+           color = smoke)) +
+  geom_point(size = 4) 
+```
+
+]
+
+.panel[
+
+.panel-name[English]
+- Using the `babies` data,   
+- Map `gestation` to x-axis, `bwt` to y-axis, `smoke` to shape and color.
+- Add a layer of points and set the size of the points to 4.
+]
+
+.panel[
+.panel-name[R]
+```{r eval = FALSE}
+ggplot(babies,
+       aes(x = gestation,
+           y = bwt,
+           shape = smoke,
+           color = smoke)) +
+  geom_point(size = 4) 
+```
+
+]
+
+]
+
+
+---
+class: middle 
+
+## Labs
+
+
+.panelset[
+.panel[
+
+.panel-name[Plot]
+
+```{r echo = FALSE, fig.align='center', warning = FALSE, fig.height=5}
+ggplot(babies,
+       aes(x = gestation,
+           y = bwt,
+           shape = smoke,
+           color = smoke)) +
+  geom_point(size = 4) +
+  labs(x = "Gestation (days)", #<<
+       y = "Birth Weight (ounces)", #<<
+       title = "Baby Gestation and Birth Weight by Mother's Smoker Status") #<<
+```
+
+]
+
+.panel[
+
+.panel-name[English]
+- Using the `babies` data,   
+- Map `gestation` to x-axis, `bwt` to y-axis, `smoke` to shape.
+- Add a layer of points and set the size of the points to 4.
+- .highlight-text[Add labels to x-axis (Gestation), y-axis (Birth Weight), and the title of the plot (Palmer babies).]
+
+
+
+.panel[
+.panel-name[R]
+```{r eval = FALSE}
+ggplot(babies,
+       aes(x = gestation,
+           y = bwt,
+           shape = smoke,
+           color = smoke)) +
+  geom_point(size = 4) +
+  labs(x = "Gestation (days)", #<<
+       y = "Birth Weight (ounces)", #<<
+       title = "Gestation and Birth Weight by Mother's Smoker Status") #<<
+```
+
+]
+
+]
+
+
+
+]
+
+---
+
+.left-panel[
+```{r eval = FALSE}
+ggplot(babies,
+       aes(x = gestation,
+           y = bwt,
+           shape = smoke,
+           color = smoke)) +
+  geom_point() +
+labs(x = "Gestation (days)",
+       y = "Birth Weight (ounces)", 
+       title = "Gestation and Birth Weight by Mother's Smoker Status") 
+  theme_bw() #<<
+  
+```
+
+]
+
+.right-panel[
+```{r echo = FALSE, fig.height=5, warning = FALSE}
+ggplot(babies,
+       aes(x = gestation,
+           y = bwt,
+           shape = smoke,
+           color = smoke)) +
+  geom_point() +
+  labs(x = "Gestation (days)",
+       y = "Birth Weight (ounces)", 
+       title = "Baby Gestation and Birth Weight by Mother's Smoker Status") +
+  theme_bw()
+```
+
+]
+
+---
+
+class: middle
+
+## Themes
+
+.panelset[
+
+
+.panel[
+
+.panel-name[`theme_gray()`]
+
+```{r echo = FALSE, fig.height=4, fig.align='center', warning = FALSE}
+ggplot(babies,
+       aes(x = gestation,
+           y = bwt,
+           shape = smoke,
+           color = smoke)) +
+  geom_point() +
+  labs(x = "Gestation (days)",
+       y = "Birth Weight (ounces)", 
+       title = "Baby Gestation and Birth Weight by Mother's Smoker Status") +
+  theme_gray()
+```
+
+]
+
+.panel[
+
+.panel-name[`theme_bw()`]
+
+```{r echo = FALSE, fig.height=4, fig.align='center', warning = FALSE}
+ggplot(babies,
+       aes(x = gestation,
+           y = bwt,
+           shape = smoke,
+           color = smoke)) +
+  geom_point() +
+  labs(x = "Gestation (days)",
+       y = "Birth Weight (ounces)", 
+       title = "Baby Gestation and Birth Weight by Mother's Smoker Status") +
+  theme_bw()
+```
+
+]
+
+.panel[
+
+.panel-name[`theme_classic()`]
+
+```{r echo = FALSE, fig.height=4, fig.align='center', warning = FALSE}
+ggplot(babies,
+       aes(x = gestation,
+           y = bwt,
+           shape = smoke,
+           color = smoke)) +
+  geom_point() +
+  labs(x = "Gestation (days)",
+       y = "Birth Weight (ounces)", 
+       title = "Baby Gestation and Birth Weight by Mother's Smoker Status") +
+  theme_classic()
+```
+
+]
+
+.panel[
+
+.panel-name[`theme_dark()`]
+
+```{r echo = FALSE, fig.height=4, fig.align='center', warning = FALSE}
+ggplot(babies,
+       aes(x = gestation,
+           y = bwt,
+           shape = smoke,
+           color = smoke)) +
+  geom_point() +
+  labs(x = "Gestation (days)",
+       y = "Birth Weight (ounces)", 
+       title = "Baby Gestation and Birth Weight by Mother's Smoker Status") +
+  theme_dark()
+```
+
+]
+
+.panel[
+.panel-name[`theme_minimal()`]
+
+```{r echo = FALSE, fig.height=4, fig.align='center', warning = FALSE}
+ggplot(babies,
+       aes(x = gestation,
+           y = bwt,
+           shape = smoke,
+           color = smoke)) +
+  geom_point() +
+  labs(x = "Gestation (days)",
+       y = "Birth Weight (ounces)", 
+       title = "Baby Gestation and Birth Weight by Mother's Smoker Status") +
+  theme_minimal()
+```
+
+]
+
+
+.panel[
+.panel-name[`theme_void()`]
+
+```{r echo = FALSE, fig.height=4, fig.align='center', warning = FALSE}
+ggplot(babies,
+       aes(x = gestation,
+           y = bwt,
+           shape = smoke,
+           color = smoke)) +
+  geom_point() +
+  labs(x = "Gestation (days)",
+       y = "Birth Weight (ounces)", 
+       title = "Baby Gestation and Birth Weight by Mother's Smoker Status") +
+  theme_void()
+```
+
+]
+]
+
+---
+
+.left-panel[
+
+```{r eval = FALSE}
+ggplot(babies,
+       aes(x = gestation,
+           y = bwt,
+           shape = smoke,
+           color = smoke)) +
+  geom_point() +
+  labs(x = "Gestation (days)",
+       y = "Birth Weight (ounces)", 
+       title = "Baby Gestation and Birth Weight by Mother's Smoker Status") +
+  theme_bw() +
+  theme(text = element_text(size=20)) #<<
+  
+```
+
+]
+
+.right-panel[
+
+```{r echo = FALSE, fig.height=5, warning = FALSE}
+ggplot(babies,
+       aes(x = gestation,
+           y = bwt,
+           shape = smoke,
+           color = smoke)) +
+  geom_point() +
+  labs(x = "Gestation (days)",
+       y = "Birth Weight (ounces)", 
+       title = "Baby Gestation and Birth Weight by Mother's Smoker Status") +
+  theme_bw() +
+  theme(text = element_text(size=20))
+```
+]
+
+
+---
+
+class: middle
+
+```{r}
+?theme
+```
+
+There are more aspects of a theme that we can control. 
+
+---
+
+class: middle 
+ 
+
+.left-panel[
+
+```{r eval = FALSE, fig.align='center', warning = FALSE, fig.height=5}
+ggplot(babies,
+       aes(x = gestation,
+           y = bwt,
+           shape = smoke,
+           color = smoke)) +
+  geom_point(size = 4) +
+  facet_grid(.~parity) #<<
+```
+
+]
+
+.right-panel[
+```{r echo = FALSE, fig.align='center', warning = FALSE, fig.height=5}
+ggplot(babies,
+       aes(x = gestation,
+           y = bwt,
+           shape = smoke,
+           color = smoke)) +
+  geom_point(size = 4) +
+  facet_grid(.~parity)
+```
+]
+
+---
+
+class: middle 
+ 
+
+.left-panel[
+
+```{r eval = FALSE, fig.align='center', warning = FALSE, fig.height=5}
+ggplot(babies,
+       aes(x = gestation,
+           y = bwt,
+           shape = smoke,
+           color = smoke)) +
+  geom_point(size = 4) +
+  facet_grid(parity~.) #<<
+```
+
+]
+
+.right-panel[
+```{r echo = FALSE, fig.align='center', warning = FALSE, fig.height=5}
+ggplot(babies,
+       aes(x = gestation,
+           y = bwt,
+           shape = smoke,
+           color = smoke)) +
+  geom_point(size = 4) +
+  facet_grid(parity~.)
+```
+]
+
+---
+
+class: middle
+
+You can do much more in ggplot. 
+
+- Use images 
+- Make maps
+- Pick colors that you want
+
+---
+
+class: middle
+
+Check out [the ggplot flipbook](https://evamaerey.github.io/ggplot_flipbook/ggplot_flipbook_xaringan.html#1) for some inspiration. 
+
+
+
+
+---
+
+class: middle
+
+- [BBC](https://bbc.github.io/rcookbook/)   
+- [fivethirtyeight](https://blog.revolutionanalytics.com/2016/07/data-journalism-with-r-at-538.html?utm_content=bufferc03e0&utm_medium=social&utm_source=twitter.com&utm_campaign=buffer)  
+- [NY Times](https://livefreeordichotomize.com/2021/04/07/nytimes-map-how-to/)
+

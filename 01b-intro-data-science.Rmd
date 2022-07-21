@@ -1,0 +1,183 @@
+---
+title: "Data Science"
+author: "Babak Shahbaba"
+output: 
+  xaringan::moon_reader:
+    css: ["slide-style.css"]
+    lib_dir: libs
+    seal: false
+    nature:
+      ratio: 16:9
+      highlightStyle: "pygments"
+      highlightLines: true
+      highlightLanguage: "r"
+
+
+---
+
+class: title-slide
+
+```{r echo = FALSE, message=FALSE}
+#setwd("~/Documents/GitHub/COSMOS-Slides")
+library(fivethirtyeight)
+library(openintro)
+library(tidyverse)
+library(DiagrammeR)
+library(DiagrammeRsvg)
+library(rsvg)
+library(magrittr)
+library(dplyr)
+library(fivethirtyeight)
+library(titanic)
+```
+
+<br>
+<br>
+.right-panel[ 
+<br>
+
+# `r rmarkdown::metadata$title`
+
+## `r rmarkdown::metadata$author`
+
+]
+
+
+---
+
+
+## What is data science 
+
+```{r echo = FALSE, message=FALSE}
+
+alzheimer_data <- read.csv('data/alzheimer_data.csv') %>% 
+  select(id, diagnosis, age, educ, female, height, weight) %>% 
+  mutate(diagnosis = as.factor(diagnosis), female = as.factor(female))
+
+```
+
+- Data-intensive studies have led to a new paradigm in scientific research. 
+
+- Within this new paradigm, there are emerging challenges involving analysis of large-scale datasets. 
+
+- To tackle these challenges, the field of __data science__ brings together _statistics, computer science_, and _mathematics_ to solve data intensive problems.
+
+- At its core, data science relies on statistical methods to solve scientific problems. These methods have their foundation in mathematics and are implemented using computational techniques. 
+
+
+---
+
+class: inverse center middle
+
+.font100[Data Science in Scientific Studies]
+
+
+
+
+---
+
+## Some general terminologies
+
+- To study a population, we measure a set of characteristics, which we refer to as __variables__.
+
+- The objective of many scientific studies is to
+learn about the __variation__ of a specific characteristic
+(e.g., BMI, disease status) in the population of interest. 
+
+- In many studies, we are interested in possible __relationships__ among different variables.
+
+---
+
+## Some general terminologies
+
+- We refer to the variables that are the main focus of our study as the
+__response__ (or target) variables. 
+
+- In contrast, we call variables that explain or predict the variation in the response variable as
+__explanatory__ variables or __predictors__ depending on the role of these variables.
+
+- Statistical analysis begins with a scientific problem usually presented
+in the form of a __hypothesis testing__, __estimation__, or __prediction__
+problem. 
+ 
+
+
+---
+
+## Alzheimer's data
+
+```{r echo=FALSE, out.width='90%', fig.align='center'}
+knitr::include_graphics('img/AlzheimerData.png')
+```
+
+
+
+
+
+---
+
+## Study design
+
+If possible, before we conduct our study, we need to design it in order to (Cox and Donnelly, 2011)
+  + avoid systematic error
+  
+  + reduce non-systematic error
+  
+  + ensure the scale of effort is appropriate; Goldilocks rule: not too limited, not too wasteful, just right!
+
+
+
+---
+
+## Common study designs
+
+- Survey studies: Researchers collect information from individuals through some questions
+
+- Observational studies: Researchers are passive examiners, trying to have the least impact on the data collection process.  
+
+- Experiments: Researchers attempt to control the process as much as possible.
+
+
+---
+
+## Sampling design
+
+- We cannot of course observe the whole population of interest or conduct experiments on them. 
+
+- Instead, we select a __sample__ of representative members from the population.
+
+- Some sampling schemes:
+
+  - Simple random sampling
+  - Stratified sampling
+  - Cluster sampling
+  - Multi-stage and temporal sampling
+
+
+
+---
+
+## Statistical inference
+
+- We collect data on a sample from the population in order to learn about the whole population. 
+
+- Note that in general the characteristics, relationships, and realities in the whole population always remain unknown. 
+
+- Therefore, there is always some __uncertainty__ associated with our inference. 
+
+- In Statistics, the mathematical tool to address uncertainty is __probability__. 
+
+
+---
+
+## Statistical inference
+
+- The process of using the data to draw conclusions about the whole population, while acknowledging the extent of our uncertainty about our findings, is called __statistical inference__. 
+
+- The knowledge we acquire from data through statistical inference allows us to make decisions with respect to the scientific problem that
+motivated our study and our data analysis. 
+
+- In this program, we will discuss some core statistical inference methods and use them to solve some scientific problems related to Alzheimer's disease.
+
+- Before doing that, however, we need to understand the problem and carefully explore (and describe) the data; this will be the focus of Week 1.  
+

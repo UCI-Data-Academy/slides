@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Linear Regression</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Babak Shahbaba" />
+    <script src="libs/header-attrs-2.14/header-attrs.js"></script>
+    <link rel="stylesheet" href="slide-style.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+class: title-slide
+
+
+
+&lt;br&gt;
+&lt;br&gt;
+.right-panel[ 
+&lt;br&gt;
+
+# Linear Regression
+
+### Babak Shahbaba
+
+]
+
+
+
+
+&lt;style type="text/css"&gt;
+
+body, td {
+   font-size: 14px;
+}
+code.r{
+  font-size: 20px;
+}
+pre {
+  font-size: 20px
+}
+&lt;/style&gt;
+
+---
+
+### Introduction
+
+- We now discuss **simple linear regression** models, where the objective is to either explain the variation in a numerical **response variable** or predict its unknown values using another variable called **explanatory variable** or **predictor** (depending its role).
+
+- We use `\(X\)` to denote explanatory variable and `\(Y\)` to denote response variable. 
+
+- We start by focusing on problems where the explanatory variable is binary. As before, the binary variable `\(X\)` can be either 0 or 1. 
+
+- We then continue our discussion for situations where the explanatory variable is numerical.
+
+
+---
+
+### One Binary Explanatory Variable
+
+
+- Suppose that we want to investigate the relationship between sodium chloride (salt) consumption (low vs. high consumption) and blood pressure among elderly people (e.g., above 65 years old). 
+
+&lt;img src="img/saltBP0.png" width="32%" height="40%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+### One Binary Explanatory Variable
+
+
+- The following figure shows the dot plot along with sample means, shown as black circles, for each group. We connect the two sample means to show the overall pattern for how blood pressure changes from one
+group to another.
+
+&lt;img src="img/saltBP1.png" width="32%" height="40%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+### One Binary Explanatory Variable
+
+
+- Using the intercept `\(a\)` and slope `\(b\)`, we can write the equation for
+the straight line that connects the estimates of the response variable for different values of `\(X\)` as follows:
+`$$\begin{equation*}
+\hat{y}  =  a + b x.
+\end{equation*}$$`
+
+- The slope is also knows as the **regression coefficient** of `\(X\)`.
+
+- For this example,
+`$$\begin{equation*}
+\hat{y}  =  133.17 + 6.25 x.
+\end{equation*}$$`
+
+---
+
+### One Binary Explanatory Variable
+
+- We expect that on average the blood
+pressure increases by 6.25 units for one unit increase in `\(X\)`. 
+
+- In this case, one unit increase in `\(X\)` from 0
+to 1 means moving from low to high sodium chloride
+diet group.
+
+
+
+---
+
+### One Binary Explanatory Variable
+
+- For an individual with `\(x=0\)` (i.e., low sodium chloride diet), the estimate according to the above regression line is
+`$$\begin{eqnarray*}
+\hat{y} &amp; = &amp; a + b \times 0 = a \\
+&amp; = &amp; \hat{y}_{x=0},
+\end{eqnarray*}$$`
+which is the sample mean for the first group. 
+
+
+---
+
+### One Binary Explanatory Variable
+
+- For an individual with `\(x=1\)` (i.e., high sodium chloride diet), the estimate according to the above regression line is
+`$$\begin{eqnarray*}
+\hat{y} &amp; = &amp; a + b \times 1 = a+b \\
+&amp; = &amp; \hat{y}_{x=0} + \hat{y}_{x=1} - \hat{y}_{x=0} \\
+&amp; = &amp; \hat{y}_{x=1}.
+\end{eqnarray*}$$`
+
+
+
+
+---
+
+### One Binary Explanatory Variable
+
+
+- We refer to the difference between the observed and estimated values of
+the response variable as the **residual**. 
+
+- For individual `\(i\)`, we denote the residual `\(e_{i}\)` and calculate it as follows:
+`$$\begin{equation*}
+e_{i}  =  y_{i} - \hat{y}_{i}.
+\end{equation*}$$`
+
+- For instance, if someone belongs to the first group, her estimated blood pressure is `\(\hat{y}_{i} = a =133.17\)`. 
+
+- Now if the observed value of her blood pressure is `\(y_{i} = 135.08\)`, then the residual is
+`$$\begin{equation*}
+e_{i}  = 135.08 - 133.17 = 1.91.
+\end{equation*}$$`
+
+
+---
+
+### Residual sum of squares
+
+- As a measure of discrepancy between the observed values and those
+estimated by the line, we calculate the **Residual Sum of
+Squares** (RSS):
+`$$\begin{equation*}
+\mathit{RSS} =  \sum_{i}^{n} e_{i}^{2}.
+\label{RSS}
+\end{equation*}$$`
+
+- Here, `\(e_i\)` is the residual of the `\(i\)`th observation, and `\(n\)` is the
+sample size. 
+
+- The square of each residual is used so that its sign becomes irrelevant.
+
+---
+
+### One Numerical Explanatory Variable
+
+
+- We now discuss simple linear regression models (i.e., linear regression with only one explanatory variable), where the explanatory variable is numerical.
+
+&lt;img src="img/bpBySalt.png" width="35%" height="40%" style="display: block; margin: auto;" /&gt;
+
+
+
+
+
+
+
+
+---
+
+### One Numerical Explanatory Variable
+
+
+- Among all possible lines we can pass through the data, we choose the one with the smallest sum of squared residuals, called the **least-squares regression line**.
+
+
+&lt;img src="img/bpSaltLines.png" width="35%" height="40%" style="display: block; margin: auto;" /&gt;
+
+
+
+
+
+---
+
+### Statistical inference using regression models
+
+- We can use the function `lm()` or `glm()` in R to find the least-squares regression line. 
+
+
+```r
+lm(BP ~ salt, data=saltBP)
+```
+
+```
+## 
+## Call:
+## lm(formula = BP ~ salt, data = saltBP)
+## 
+## Coefficients:
+## (Intercept)         salt  
+##     128.616        1.197
+```
+
+
+---
+
+### Statistical inference using regression models
+
+- We can use the function `lm()` or `glm()` in R to find the least-squares regression line. 
+
+
+```r
+glm(BP ~ salt, data=saltBP)
+```
+
+```
+## 
+## Call:  glm(formula = BP ~ salt, data = saltBP)
+## 
+## Coefficients:
+## (Intercept)         salt  
+##     128.616        1.197  
+## 
+## Degrees of Freedom: 24 Total (i.e. Null);  23 Residual
+## Null Deviance:	    584.8 
+## Residual Deviance: 173.4 	AIC: 125.4
+```
+
+---
+
+### Residual
+
+- Given `\(x\)`, we can find the expected value of `\(y\)` for each subject. 
+
+- For one individual in our sample, the amount of daily sodium chloride intake is `\(x_{i} = 3.68\)`. 
+
+- The estimated value of the blood pressure for this person is
+`$$\begin{equation*}
+\hat{y}_{i}  =  128.60 + 1.20 \times 3.68 = 133.02.
+\end{equation*}$$`
+
+- The actual blood pressure for this individual is `\(y_{i} = 128.3\)`. The residual therefore is
+`$$\begin{equation*}
+e_{i} = y_{i} - \hat{y}_{i} = 128.3 - 133.02 = - 4.72.
+\end{equation*}$$`
+
+
+
+---
+
+### Prediction
+
+- We can also use our model for **predicting** the unknown values of the
+response variable (i.e., blood pressure) for all individuals in the target population. 
+
+- For example, if we know the amount of daily sodium chloride intake is `\(x=7.81\)` for an individual, we can predict her blood pressure as follows:
+`$$\begin{equation*}
+\hat{y}  =  128.60 + 1.20 \times 7.81 = 137.97.
+\end{equation*}$$`
+
+
+---
+
+### Interpretation
+
+
+- The interpretation of the intercept `\(a\)` and the slope `\(b\)` is similar to what we had before.
+
+- `\(a=128.6\)`: the *expected* value of blood pressure is 128.6 for subjects with zero sodium chloride diet.
+
+- `\(b=1.2\)`: the *expected* value of blood pressure increases by 1.2 points corresponding to one unit increase in the daily amount of sodium chloride intake.
+
+
+---
+
+### Confidence interval
+
+
+```r
+lm_res &lt;- glm(BP ~ salt, data=saltBP)
+confint(lm_res)
+```
+
+```
+##                   2.5 %     97.5 %
+## (Intercept) 126.4567292 130.776065
+## salt          0.8794023   1.514386
+```
+
+
+---
+
+### Hypothesis testing
+
+
+```r
+lm_res &lt;- glm(BP ~ salt, data=saltBP)
+summary(lm_res)
+```
+
+```
+## 
+## Call:
+## glm(formula = BP ~ salt, data = saltBP)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -5.0388  -1.6755   0.3662   1.8824   5.3443  
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  128.616      1.102 116.723  &lt; 2e-16 ***
+## salt           1.197      0.162   7.389 1.63e-07 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for gaussian family taken to be 7.537079)
+## 
+##     Null deviance: 584.83  on 24  degrees of freedom
+## Residual deviance: 173.35  on 23  degrees of freedom
+## AIC: 125.36
+## 
+## Number of Fisher Scoring iterations: 2
+```
+
+---
+
+### Model Assumptions and Diagnostics
+
+
+- The typical assumptions of linear regression models are
+
+  - Linearity
+
+  - Independent observations
+
+  - Constant variance and normality of the error term (residuals)
+
+- The first two assumptions are usually justified by our domain knowledge, our study design, and simple visualization of data.
+
+- To investigate the validity of the third assumptions we can use diagnostic plots by visualizing the residuals
+
+
+
+
+---
+
+### Multiple Linear Regression
+
+- So far, we have focused on linear regression models with only one
+explanatory variable. 
+
+- In most cases, however, we are interested in the
+relationship between the response variable and multiple explanatory variables. 
+
+- Such models with multiple explanatory variables or predictors are called **multiple linear regression**
+models.
+
+- For example, we might want to examine how the birthweight of babies is associated with their mother age and smoking status. 
+
+
+---
+
+### Multiple Linear Regression
+
+- A multiple linear regression model with `\(p\)` explanatory variables can
+be presented as follows:
+
+`$$\begin{equation*}
+\hat{y}  =  a + b_{1}x_{1} + b_{2}x_{2} + \cdots + b_{p}x_{p}.
+\end{equation*}$$`
+
+- To fit this model, we can use R as before.
+
+
+
+---
+
+### Multiple Linear Regression
+
+
+```r
+library(MASS)
+data("birthwt")
+bwt_mod &lt;- glm(bwt ~ age + factor(smoke), data=birthwt)
+```
+
+
+---
+
+### Multiple Linear Regression
+
+
+```r
+confint(bwt_mod)
+```
+
+```
+##                      2.5 %     97.5 %
+## (Intercept)    2318.971775 3263.47685
+## age              -8.077542   30.65676
+## factor(smoke)1 -488.046399  -68.66586
+```
+
+
+
+---
+
+### Multiple Linear Regression
+
+
+```r
+summary(bwt_mod)
+```
+
+```
+## 
+## Call:
+## glm(formula = bwt ~ age + factor(smoke), data = birthwt)
+## 
+## Deviance Residuals: 
+##      Min        1Q    Median        3Q       Max  
+## -2119.98   -442.66     52.92    532.38   1690.74  
+## 
+## Coefficients:
+##                Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)    2791.224    240.950  11.584   &lt;2e-16 ***
+## age              11.290      9.881   1.143    0.255    
+## factor(smoke)1 -278.356    106.987  -2.602    0.010 *  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for gaussian family taken to be 514367.1)
+## 
+##     Null deviance: 99969656  on 188  degrees of freedom
+## Residual deviance: 95672288  on 186  degrees of freedom
+## AIC: 3026.8
+## 
+## Number of Fisher Scoring iterations: 2
+```
+
+---
+
+### Interpretation
+
+- The intercept in multiple linear regression model is the expected (average) value of the response variable when all the explanatory variables in the model are set to zero simultaneously. 
+
+- In the above example, the intercept is `\(a=2791\)`, which is obtained by setting age and smoking to zero. 
+
+- We might be tempted to interpret this as the average birthweight of babies for nonsmoking mothers (smoke=0) with age equal to zero. 
+
+- In this case, however, this is not a reasonable interpretation since mother's age cannot be zero.
+
+
+---
+
+### Interpretation
+
+- We interpret `\(b_{j}\)` as our estimate of the expected (average) change in the response variable
+associated with a unit increase in the corresponding explanatory variable `\(x_{j}\)` **while all other explanatory variables in the model remain fixed**.
+
+- For the above example, the point estimate of the regression coefficient for {age} is `\(b_{1}=11\)`, and the estimate of the regression coefficient for {smoke} is `\(b_{2} = -278\)`. 
+
+---
+
+### Interpretation
+
+- We expect that the birthweight of babies increase by 11 grams as the mother's age increases by one year among mothers with the same smoking status. 
+
+- The expected birthweight changes by `\(-278\)` (decreases by `\(278\)`) grams associated with one unit increase in the value of the variable smoke among mothers with the same age.
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "pygments",
+"highlightLines": true,
+"highlightLanguage": "r"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

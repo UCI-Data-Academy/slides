@@ -1,0 +1,233 @@
+---
+title: "Working with R Packages"
+author: "Brian Schetzsle"
+output: 
+  xaringan::moon_reader:
+    css: ["slide-style.css", "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"]
+    lib_dir: libs
+    seal: false
+    nature:
+      beforeInit: "cols_macro.js"
+      ratio: 16:9
+      highlightStyle: "pygments"
+      highlightLines: true
+      highlightLanguage: "r"
+
+---
+
+class: title-slide
+
+
+```{r echo = FALSE, message = FALSE}
+library(tidyverse)
+options(scipen = 999)
+```
+
+
+<br>
+<br>
+.right-panel[ 
+
+# `r rmarkdown::metadata$title`
+## `r rmarkdown::metadata$author`
+
+Adapted from slides by Mine Dogucu
+]
+
+
+
+
+---
+
+class: middle center
+
+.pull-left[
+
+__Default__
+
+```{r echo=FALSE, out.width='60%'}
+knitr::include_graphics('img/office-suite-default.png')
+```
+
+]
+
+.footnote[Microsoft products have Copyright. Images used based on [fair use](https://www.microsoft.com/en-us/legal/copyright/default.aspx) for educational purposes.]
+
+.pull-right[
+
+__Optional__
+
+```{r echo=FALSE, out.width='60%'}
+knitr::include_graphics('img/office-suite-optional.png')
+```
+
+
+]
+
+---
+class: middle
+
+## R packages
+
+
+When you download R, you actually download base R. 
+
+--
+
+But there are MANY optional packages you can download.
+
+
+---
+
+class: middle
+
+
+## R packages
+
+There are more than 15000 R packages. 
+
+--
+
+Good part: There is an R package for (almost) everything, from complex statistical modeling packages to baby names.
+
+--
+
+Bad part: At the beginning it can feel overwhelming. 
+
+---
+
+class: middle 
+
+## R packages
+
+All this time we have actually been using R packages. 
+
+---
+
+class: middle 
+
+## R packages
+
+What do R packages have? All sorts of things but mainly
+
+- functions 
+
+- datasets
+
+---
+
+class: middle
+
+## R packages
+
+Try running the following code:
+
+```{r error = TRUE}
+beep()
+```
+
+Why are we seeing this error? 
+
+---
+
+class: middle
+
+## R packages
+
+We will need to do two things:
+- Install the `beeper` package onto our computer
+- Load the `beeper` package into our R environment
+
+---
+
+class:inverse middle
+
+.font75[Installing packages]
+
+---
+
+## Using `install.packages()`
+
+In your **Console**, install the beepr package
+
+```{r eval = FALSE}
+install.packages("beepr")
+```
+
+We do this in the Console because we only need to do it once.
+
+---
+
+## Using Packages pane
+
+```{r echo = FALSE, out.width="40%", fig.align='center'}
+knitr::include_graphics("img/packages-pane.png")
+```
+
+Packages Pane > Install 
+
+---
+
+## Letting RStudio Install
+
+```{r echo = FALSE, out.width="80%", fig.align='center'}
+knitr::include_graphics("img/rstudio-install.png")
+```
+
+If you save your file and using a package RStudio will tell you that you have not installed the package.
+
+---
+
+class:inverse middle
+
+.font75[Loading packages]
+
+---
+
+### Using beep() from beepr
+
+.pull-left[
+```{r warning = FALSE, eval = FALSE}
+library(beepr)
+beep()
+```
+
+More common usage. 
+Useful if you are going to use multiple functions from the same package.
+E.g. we have used many functions (ggplot, aes, geom_...) from the ggplot2 package. In such cases, usual practice is to put the library name in the first R chunk in the .Rmd file.
+
+]
+
+.pull-right[
+```{r eval = FALSE}
+beepr::beep()
+```
+Useful when you are going to use a function once or few times. Also useful if there are any conflicts. For instance if there is some other package loaded that has a `beep()` function that prints the word beep, you would want to distinguish the beep function from the `beepr` package and the `beep()` function from the other imaginary package. 
+]
+
+---
+
+```{r echo=FALSE, fig.align='center', out.width="80%"}
+knitr::include_graphics("img/beep-help.png")
+```
+
+
+---
+
+class: middle
+
+## Open Source
+
+Any one around the world can create R packages. 
+
+--
+
+Good part: We are able to do pretty much anything with R because someone from around the world has developed the package and shared it. 
+
+--
+
+Bad part: The language can be inconsistent. 
+
+--
+
+Good news: We have tidyverse. 

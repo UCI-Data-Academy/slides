@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Subsetting and Grouping Data</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dr. Mine Dogucu" />
+    <script src="Lab-02a-subset-group_files/header-attrs-2.14/header-attrs.js"></script>
+    <link rel="stylesheet" href="slide-style.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+class: title-slide
+
+
+
+
+
+
+&lt;br&gt;
+&lt;br&gt;
+.right-panel[ 
+
+# Subsetting and Grouping Data
+## Dr. Mine Dogucu
+]
+
+---
+
+
+
+
+
+```r
+glimpse(arthritis)
+```
+
+```
+## Rows: 530
+## Columns: 14
+## $ id            &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1…
+## $ age           &lt;dbl&gt; 85, 86, 83, 83, 85, 79, 90, 90, 87, 82, 77, 86, 84, 76, …
+## $ age_gp        &lt;fct&gt; elderly, elderly, elderly, elderly, elderly, elderly, el…
+## $ sex           &lt;fct&gt; female, female, female, female, female, male, female, fe…
+## $ yrs_from_dx   &lt;dbl&gt; 27, 27, 10, 9, NA, NA, 51, 11, 36, 4, 31, NA, 9, 10, 3, …
+## $ cdai          &lt;dbl&gt; NA, 23.0, 14.5, NA, NA, NA, NA, 40.0, 6.0, NA, 0.0, NA, …
+## $ cdai_yn       &lt;fct&gt; no, yes, yes, no, no, no, no, yes, yes, no, yes, no, no,…
+## $ das_28        &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 2.44…
+## $ das28_yn      &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1,…
+## $ steroids_gt_5 &lt;dbl&gt; 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,…
+## $ dmar_ds       &lt;dbl&gt; 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 1,…
+## $ biologics     &lt;dbl&gt; 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,…
+## $ s_dmards      &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+## $ osteop_screen &lt;dbl&gt; 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+```
+
+---
+
+
+```r
+colnames(arthritis)
+```
+
+```
+##  [1] "id"            "age"           "age_gp"        "sex"          
+##  [5] "yrs_from_dx"   "cdai"          "cdai_yn"       "das_28"       
+##  [9] "das28_yn"      "steroids_gt_5" "dmar_ds"       "biologics"    
+## [13] "s_dmards"      "osteop_screen"
+```
+
+---
+
+## subsetting variables/columns
+
+&lt;img src="img/data-wrangle.001.jpeg" width="80%" /&gt;
+
+--
+
+`select()`
+
+---
+
+## subsetting observations/rows
+
+&lt;img src="img/data-wrangle.002.jpeg" width="80%" /&gt;
+
+`slice()` and `filter()` 
+
+---
+
+`select` is used to select certain variables in the data frame. 
+
+
+.left-panel[
+
+```r
+select(arthritis, age, cdai)
+```
+
+```
+## # A tibble: 530 × 2
+##      age  cdai
+##    &lt;dbl&gt; &lt;dbl&gt;
+##  1    85  NA  
+##  2    86  23  
+##  3    83  14.5
+##  4    83  NA  
+##  5    85  NA  
+##  6    79  NA  
+##  7    90  NA  
+##  8    90  40  
+##  9    87   6  
+## 10    82  NA  
+## # … with 520 more rows
+```
+]
+
+--
+
+.right-panel[
+
+
+```r
+arthritis %&gt;% 
+  select(age, cdai)
+```
+
+```
+## # A tibble: 530 × 2
+##      age  cdai
+##    &lt;dbl&gt; &lt;dbl&gt;
+##  1    85  NA  
+##  2    86  23  
+##  3    83  14.5
+##  4    83  NA  
+##  5    85  NA  
+##  6    79  NA  
+##  7    90  NA  
+##  8    90  40  
+##  9    87   6  
+## 10    82  NA  
+## # … with 520 more rows
+```
+
+]
+
+---
+
+`select` can also be used to drop certain variables if used with a negative sign.
+
+
+```r
+select(arthritis, -id, -sex)
+```
+
+```
+## # A tibble: 530 × 12
+##      age age_gp  yrs_from_dx  cdai cdai_yn das_28 das28_yn steroids_gt_5 dmar_ds
+##    &lt;dbl&gt; &lt;fct&gt;         &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;    &lt;dbl&gt;    &lt;dbl&gt;         &lt;dbl&gt;   &lt;dbl&gt;
+##  1    85 elderly          27  NA   no          NA        1             0       1
+##  2    86 elderly          27  23   yes         NA        1             1       1
+##  3    83 elderly          10  14.5 yes         NA        1             1       1
+##  4    83 elderly           9  NA   no          NA        1             1       1
+##  5    85 elderly          NA  NA   no          NA        1             0       0
+##  6    79 elderly          NA  NA   no          NA        1             0       0
+##  7    90 elderly          51  NA   no          NA        1             0       1
+##  8    90 elderly          11  40   yes         NA        1             1       0
+##  9    87 elderly          36   6   yes         NA        1             0       0
+## 10    82 elderly           4  NA   no          NA        1             0       1
+## # … with 520 more rows, and 3 more variables: biologics &lt;dbl&gt;, s_dmards &lt;dbl&gt;,
+## #   osteop_screen &lt;dbl&gt;
+```
+
+---
+
+## Selection helpers
+
+`starts_with()`  
+`ends_with()`  
+`contains()`  
+
+---
+
+
+```r
+select(arthritis, starts_with("cdai"))
+```
+
+```
+## # A tibble: 530 × 2
+##     cdai cdai_yn
+##    &lt;dbl&gt; &lt;fct&gt;  
+##  1  NA   no     
+##  2  23   yes    
+##  3  14.5 yes    
+##  4  NA   no     
+##  5  NA   no     
+##  6  NA   no     
+##  7  NA   no     
+##  8  40   yes    
+##  9   6   yes    
+## 10  NA   no     
+## # … with 520 more rows
+```
+
+---
+
+
+```r
+select(arthritis, contains("28"))
+```
+
+```
+## # A tibble: 530 × 2
+##    das_28 das28_yn
+##     &lt;dbl&gt;    &lt;dbl&gt;
+##  1     NA        1
+##  2     NA        1
+##  3     NA        1
+##  4     NA        1
+##  5     NA        1
+##  6     NA        1
+##  7     NA        1
+##  8     NA        1
+##  9     NA        1
+## 10     NA        1
+## # … with 520 more rows
+```
+
+---
+
+## subsetting variables/columns
+
+&lt;img src="img/data-wrangle.001.jpeg" width="80%" /&gt;
+
+--
+
+`select()`
+
+---
+
+## subsetting observations/rows
+
+&lt;img src="img/data-wrangle.002.jpeg" width="80%" /&gt;
+
+`slice()` and `filter()` 
+
+---
+
+.pull-left[
+`slice()` subsetting rows based on a row number.
+
+The data below include all the rows from third to seventh. Including third and seventh.
+
+
+```r
+slice(arthritis, 3:7)
+```
+
+```
+## # A tibble: 5 × 14
+##      id   age age_gp  sex    yrs_from_dx  cdai cdai_yn das_28 das28_yn
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;   &lt;fct&gt;        &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+## 1     3    83 elderly female          10  14.5 yes         NA        1
+## 2     4    83 elderly female           9  NA   no          NA        1
+## 3     5    85 elderly female          NA  NA   no          NA        1
+## 4     6    79 elderly male            NA  NA   no          NA        1
+## 5     7    90 elderly female          51  NA   no          NA        1
+## # … with 5 more variables: steroids_gt_5 &lt;dbl&gt;, dmar_ds &lt;dbl&gt;, biologics &lt;dbl&gt;,
+## #   s_dmards &lt;dbl&gt;, osteop_screen &lt;dbl&gt;
+```
+
+
+]
+
+--
+
+.pull-right[
+
+`filter()` subsetting rows based on a condition.
+
+The data below includes rows when the age is 90.
+
+
+```r
+filter(arthritis, age == 90)
+```
+
+```
+## # A tibble: 7 × 14
+##      id   age age_gp  sex    yrs_from_dx  cdai cdai_yn das_28 das28_yn
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;   &lt;fct&gt;        &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+## 1     7    90 elderly female          51    NA no          NA        1
+## 2     8    90 elderly female          11    40 yes         NA        1
+## 3    20    90 elderly female          NA    NA no          NA        1
+## 4    21    90 elderly female          11    NA no          NA        1
+## 5    54    90 elderly female           3    NA no          NA        1
+## 6    66    90 elderly female          40    NA no          NA        1
+## 7    69    90 elderly female          40    14 yes         NA        1
+## # … with 5 more variables: steroids_gt_5 &lt;dbl&gt;, dmar_ds &lt;dbl&gt;, biologics &lt;dbl&gt;,
+## #   s_dmards &lt;dbl&gt;, osteop_screen &lt;dbl&gt;
+```
+
+]
+
+---
+
+.pull-left[
+
+### Relational Operators in R
+
+
+| Operator | Description              |
+|----------|--------------------------|
+| &lt;        | Less than                |
+| &gt;        | Greater than             |
+| &lt;=       | Less than or equal to    |
+| &gt;=       | Greater than or equal to |
+| ==       | Equal to                 |
+| !=       | Not equal to             |
+
+]
+
+.pull-right[
+
+### Logical Operators in R
+
+| Operator | Description |
+|----------|-------------|
+| &amp;        | and         |
+| &amp;#124;   | or          |
+
+]
+
+
+---
+
+
+Recall that when CDAI &gt; 22 it was identified as High Disease Activity in the data dictionary
+
+
+```r
+arthritis %&gt;% 
+  filter(age == 90 &amp; cdai &gt; 22)
+```
+
+```
+## # A tibble: 1 × 14
+##      id   age age_gp  sex    yrs_from_dx  cdai cdai_yn das_28 das28_yn
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;   &lt;fct&gt;        &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+## 1     8    90 elderly female          11    40 yes         NA        1
+## # … with 5 more variables: steroids_gt_5 &lt;dbl&gt;, dmar_ds &lt;dbl&gt;, biologics &lt;dbl&gt;,
+## #   s_dmards &lt;dbl&gt;, osteop_screen &lt;dbl&gt;
+```
+
+
+---
+
+
+
+```r
+arthritis %&gt;% 
+  filter(age == 90 &amp; cdai &gt; 22) %&gt;% 
+  nrow()
+```
+
+```
+## [1] 1
+```
+
+Here is when piping helps. We can pipe into other functions such as `nrow()`
+
+---
+
+
+Q. How many patients are diagnosed with moderate disease activity (i.e. CDAI &gt; 10 and ≤ 22)? 
+
+--
+
+
+```r
+arthritis %&gt;% 
+  filter(cdai &gt; 10 &amp; cdai &lt;= 22)
+```
+
+```
+## # A tibble: 67 × 14
+##       id   age age_gp  sex    yrs_from_dx  cdai cdai_yn das_28 das28_yn
+##    &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;   &lt;fct&gt;        &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+##  1     3    83 elderly female          10  14.5 yes         NA        1
+##  2    27    77 elderly female           3  20   yes         NA        1
+##  3    69    90 elderly female          40  14   yes         NA        1
+##  4   206    58 control female           4  18   yes         NA        1
+##  5   207    61 control female          35  16   yes         NA        1
+##  6   208    42 control female           8  20   yes         NA        1
+##  7   209    54 control female          10  17   yes         NA        1
+##  8   210    70 control female           5  13   yes         NA        1
+##  9   211    62 control female           9  11   yes         NA        1
+## 10   212    63 control female           1  16   yes         NA        1
+## # … with 57 more rows, and 5 more variables: steroids_gt_5 &lt;dbl&gt;,
+## #   dmar_ds &lt;dbl&gt;, biologics &lt;dbl&gt;, s_dmards &lt;dbl&gt;, osteop_screen &lt;dbl&gt;
+```
+
+---
+
+Q. How many patients are in remission (CDAI ≤ 2.8) and are female?
+
+
+
+```r
+arthritis %&gt;% 
+  filter(cdai &lt;= 2.8 &amp; sex == "female") %&gt;% 
+  nrow()
+```
+
+```
+## [1] 20
+```
+
+---
+
+We have done all sorts of selections, slicing, filtering on `arthritis` but it has not changed at all. Why do you think so?
+
+
+```r
+glimpse(arthritis)
+```
+
+```
+## Rows: 530
+## Columns: 14
+## $ id            &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1…
+## $ age           &lt;dbl&gt; 85, 86, 83, 83, 85, 79, 90, 90, 87, 82, 77, 86, 84, 76, …
+## $ age_gp        &lt;fct&gt; elderly, elderly, elderly, elderly, elderly, elderly, el…
+## $ sex           &lt;fct&gt; female, female, female, female, female, male, female, fe…
+## $ yrs_from_dx   &lt;dbl&gt; 27, 27, 10, 9, NA, NA, 51, 11, 36, 4, 31, NA, 9, 10, 3, …
+## $ cdai          &lt;dbl&gt; NA, 23.0, 14.5, NA, NA, NA, NA, 40.0, 6.0, NA, 0.0, NA, …
+## $ cdai_yn       &lt;fct&gt; no, yes, yes, no, no, no, no, yes, yes, no, yes, no, no,…
+## $ das_28        &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 2.44…
+## $ das28_yn      &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1,…
+## $ steroids_gt_5 &lt;dbl&gt; 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,…
+## $ dmar_ds       &lt;dbl&gt; 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 1,…
+## $ biologics     &lt;dbl&gt; 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,…
+## $ s_dmards      &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+## $ osteop_screen &lt;dbl&gt; 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+```
+
+---
+
+Moving forward we are only going to use, `age`, `age_gp` `sex`, `yrs_from_dx` and `cdai`. Let's clean our data accordingly and move on with the smaller `arthritis` data that we need.
+
+---
+
+
+```r
+arthritis %&gt;% 
+  select(age, age_gp, 
+         sex, yrs_from_dx,
+         cdai)
+```
+
+```
+## # A tibble: 530 × 5
+##      age age_gp  sex    yrs_from_dx  cdai
+##    &lt;dbl&gt; &lt;fct&gt;   &lt;fct&gt;        &lt;dbl&gt; &lt;dbl&gt;
+##  1    85 elderly female          27  NA  
+##  2    86 elderly female          27  23  
+##  3    83 elderly female          10  14.5
+##  4    83 elderly female           9  NA  
+##  5    85 elderly female          NA  NA  
+##  6    79 elderly male            NA  NA  
+##  7    90 elderly female          51  NA  
+##  8    90 elderly female          11  40  
+##  9    87 elderly female          36   6  
+## 10    82 elderly female           4  NA  
+## # … with 520 more rows
+```
+
+---
+
+
+```r
+arthritis &lt;- 
+  arthritis %&gt;% 
+  select(age, age_gp, 
+         sex, yrs_from_dx,
+         cdai)
+```
+
+
+---
+
+
+```r
+glimpse(arthritis)
+```
+
+```
+## Rows: 530
+## Columns: 5
+## $ age         &lt;dbl&gt; 85, 86, 83, 83, 85, 79, 90, 90, 87, 82, 77, 86, 84, 76, 77…
+## $ age_gp      &lt;fct&gt; elderly, elderly, elderly, elderly, elderly, elderly, elde…
+## $ sex         &lt;fct&gt; female, female, female, female, female, male, female, fema…
+## $ yrs_from_dx &lt;dbl&gt; 27, 27, 10, 9, NA, NA, 51, 11, 36, 4, 31, NA, 9, 10, 3, 10…
+## $ cdai        &lt;dbl&gt; NA, 23.0, 14.5, NA, NA, NA, NA, 40.0, 6.0, NA, 0.0, NA, NA…
+```
+
+---
+
+class: inverse
+
+.font50[Grouping Data]
+
+---
+
+Recall this question from the lab: 
+
+&gt; Do "elderly" group have higher or lower CDAI overall when compared with the "control" group? Answer with a visual and comment on what you see.
+
+--
+.pull-left[
+
+
+![](Lab-02a-subset-group_files/figure-html/unnamed-chunk-24-1.png)&lt;!-- --&gt;
+
+]
+
+.pull-right[
+
+```r
+ggplot(arthritis, 
+       aes(x = age_gp, y = cdai)) +
+  geom_boxplot() +
+  theme_bw() +
+  theme(text = element_text(size=20)) +
+  labs(x = "Age Group", y = "CDAI")
+```
+
+]
+
+---
+
+&lt;img src="img/data-wrangle.003.jpeg" width="80%" style="display: block; margin: auto;" /&gt;
+Here `variable_2` represents a factor. We can **group** the rest of the data **by** this factor variable. 
+
+
+
+---
+
+Once we group the data, we won't see much difference other than `Groups:   age_gp [2]` statement, everything else will be similar. 
+
+
+```r
+arthritis %&gt;% 
+  group_by(age_gp) 
+```
+
+```
+## # A tibble: 530 × 5
+## # Groups:   age_gp [2]
+##      age age_gp  sex    yrs_from_dx  cdai
+##    &lt;dbl&gt; &lt;fct&gt;   &lt;fct&gt;        &lt;dbl&gt; &lt;dbl&gt;
+##  1    85 elderly female          27  NA  
+##  2    86 elderly female          27  23  
+##  3    83 elderly female          10  14.5
+##  4    83 elderly female           9  NA  
+##  5    85 elderly female          NA  NA  
+##  6    79 elderly male            NA  NA  
+##  7    90 elderly female          51  NA  
+##  8    90 elderly female          11  40  
+##  9    87 elderly female          36   6  
+## 10    82 elderly female           4  NA  
+## # … with 520 more rows
+```
+
+
+---
+
+
+```r
+arthritis %&gt;% 
+  group_by(age_gp) %&gt;% 
+  summarize(median(cdai, na.rm = TRUE))
+```
+
+```
+## # A tibble: 2 × 2
+##   age_gp  `median(cdai, na.rm = TRUE)`
+##   &lt;fct&gt;                          &lt;dbl&gt;
+## 1 control                           10
+## 2 elderly                            6
+```
+
+---
+
+We can also calculate other descriptives as well as number of observations for each group.
+
+
+```r
+arthritis %&gt;% 
+  group_by(age_gp) %&gt;% 
+  summarize(med_cdai = median(cdai, na.rm = TRUE),
+            mean_cdai = mean(cdai, na.rm = TRUE),
+            n_cdai = n())
+```
+
+```
+## # A tibble: 2 × 4
+##   age_gp  med_cdai mean_cdai n_cdai
+##   &lt;fct&gt;      &lt;dbl&gt;     &lt;dbl&gt;  &lt;int&gt;
+## 1 control       10      13.1    459
+## 2 elderly        6      13.0     71
+```
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "pygments",
+"highlightLines": true,
+"highlightLanguage": "r"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

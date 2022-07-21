@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Data Science</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Babak Shahbaba" />
+    <script src="libs/header-attrs-2.14/header-attrs.js"></script>
+    <link rel="stylesheet" href="slide-style.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+class: title-slide
+
+
+
+&lt;br&gt;
+&lt;br&gt;
+.right-panel[ 
+&lt;br&gt;
+
+# Data Science
+
+## Babak Shahbaba
+
+]
+
+
+---
+
+
+## What is data science 
+
+
+
+- Data-intensive studies have led to a new paradigm in scientific research. 
+
+- Within this new paradigm, there are emerging challenges involving analysis of large-scale datasets. 
+
+- To tackle these challenges, the field of __data science__ brings together _statistics, computer science_, and _mathematics_ to solve data intensive problems.
+
+- At its core, data science relies on statistical methods to solve scientific problems. These methods have their foundation in mathematics and are implemented using computational techniques. 
+
+
+---
+
+class: inverse center middle
+
+.font100[Data Science in Scientific Studies]
+
+
+
+
+---
+
+## Some general terminologies
+
+- To study a population, we measure a set of characteristics, which we refer to as __variables__.
+
+- The objective of many scientific studies is to
+learn about the __variation__ of a specific characteristic
+(e.g., BMI, disease status) in the population of interest. 
+
+- In many studies, we are interested in possible __relationships__ among different variables.
+
+---
+
+## Some general terminologies
+
+- We refer to the variables that are the main focus of our study as the
+__response__ (or target) variables. 
+
+- In contrast, we call variables that explain or predict the variation in the response variable as
+__explanatory__ variables or __predictors__ depending on the role of these variables.
+
+- Statistical analysis begins with a scientific problem usually presented
+in the form of a __hypothesis testing__, __estimation__, or __prediction__
+problem. 
+ 
+
+
+---
+
+## Alzheimer's data
+
+&lt;img src="img/AlzheimerData.png" width="90%" style="display: block; margin: auto;" /&gt;
+
+
+
+
+
+---
+
+## Study design
+
+If possible, before we conduct our study, we need to design it in order to (Cox and Donnelly, 2011)
+  + avoid systematic error
+  
+  + reduce non-systematic error
+  
+  + ensure the scale of effort is appropriate; Goldilocks rule: not too limited, not too wasteful, just right!
+
+
+
+---
+
+## Common study designs
+
+- Survey studies: Researchers collect information from individuals through some questions
+
+- Observational studies: Researchers are passive examiners, trying to have the least impact on the data collection process.  
+
+- Experiments: Researchers attempt to control the process as much as possible.
+
+
+---
+
+## Sampling design
+
+- We cannot of course observe the whole population of interest or conduct experiments on them. 
+
+- Instead, we select a __sample__ of representative members from the population.
+
+- Some sampling schemes:
+
+  - Simple random sampling
+  - Stratified sampling
+  - Cluster sampling
+  - Multi-stage and temporal sampling
+
+
+
+---
+
+## Statistical inference
+
+- We collect data on a sample from the population in order to learn about the whole population. 
+
+- Note that in general the characteristics, relationships, and realities in the whole population always remain unknown. 
+
+- Therefore, there is always some __uncertainty__ associated with our inference. 
+
+- In Statistics, the mathematical tool to address uncertainty is __probability__. 
+
+
+---
+
+## Statistical inference
+
+- The process of using the data to draw conclusions about the whole population, while acknowledging the extent of our uncertainty about our findings, is called __statistical inference__. 
+
+- The knowledge we acquire from data through statistical inference allows us to make decisions with respect to the scientific problem that
+motivated our study and our data analysis. 
+
+- In this program, we will discuss some core statistical inference methods and use them to solve some scientific problems related to Alzheimer's disease.
+
+- Before doing that, however, we need to understand the problem and carefully explore (and describe) the data; this will be the focus of Week 1.  
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "pygments",
+"highlightLines": true,
+"highlightLanguage": "r"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Logistic Regression</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Babak Shahbaba" />
+    <script src="libs/header-attrs-2.14/header-attrs.js"></script>
+    <link rel="stylesheet" href="slide-style.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+class: title-slide
+
+
+
+&lt;br&gt;
+&lt;br&gt;
+.right-panel[ 
+&lt;br&gt;
+
+# Logistic Regression
+
+### Babak Shahbaba
+
+]
+
+
+
+
+&lt;style type="text/css"&gt;
+
+body, td {
+   font-size: 14px;
+}
+code.r{
+  font-size: 20px;
+}
+pre {
+  font-size: 20px
+}
+&lt;/style&gt;
+
+---
+
+### Introduction
+
+- For linear regression models, the response variable, `\(Y\)`, is assumed to be a real-valued continuous random variable. 
+
+- Now consider situations where the response variable is a binary random variable (e.g., disease status).
+
+- For such problems, it is common to use **logistic regression** instead:
+`$$\begin{eqnarray*}
+\log \Big(\frac{\hat{p}}{1- \hat{p}} \Big) &amp; = &amp; a + b_{1}x_1 + \ldots + b_{q}x_{q}
+\end{eqnarray*}$$`
+
+---
+
+### Logistic regression
+
+- Note that binary variable `\(p = P(Y=1|X)\)`; that is, `\(p\)` is the probability of the outcome of interest (denoted as 1) given the explanatory variables.
+
+- The term `\(\Big(\frac{\hat{p}}{1- \hat{p}} \Big)\)` is called the **odds** of `\(Y=1\)`. 
+
+- The term `\(\log \Big(\frac{\hat{p}}{1- \hat{p}} \Big)\)`, i.e.,  log of odds, is called the **logit** function. 
+
+- Although `\(p\)` is a real number between 0 and 1, its logit transformation can be any real number between `\(-\infty\)` to `\(+\infty\)`.
+
+
+
+---
+
+### Logistic regression
+
+- We can exponentiate both sides,
+`$$\begin{eqnarray*}
+\frac{\hat{p}}{1- \hat{p}}  &amp; = &amp; \exp(a + b_{1}x_1 + \ldots + b_{q}x_{q})
+\end{eqnarray*}$$`
+
+- and find `\(\hat{p}\)` using the **logistic function**,
+`$$\begin{eqnarray*}
+\hat{p} &amp; = &amp; \frac{\exp(a + b_{1}x_1 + \ldots + b_{q}x_{q})}{1 + \exp(a + b_{1}x_1 + \ldots + b_{q}x_{q})}
+\end{eqnarray*}$$`
+
+
+
+
+
+---
+
+### Logistic Regression with One Binary Predictor
+
+
+- As an example, we use the `birthwt` data set to model the relationship between having low birthweight babies (a binary variable), `\(Y\)`, and smoking during pregnancy, `\(X\)`. 
+
+- The binary variable `low` identifies low birthweight babies (low = 1 for low birthweight babies, and 0 otherwise). 
+
+- The binary variable `smoke` identifies mothers who were smoking during pregnancy (smoke=1 for smoking during pregnancy, and 0 otherwise).
+
+
+---
+
+### Generalized linear model (glm) in R
+
+- We can use the `glm()` function in R to fit a regression model
+
+
+```r
+library(MASS)
+data(birthwt)
+birthwt$low &lt;- factor(birthwt$low)
+birthwt$smoke &lt;- factor(birthwt$smoke)
+fit &lt;- glm(low ~ smoke, family = 'binomial', data = birthwt)
+```
+
+
+
+
+---
+
+### Generalized linear model (glm) in R
+
+- We can use the `glm()` function in R to fit a regression model
+
+
+```r
+confint(fit)
+```
+
+```
+##                  2.5 %    97.5 %
+## (Intercept) -1.5243118 -0.679205
+## smoke1       0.0786932  1.335154
+```
+
+
+
+
+---
+
+### Generalized linear model (glm) in R
+
+- We can use the `glm()` function in R to fit a regression model
+
+
+```r
+summary(fit)
+```
+
+```
+## 
+## Call:
+## glm(formula = low ~ smoke, family = "binomial", data = birthwt)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.0197  -0.7623  -0.7623   1.3438   1.6599  
+## 
+## Coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  -1.0871     0.2147  -5.062 4.14e-07 ***
+## smoke1        0.7041     0.3196   2.203   0.0276 *  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 234.67  on 188  degrees of freedom
+## Residual deviance: 229.80  on 187  degrees of freedom
+## AIC: 233.8
+## 
+## Number of Fisher Scoring iterations: 4
+```
+
+
+---
+
+### Estimation
+
+- For the above example, the estimated values of the intercept `\(\alpha\)` and the regression coefficient `\(\beta\)` are `\(a=-1.09\)` and `\(b=0.70\)` respectively. 
+
+- Therefore, 
+`$$\begin{eqnarray*}
+\frac{\hat{p}}{1- \hat{p}} &amp; = &amp; \exp(-1.09 + 0.70x)
+\end{eqnarray*}$$`
+
+- Here, `\(\hat{p}\)` is the estimated probability of having a low birthweight baby for a given `\(x\)`. 
+
+- The left-hand side of the above equation is the estimated odds of having a low birthweight baby. 
+
+
+---
+
+### Estimation
+
+- For non-smoking mother, `\(x=0\)`, the odds of having low birthweight baby is 
+`$$\begin{eqnarray*}
+\frac{\hat{p}_{0}}{1- \hat{p}_{0}} &amp; = &amp; \exp(-1.09) \\
+&amp; = &amp; 0.34
+\end{eqnarray*}$$`
+
+- That is, the exponential of the intercept is the odds when `\(x=0\)`, which is sometimes referred to as the **baseline odds**. 
+
+
+---
+
+### Estimation
+
+
+- For mothers who smoke during pregnancy, `\(x=1\)`, and
+`$$\begin{eqnarray*}
+\frac{\hat{p}_{1}}{1- \hat{p}_{1}} &amp; = &amp;  \exp(-1.09 + 0.7)\\
+&amp; = &amp;  \exp(-1.09) \exp(0.7)\\
+&amp; = &amp; 0.68
+\end{eqnarray*}$$`
+
+
+- As we can see, corresponding to one unit increase in `\(x\)` from `\(x=0\)` (non-smoking) to `\(x=1\)` (smoking), the odds multiplicatively increases by the exponential of the regression coefficient. 
+
+
+---
+
+### Interpretation 
+
+- Note that
+`$$\begin{eqnarray*}
+\frac{\frac{\hat{p}_{1}}{1- \hat{p}_{1}}}{\frac{\hat{p}_{0}}{1- \hat{p}_{0}}} &amp; = &amp;  \frac{\exp(-1.09) \exp(0.7)}{\exp(-1.09)} =  \exp(0.7)
+\end{eqnarray*}$$`
+
+- We can interpret the exponential of the regression coefficient as the odds ratio of having low birthweight babies for smoking mothers compared to non-smoking mothers. 
+
+- Here, the estimated odds ratio is `\(\exp(0.7) = 2.01\)` so the odds of having a low birthweight baby almost doubles for smoking mothers compared to non-smoking mothers. 
+
+
+---
+
+### Interpretation 
+
+- In general, 
+
+  - if `\(b&gt;0\)`, then `\(\exp(b) &gt; 1\)` so the odds increases as `\(X\)` increases;
+  - if `\(b&lt;0\)`, then `\(0 &lt; \exp(b) &lt; 1\)` so the odds decreases as `\(X\)` increases;
+  - if `\(b=0\)`, the odds ratio is 1 so the odds does not change with `\(X\)` according to the assumed model. 
+
+
+---
+
+### Inference
+
+- Similar to linear regression, we use the functions `confint()` and `summary()` to obtian the confidence interval and p-value for each coefficient.
+
+
+```r
+fit &lt;- glm(low ~ smoke, family = 'binomial', data = birthwt)
+fit
+```
+
+```
+## 
+## Call:  glm(formula = low ~ smoke, family = "binomial", data = birthwt)
+## 
+## Coefficients:
+## (Intercept)       smoke1  
+##     -1.0871       0.7041  
+## 
+## Degrees of Freedom: 188 Total (i.e. Null);  187 Residual
+## Null Deviance:	    234.7 
+## Residual Deviance: 229.8 	AIC: 233.8
+```
+
+
+
+
+---
+
+### Inference
+
+- Similar to linear regression, we use the functions `confint()` and `summary()` to obtian the confidence interval and p-value for each coefficient.
+
+
+```r
+confint(fit)
+```
+
+```
+## Waiting for profiling to be done...
+```
+
+```
+##                  2.5 %    97.5 %
+## (Intercept) -1.5243118 -0.679205
+## smoke1       0.0786932  1.335154
+```
+
+
+
+---
+
+### Inference
+
+- Similar to linear regression, we use the functions `confint()` and `summary()` to obtian the confidence interval and p-value for each coefficient.
+
+
+```r
+summary(fit)
+```
+
+```
+## 
+## Call:
+## glm(formula = low ~ smoke, family = "binomial", data = birthwt)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.0197  -0.7623  -0.7623   1.3438   1.6599  
+## 
+## Coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  -1.0871     0.2147  -5.062 4.14e-07 ***
+## smoke1        0.7041     0.3196   2.203   0.0276 *  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 234.67  on 188  degrees of freedom
+## Residual deviance: 229.80  on 187  degrees of freedom
+## AIC: 233.8
+## 
+## Number of Fisher Scoring iterations: 4
+```
+
+
+---
+
+### Prediction
+
+- We can use logistic regression models for predicting the unknown values of the response variable `\(Y\)` given the value of the predictor value `\(X\)`.
+
+`$$\begin{eqnarray*}
+\hat{p} &amp; = &amp; \frac{\exp(a + bx)}{1 + \exp(a + bx)}
+\end{eqnarray*}$$`
+
+- For the above example,
+`$$\begin{eqnarray*}
+\hat{p} &amp; = &amp; \frac{\exp(-1.09 + 0.70x)}{1 + \exp(-1.09 + 0.70x)}
+\end{eqnarray*}$$`
+
+
+
+---
+
+### Prediction
+
+- Therefore, the estimated probability of having a low birthweight baby for non-smoking mothers, `\(x=0\)`, is
+`$$\begin{eqnarray*}
+\hat{p} &amp; = &amp; \frac{\exp(-1.09)}{1 + \exp(-1.09)} = 0.25
+\end{eqnarray*}$$`
+
+- This probability increases for mothers who smoke during pregnancy, `\(x=1\)`,
+`$$\begin{eqnarray*}
+\hat{p} &amp; = &amp; \frac{\exp(-1.09 + 0.7)}{1 + \exp(-1.09 + 0.7)} = 0.40
+\end{eqnarray*}$$`
+
+- That is, the risk of having a low birthweight baby increases by 60% if a mother smokes during her pregnancy. 
+
+
+
+
+
+
+---
+
+### Logistic Regression with One Numerical Predictor
+
+
+- For the most part, we follow similar steps to fit the model, estimate regression parameters, perform hypothesis testing, and predict unknown values of the response variable. 
+
+- As an example, we want to investigate the relationship between having a low birthweight baby, `\(Y\)`, and mother's age at the time of pregnancy, `\(X\)`. 
+
+
+
+---
+
+### Logistic Regression with One Numerical Predictor
+
+
+
+
+```r
+fit &lt;- glm(low ~ age, family = 'binomial', data = birthwt)
+fit
+```
+
+```
+## 
+## Call:  glm(formula = low ~ age, family = "binomial", data = birthwt)
+## 
+## Coefficients:
+## (Intercept)          age  
+##     0.38458     -0.05115  
+## 
+## Degrees of Freedom: 188 Total (i.e. Null);  187 Residual
+## Null Deviance:	    234.7 
+## Residual Deviance: 231.9 	AIC: 235.9
+```
+
+
+---
+
+### Logistic Regression with One Numerical Predictor
+
+
+- Finding confidence intervals and performing hypothesis testing remain as before, so we focus on prediction and interpreting the point estimates.
+
+- For the above example, the point estimates for the regression parameters are `\(a=0.38\)` and `\(b=-0.05\)`. 
+
+- While the intercept is the log odds when `\(x=0\)`, it is not reasonable to interpret its exponential as the baseline odds since mother's age cannot be zero. 
+
+
+---
+
+### Logistic Regression with One Numerical Predictor
+
+- To interpret `\(b\)`, consider mothers whose age is 20 years old at the time of pregnancy, 
+`$$\begin{eqnarray*}
+\log \Big(\frac{\hat{p}_{20}}{1- \hat{p}_{20}} \Big) &amp; = &amp; 0.38 - 0.05 \times 20\\ 
+\frac{\hat{p}_{20}}{1- \hat{p}_{20}} &amp; = &amp;  \exp(0.38 - 0.05 \times 20)\\
+&amp; = &amp;  \exp(0.38) \exp(- 0.05 \times 20)
+\end{eqnarray*}$$`
+
+---
+
+### Logistic Regression with One Numerical Predictor
+
+- For mothers who are one year older (i.e., one unit increase in age), we have
+`$$\begin{eqnarray*}
+\log \Big(\frac{\hat{p}_{21}}{1- \hat{p}_{21}} \Big) &amp; = &amp; 0.38 - 0.05 \times 21\\ 
+\frac{\hat{p}_{21}}{1- \hat{p}_{21}} &amp; = &amp;  \exp(0.38 - 0.05 \times 21)\\
+&amp; = &amp;  \exp(0.38) \exp(- 0.05 \times 21)
+\end{eqnarray*}$$`
+
+
+---
+
+### Logistic Regression with One Numerical Predictor
+
+- The odds ratio for comparing 21 year old mothers to 20 year old mothers is
+`$$\begin{eqnarray*}
+\frac{\frac{\hat{p}_{21}}{1- \hat{p}_{21}}}{\frac{\hat{p}_{20}}{1- \hat{p}_{20}}} &amp; = &amp;  \frac{ \exp(0.38) \exp(- 0.05 \times 21))}{ \exp(0.38) \exp(- 0.05 \times 20)}\\
+&amp; = &amp; \exp(- 0.05 \times 21 + 0.05 \times 20)\\
+&amp; = &amp; \exp(- 0.05)
+\end{eqnarray*}$$`
+
+- Therefore, `\(\exp(b)\)` is the estimated odds ratio comparing 21 year old mothers to 20 year old mothers. 
+
+---
+
+### Logistic Regression with One Numerical Predictor
+
+- In general, `\(\exp(b)\)` is the estimated odds ratio for comparing two subpopulations, whose predictor values are `\(x+1\)` and `\(x\)`,
+`$$\begin{eqnarray*}
+\frac{\frac{\hat{p}_{x+1}}{1- \hat{p}_{x+1}}}{\frac{\hat{p}_{x}}{1- \hat{p}_{x}}} &amp; = &amp; \exp(b)
+\end{eqnarray*}$$`
+
+
+---
+
+### Logistic Regression with One Numerical Predictor
+
+
+- As before, we can use the estimated regression parameters to find `\(\hat{p}\)` and predict the unknown value of the response variable. 
+`$$\begin{eqnarray*}
+\hat{p} &amp; = &amp; \frac{\exp(a + bx)}{1 + \exp(a + bx)} &amp; = &amp; \frac{\exp(0.38 -0.05x)}{1 + \exp(0.38 -0.05x)}.
+\end{eqnarray*}$$`
+
+- For example, for mother who are 20 years old at the time of pregnancy, the estimated probability of having a low birthweight baby is
+`$$\begin{eqnarray*}
+\hat{p} &amp; = &amp; \frac{\exp(0.38 -0.05 \times 20)}{1 + \exp(0.38 -0.05 \times 20)} = 0.35.
+\end{eqnarray*}$$`
+
+
+
+---
+
+### Logistic Regression with Multiple Variables
+
+- Including multiple explanatory variables (predictors) in a logistic regression model is easy. 
+
+- Similar to linear regression models, we specify the model formula by entering the response variable on the left side of the "~" symbol and the explanatory variables (separated by "+" sings) on the right side. 
+
+
+
+---
+
+### Logistic Regression with Multiple Variables
+
+
+```r
+fit &lt;- glm(low ~ age + smoke, family = 'binomial', 
+           data = birthwt)
+fit
+```
+
+```
+## 
+## Call:  glm(formula = low ~ age + smoke, family = "binomial", data = birthwt)
+## 
+## Coefficients:
+## (Intercept)          age       smoke1  
+##     0.06091     -0.04978      0.69185  
+## 
+## Degrees of Freedom: 188 Total (i.e. Null);  186 Residual
+## Null Deviance:	    234.7 
+## Residual Deviance: 227.3 	AIC: 233.3
+```
+
+
+---
+
+### Logistic Regression with Multiple Variables
+
+
+```r
+confint(fit)
+```
+
+```
+## Waiting for profiling to be done...
+```
+
+```
+##                   2.5 %     97.5 %
+## (Intercept) -1.41611481 1.56446444
+## age         -0.11450032 0.01132921
+## smoke1       0.06214062 1.32718026
+```
+
+
+
+---
+
+### Logistic Regression with Multiple Variables
+
+
+```r
+summary(fit)
+```
+
+```
+## 
+## Call:
+## glm(formula = low ~ age + smoke, family = "binomial", data = birthwt)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.1589  -0.8668  -0.7470   1.2821   1.7925  
+## 
+## Coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)  
+## (Intercept)  0.06091    0.75732   0.080   0.9359  
+## age         -0.04978    0.03197  -1.557   0.1195  
+## smoke1       0.69185    0.32181   2.150   0.0316 *
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 234.67  on 188  degrees of freedom
+## Residual deviance: 227.28  on 186  degrees of freedom
+## AIC: 233.28
+## 
+## Number of Fisher Scoring iterations: 4
+```
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "pygments",
+"highlightLines": true,
+"highlightLanguage": "r"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

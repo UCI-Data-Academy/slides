@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Examining Relationships</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Babak Shahbaba" />
+    <script src="libs/header-attrs-2.14/header-attrs.js"></script>
+    <link rel="stylesheet" href="slide-style.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+class: title-slide
+
+
+
+&lt;br&gt;
+&lt;br&gt;
+.right-panel[ 
+&lt;br&gt;
+
+# Examining Relationships
+
+### Babak Shahbaba
+
+]
+
+
+&lt;style type="text/css"&gt;
+
+body, td {
+   font-size: 14px;
+}
+code.r{
+  font-size: 20px;
+}
+pre {
+  font-size: 20px
+}
+&lt;/style&gt;
+
+---
+
+### Objective
+
+- We now discuss exploring and examining possible relationships between two variables. 
+
+- We first focus on problems where we are investigating the relationship between one binary categorical variable (e.g., gender) and one numerical variable (e.g., body temperature).  
+
+- Next, we examine the relationship between two numerical variables (e.g., years of education and income). 
+
+- Finally, we discuss the relationship between two categorical variables (e.g., treatment and survival status).
+
+---
+
+### Relationship Between a Numerical Variable and a Binary Variable
+
+- In these situations, the binary variable typically represents two different groups or two different experimental conditions. 
+
+- We treat the binary variable (factor) as the explanatory variable in our analysis. 
+
+- The numerical variable, on the other hand, is regarded as the response (target) variable (e.g., body temperature).
+
+
+---
+
+### Relationship Between a Numerical Variable and a Binary Variable
+
+&lt;img src="img/cabbages1.png" width="45%" height="30%" style="display: block; margin: auto;" /&gt;
+Dot plots of vitamin C content (numerical) by cultivar (categorical) for the `cabbages` data set from the `MASS` package.
+
+
+
+---
+
+### Relationship Between a Numerical Variable and a Binary Variable
+A more common way of visualizing the relationship between a numerical
+variable and a categorical variable is to create boxplots.
+&lt;img src="img/boxVitCbyCult.png" width="35%" height="20%" style="display: block; margin: auto;" /&gt;
+
+
+---
+### Relationship Between a Numerical Variable and a Binary Variable
+
+- In general, we say that two variables are related if the distribution
+of one of them changes as the other one varies.
+
+- We can measure changes in the distribution of the numerical variable by obtaining its summary statistics for different levels of the categorical variable.
+
+- it is common to use the __difference of means__ when examining the relationship between a numerical variable and a categorical variable. 
+
+- In the above example, the difference of means of vitamin C content is `\(64.4 - 51.5 = 12.9\)` between the two cultivars. Is this difference __significant__?
+
+
+---
+
+### Two sample t-test
+
+
+- In general, we can denote the population means of two groups as `\(\mu_{1}\)` and
+`\(\mu_{2}\)`. 
+
+- The null hypothesis indicates that the population means are equal,
+`\(H_{0}: \mu_{1} = \mu_{2}\)`. 
+
+- In contrast, the alternative hypothesis is one the following:
+`$$\begin{array}[t]{l@{\quad}p{6.7cm}}
+H_{A}: \mu_{1} &gt; \mu_{2} \\
+H_{A}: \mu_{1} &lt; \mu_{2}   \\
+H_{A}: \mu_{1} \ne \mu_{2}  \\
+\end{array}$$`
+
+---
+
+### Two sample t-test
+
+
+- We can also express these hypotheses in terms of the
+*difference* in the means: 
+`$$\begin{array}[t]{l@{\quad}p{6.7cm}}
+H_{A}: \mu_{1}  - \mu_{2} &gt; 0 \\
+H_{A}: \mu_{1} - \mu_{2} &lt; 0  \\
+H_{A}: \mu_{1} - \mu_{2} \ne 0  \\
+\end{array}$$`
+
+- Then the corresponding null hypothesis is that there is no difference
+in the population means, `$$H_{0}: \mu_{1} - \mu_{2} = 0$$`
+
+
+---
+
+### Two sample t-test
+
+
+- Previously, we used the sample mean `\(\bar{X}\)` to perform statistical
+inference regarding the population mean `\(\mu\)`. 
+
+- To evaluate our
+hypothesis regarding the difference between two means, `\(\mu_{1} - \mu_{2}\)`, it is reasonable to examine the difference between the sample
+means, `\(\bar{X}_{1} - \bar{X}_{2}\)`, as our test statistic. 
+
+- For this, we can simply use the `t.test()` function in R.
+
+---
+
+### Two sample t-test
+
+
+```r
+t.test(VitC ~ Cult, data=cabbages)
+```
+
+```
+## 
+## 	Welch Two Sample t-test
+## 
+## data:  VitC by Cult
+## t = -6.3909, df = 56.376, p-value = 3.405e-08
+## alternative hypothesis: true difference in means between group c39 and group c52 is not equal to 0
+## 95 percent confidence interval:
+##  -16.94296  -8.85704
+## sample estimates:
+## mean in group c39 mean in group c52 
+##              51.5              64.4
+```
+
+
+---
+
+### Paired t-test
+
+- While we hope that the two samples taken from the population are
+comparable except for the characteristic that defines the grouping,
+this is not guaranteed in general. 
+
+- To mitigate the influence of other important factors (e.g., age) that are not the focus
+of our study, we sometimes **pair** (match) each individual in one group with an
+individual in the other group so that the paired individuals are very
+similar to each other except for the variable that defines the
+grouping. 
+
+- For example, we might recruit twins and assign one of them to the treatment group and the other one to the placebo group.
+
+- Sometimes, the subjects in the two groups are the same individuals under two different conditions. 
+
+
+---
+
+### Paired t-test
+
+- When the individuals in the two groups are paired, we use the **paired**
+`\(t\)`-test to take the pairing of the observations between the two
+groups into account.
+
+- Using the difference, `\(D\)`, between the paired observations, the
+hypothesis testing problem reduces to a single sample `\(t\)`-test problem.
+
+- In practice, we can use the function `t.test()` with the option `paired=TRUE`.
+
+---
+
+### Paired t-test
+
+- As an example, we use the study of the effect of tobacco smoke on platelet function by Levine (1973). 
+
+- In his study, for a group of eleven people, platelet aggregation was measured before and after smoking a cigarette. 
+
+- Therefore, observations in the `Before` sample and `After` sample are from the same subjects. 
+
+- For each subject, an observation in the `Before` sample is paired with an observation in the `After` sample. 
+
+
+---
+
+### Paired t-test
+
+
+```r
+glimpse(Platelet)
+```
+
+```
+## Rows: 11
+## Columns: 2
+## $ Before &lt;int&gt; 25, 25, 27, 44, 30, 67, 53, 53, 52, 60, 28
+## $ After  &lt;int&gt; 27, 29, 37, 56, 46, 82, 57, 80, 61, 59, 43
+```
+
+---
+
+### Paired t-test
+
+
+```r
+t.test(Platelet$Before, Platelet$After, paired = TRUE)
+```
+
+```
+## 
+## 	Paired t-test
+## 
+## data:  Platelet$Before and Platelet$After
+## t = -4.2716, df = 10, p-value = 0.001633
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -15.63114  -4.91431
+## sample estimates:
+## mean of the differences 
+##               -10.27273
+```
+
+
+---
+
+### Paired t-test
+
+See what happens if we fail to account for the pairing of observations!
+
+```r
+t.test(Platelet$Before, Platelet$After)
+```
+
+```
+## 
+## 	Welch Two Sample t-test
+## 
+## data:  Platelet$Before and Platelet$After
+## t = -1.4164, df = 19.516, p-value = 0.1724
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -25.425913   4.880458
+## sample estimates:
+## mean of x mean of y 
+##  42.18182  52.45455
+```
+
+
+---
+### Two numerical variables
+
+- A simple way to visualize the relationship between two numerical
+variables is with a __scatterplot__. 
+
+- As our first example, we use the `bodyFat` data: http://lib.stat.cmu.edu/datasets/bodyfat. 
+
+- Suppose that we are interested in examining the relationship between
+percent body fat (`siri`) and abdomen circumference (`abdomen`) among men.
+
+
+---
+
+### Scatterplot
+
+The plot suggests that the increase in percent body fat tends to coincide with the increase in abdomen circumference.
+&lt;img src="img/scatterPercAb.png" width="40%" height="20%" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Scatterplot
+
+Next, we examine the relationship between the annual
+mortality rate due to malignant melanoma for US states and the latitude
+of their centers. 
+&lt;img src="img/latMelanoma.png" width="40%" height="20%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+### Scatterplot
+
+- Using scatterplots, we could detect possible relationships between two
+numerical variables. 
+
+- In above examples, we can see that changes in one variable
+coincides with substantial __systematic__ changes (increase or
+decrease) in the other variable. 
+
+- Since the overall relationship can be presented by a straight line, we say
+that the two variables have __linear relationship__. 
+
+- We say that percent body fat and abdomen circumference have __positive linear relationship__. 
+
+- In contrast, we say that annual mortality rate due to malignant melanoma and latitude have __negative linear relationship__. 
+
+
+---
+
+### Correlation
+
+- To quantify the strength and direction of _linear_ relationship between two numerical variables, we can use __Pearson's correlation coefficient__, `\(r\)`, as a summary statistic. 
+
+- The value of `\(r\)` is always between `\(-1\)` and `\(+1\)` and the relationship is strong when `\(r\)` approaches `\(-1\)` or `\(+1\)`.
+
+- The sign of `\(r\)` shows the direction (negative or positive) of the linear relationship. 
+
+- For observed pairs of values, `\((x_{n}, y_{n}), (x_{n},y_{n}), \ldots, (x_{n}, y_{n})\)`, 
+
+`$$\begin{eqnarray*}
+r_{xy} = \frac{\sum_{i=1}^{n}(x_{i}-\bar{x})(y_{i}- \bar{y})}{(n-1)s_{x}s_{y}}
+\end{eqnarray*}$$`
+
+---
+
+### Correlation
+
+&lt;img src="img/corr1.png" width="60%" height="20%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+### Correlation
+
+&lt;img src="img/corr2.png" width="70%" height="20%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+### Correlation
+
+- We can examine whether the correlation is statistically significant or not using the `cor.test()` function in R.
+
+- The following code tests whether the correlation coefficient between `siri` and `abdomon` is greater than zero. 
+
+---
+
+### Correlation
+
+
+```r
+data(bodyfat, package="mfp")
+bodyfat$abdomen = bodyfat$abdomen *.39
+cor.test(bodyfat$siri, bodyfat$abdomen, alternative = "greater")
+```
+
+```
+## 
+## 	Pearson's product-moment correlation
+## 
+## data:  bodyfat$siri and bodyfat$abdomen
+## t = 22.112, df = 250, p-value &lt; 2.2e-16
+## alternative hypothesis: true correlation is greater than 0
+## 95 percent confidence interval:
+##  0.77505 1.00000
+## sample estimates:
+##       cor 
+## 0.8134323
+```
+
+
+---
+
+### Correlation
+
+Later, we will discuss more advanced models for examining such relationships using linear regression models.
+
+---
+
+### Two categorical variables
+
+- We now discuss techniques for exploring
+relationships between categorical variables. 
+
+- As an example, we consider the five-year study to investigate whether regular aspirin intake reduces
+the risk of cardiovascular disease. 
+
+- We usually use __contingency tables__ to summarize such data.
+
+&lt;img src="img/aspirin.png" width="70%" height="20%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+### Two categorical variables
+
+- Each cell shows the frequency of one possible combination of disease status (heart attack or no heart attack) and experiment group (placebo or aspirin). 
+
+- Using these frequencies, we can
+calculate the __sample proportion__ of people who suffered from heart attack in each experiment group separately. 
+
+- There were 11034 people in the placebo group, of which 189 had heart attack. The
+proportion of people suffered from a heart attack in the placebo group
+is therefore `\(p_1 = {189}/{11034} = 0.0171\)`. 
+
+- The proportion of people suffered from heart attack in the aspirin
+group is `\(p_2 = {104}/{11037} = 0.0094\)`.
+
+
+
+---
+
+### Two categorical variables
+
+- Here, we refer to these proportions as the __risk__ of heart attack for the two groups.
+
+- Substantial difference between the sample proportion of heart attack between the two experiment groups could lead us to believe that the treatment and disease status are related.
+
+- A common summary statistic for comparing sample proportions is
+the __relative proportion__: `\(p_{2}/p_{1}\)`. 
+
+
+---
+
+### Two categorical variables
+
+- Since the sample proportions in this case are related to the risk of  heart attack, we
+refer to the relative proportion as the __relative risk__. 
+
+- Here, the relative risk of suffering from heart attack is `$${p_2}/{p_1} = {0.0094} / {0.0171}= 0.55$$` 
+
+- This means that the risk of a heart attack in the aspirin group is 0.55 times of the risk in the placebo group.
+
+---
+
+### Two categorical variables
+
+- It is more common to compare the __sample odds__,
+`$$\begin{equation*}
+o=\frac{p}{1-p},
+\label{Eq:odds}
+\end{equation*}$$`
+
+- The odds of a heart attack in the placebo group, `\(o_1\)`, and in the aspirin group, `\(o_2\)`, are
+`$$\begin{eqnarray*}
+o _1 &amp;=&amp; \frac{0.0171}{(1-0.0171)} = 0.0174, \\
+o _2 &amp;=&amp; \frac{0.0094}{(1-0.0094)} = 0.0095.
+\end{eqnarray*}$$`
+
+
+---
+
+### Two categorical variables
+
+- We usually compare the sample odds using the __sample odds ratio__
+
+`$$\begin{eqnarray*}
+\mathit{OR}_{21} = \frac{o_2}{o _1} = \frac{0.0095}{0.0174}= 0.54.
+\end{eqnarray*}$$`
+
+- Later, we will discuss more advanced models for making statistical inference about odds ratio using logistic regression models.
+
+- Here, we use a simpler approach for assessing the significance of the relationship between two binary (and in general, two categorical) variables presented as a contingency table.  
+
+
+---
+
+### Pearson's `\(\chi^{2}\)` Test of Independence
+
+- As discussed above, we can use contingency tables to find the observed frequencies for different combinations of categories of the two variables. 
+
+- We denote the **observed** frequency in row `\(i\)` and column `\(j\)` as `\(O_{ij}\)`.
+
+- Using the independence rule, we can find the **expected** frequencies under the null hypothesis, which indicates that the two variables are independent. 
+
+- Recall that for two independent random variables, the joint
+probability is equal to the product of their individual probabilities.
+
+
+---
+
+### Pearson's `\(\chi^{2}\)` Test of Independence
+
+- Pearson's `\(\chi^{2}\)` test uses a test statistic, which we
+denote as `\(Q\)`, to measure the discrepancy between the observed data and
+what we expect to observe under the null hypothesis (i.e., assuming the null hypothesis is true).
+
+- Note that the null hypothesis in this case states that the two variables are independent. 
+
+
+
+---
+
+### Pearson's `\(\chi^{2}\)` Test of Independence
+
+- We denote the expected frequency in row `\(i\)` and column `\(j\)` as `\(E_{ij}\)`.
+
+- Pearson's `\(\chi^{2}\)` test summarizes the differences between the expected
+frequencies (under the null hypothesis) and the observed frequencies
+over all cells of the contingency table,
+
+`$$\begin{equation*}
+Q =  \sum_{i} \sum_{j} \frac{(O_{ij} - E_{ij})^{2}}{E_{ij}}.
+\end{equation*}$$`
+
+
+---
+
+### Pearson's `\(\chi^{2}\)` Test of Independence
+
+- In practice, we simply use the `chisq.test()` in R.
+
+
+```r
+asp &lt;- matrix(c(189, 10845, 104, 10933), nrow=2, ncol=2, byrow = TRUE)
+asp
+```
+
+```
+##      [,1]  [,2]
+## [1,]  189 10845
+## [2,]  104 10933
+```
+
+```r
+chisq.test(asp)
+```
+
+```
+## 
+## 	Pearson's Chi-squared test with Yates' continuity correction
+## 
+## data:  asp
+## X-squared = 24.429, df = 1, p-value = 7.71e-07
+```
+
+
+---
+
+### Smoking and low birthweight babies
+
+As another example, we will examine the association between smoking during pregnancy and having low birth weight babies using the `birthwt` from the `MASS` package. 
+
+---
+
+### Smoking and low birthweight babies
+
+
+```r
+library(MASS)
+data("birthwt") 
+birthwt &lt;- birthwt %&gt;% 
+  as_tibble() %&gt;% 
+  mutate(across(c(low, race, smoke, ht), as.factor))
+head(birthwt)
+```
+
+```
+## # A tibble: 6 × 10
+##   low     age   lwt race  smoke   ptl ht       ui   ftv   bwt
+##   &lt;fct&gt; &lt;int&gt; &lt;int&gt; &lt;fct&gt; &lt;fct&gt; &lt;int&gt; &lt;fct&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
+## 1 0        19   182 2     0         0 0         1     0  2523
+## 2 0        33   155 3     0         0 0         0     3  2551
+## 3 0        20   105 1     1         0 0         0     1  2557
+## 4 0        21   108 1     1         0 0         1     2  2594
+## 5 0        18   107 1     1         0 0         1     0  2600
+## 6 0        21   124 3     0         0 0         0     0  2622
+```
+
+
+---
+
+### Smoking and low birthweight babies
+
+
+```r
+tab &lt;- table(birthwt$smoke, birthwt$low)
+res &lt;- chisq.test(tab)
+res
+```
+
+```
+## 
+## 	Pearson's Chi-squared test with Yates' continuity correction
+## 
+## data:  tab
+## X-squared = 4.2359, df = 1, p-value = 0.03958
+```
+
+
+---
+
+### Smoking and low birthweight babies
+
+
+```r
+res$observed
+```
+
+```
+##    
+##      0  1
+##   0 86 29
+##   1 44 30
+```
+
+```r
+res$expected
+```
+
+```
+##    
+##            0        1
+##   0 79.10053 35.89947
+##   1 50.89947 23.10053
+```
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "pygments",
+"highlightLines": true,
+"highlightLanguage": "r"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

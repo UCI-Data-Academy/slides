@@ -1,0 +1,428 @@
+---
+title: "Logistic Regression"
+author: "Babak Shahbaba"
+output: 
+  xaringan::moon_reader:
+    css: ["slide-style.css"]
+    lib_dir: libs
+    seal: false
+    nature:
+      ratio: 16:9
+      highlightStyle: "pygments"
+      highlightLines: true
+      highlightLanguage: "r"
+
+---
+
+class: title-slide
+
+```{r echo = FALSE}
+library(fabricerin)
+```
+
+<br>
+<br>
+.right-panel[ 
+<br>
+
+# `r rmarkdown::metadata$title`
+
+### `r rmarkdown::metadata$author`
+
+]
+
+
+
+
+<style type="text/css">
+
+body, td {
+   font-size: 14px;
+}
+code.r{
+  font-size: 20px;
+}
+pre {
+  font-size: 20px
+}
+</style>
+
+---
+
+### Introduction
+
+- For linear regression models, the response variable, $Y$, is assumed to be a real-valued continuous random variable. 
+
+- Now consider situations where the response variable is a binary random variable (e.g., disease status).
+
+- For such problems, it is common to use **logistic regression** instead:
+$$\begin{eqnarray*}
+\log \Big(\frac{\hat{p}}{1- \hat{p}} \Big) & = & a + b_{1}x_1 + \ldots + b_{q}x_{q}
+\end{eqnarray*}$$
+
+---
+
+### Logistic regression
+
+- Note that binary variable $p = P(Y=1|X)$; that is, $p$ is the probability of the outcome of interest (denoted as 1) given the explanatory variables.
+
+- The term $\Big(\frac{\hat{p}}{1- \hat{p}} \Big)$ is called the **odds** of $Y=1$. 
+
+- The term $\log \Big(\frac{\hat{p}}{1- \hat{p}} \Big)$, i.e.,  log of odds, is called the **logit** function. 
+
+- Although $p$ is a real number between 0 and 1, its logit transformation can be any real number between $-\infty$ to $+\infty$.
+
+
+
+---
+
+### Logistic regression
+
+- We can exponentiate both sides,
+$$\begin{eqnarray*}
+\frac{\hat{p}}{1- \hat{p}}  & = & \exp(a + b_{1}x_1 + \ldots + b_{q}x_{q})
+\end{eqnarray*}$$
+
+- and find $\hat{p}$ using the **logistic function**,
+$$\begin{eqnarray*}
+\hat{p} & = & \frac{\exp(a + b_{1}x_1 + \ldots + b_{q}x_{q})}{1 + \exp(a + b_{1}x_1 + \ldots + b_{q}x_{q})}
+\end{eqnarray*}$$
+
+
+
+
+
+---
+
+### Logistic Regression with One Binary Predictor
+
+
+- As an example, we use the `birthwt` data set to model the relationship between having low birthweight babies (a binary variable), $Y$, and smoking during pregnancy, $X$. 
+
+- The binary variable `low` identifies low birthweight babies (low = 1 for low birthweight babies, and 0 otherwise). 
+
+- The binary variable `smoke` identifies mothers who were smoking during pregnancy (smoke=1 for smoking during pregnancy, and 0 otherwise).
+
+
+---
+
+### Generalized linear model (glm) in R
+
+- We can use the `glm()` function in R to fit a regression model
+
+```{r, message=FALSE}
+library(MASS)
+data(birthwt)
+birthwt$low <- factor(birthwt$low)
+birthwt$smoke <- factor(birthwt$smoke)
+fit <- glm(low ~ smoke, family = 'binomial', data = birthwt)
+```
+
+
+
+
+---
+
+### Generalized linear model (glm) in R
+
+- We can use the `glm()` function in R to fit a regression model
+
+```{r, message=FALSE}
+confint(fit)
+```
+
+
+
+
+---
+
+### Generalized linear model (glm) in R
+
+- We can use the `glm()` function in R to fit a regression model
+
+```{r, message=FALSE}
+summary(fit)
+```
+
+
+---
+
+### Estimation
+
+- For the above example, the estimated values of the intercept $\alpha$ and the regression coefficient $\beta$ are $a=-1.09$ and $b=0.70$ respectively. 
+
+- Therefore, 
+$$\begin{eqnarray*}
+\frac{\hat{p}}{1- \hat{p}} & = & \exp(-1.09 + 0.70x)
+\end{eqnarray*}$$
+
+- Here, $\hat{p}$ is the estimated probability of having a low birthweight baby for a given $x$. 
+
+- The left-hand side of the above equation is the estimated odds of having a low birthweight baby. 
+
+
+---
+
+### Estimation
+
+- For non-smoking mother, $x=0$, the odds of having low birthweight baby is 
+$$\begin{eqnarray*}
+\frac{\hat{p}_{0}}{1- \hat{p}_{0}} & = & \exp(-1.09) \\
+& = & 0.34
+\end{eqnarray*}$$
+
+- That is, the exponential of the intercept is the odds when $x=0$, which is sometimes referred to as the **baseline odds**. 
+
+
+---
+
+### Estimation
+
+
+- For mothers who smoke during pregnancy, $x=1$, and
+$$\begin{eqnarray*}
+\frac{\hat{p}_{1}}{1- \hat{p}_{1}} & = &  \exp(-1.09 + 0.7)\\
+& = &  \exp(-1.09) \exp(0.7)\\
+& = & 0.68
+\end{eqnarray*}$$
+
+
+- As we can see, corresponding to one unit increase in $x$ from $x=0$ (non-smoking) to $x=1$ (smoking), the odds multiplicatively increases by the exponential of the regression coefficient. 
+
+
+---
+
+### Interpretation 
+
+- Note that
+$$\begin{eqnarray*}
+\frac{\frac{\hat{p}_{1}}{1- \hat{p}_{1}}}{\frac{\hat{p}_{0}}{1- \hat{p}_{0}}} & = &  \frac{\exp(-1.09) \exp(0.7)}{\exp(-1.09)} =  \exp(0.7)
+\end{eqnarray*}$$
+
+- We can interpret the exponential of the regression coefficient as the odds ratio of having low birthweight babies for smoking mothers compared to non-smoking mothers. 
+
+- Here, the estimated odds ratio is $\exp(0.7) = 2.01$ so the odds of having a low birthweight baby almost doubles for smoking mothers compared to non-smoking mothers. 
+
+
+---
+
+### Interpretation 
+
+- In general, 
+
+  - if $b>0$, then $\exp(b) > 1$ so the odds increases as $X$ increases;
+  - if $b<0$, then $0 < \exp(b) < 1$ so the odds decreases as $X$ increases;
+  - if $b=0$, the odds ratio is 1 so the odds does not change with $X$ according to the assumed model. 
+
+
+---
+
+### Inference
+
+- Similar to linear regression, we use the functions `confint()` and `summary()` to obtian the confidence interval and p-value for each coefficient.
+
+```{r}
+fit <- glm(low ~ smoke, family = 'binomial', data = birthwt)
+fit
+```
+
+
+
+
+---
+
+### Inference
+
+- Similar to linear regression, we use the functions `confint()` and `summary()` to obtian the confidence interval and p-value for each coefficient.
+
+```{r}
+confint(fit)
+```
+
+
+
+---
+
+### Inference
+
+- Similar to linear regression, we use the functions `confint()` and `summary()` to obtian the confidence interval and p-value for each coefficient.
+
+```{r}
+summary(fit)
+```
+
+
+---
+
+### Prediction
+
+- We can use logistic regression models for predicting the unknown values of the response variable $Y$ given the value of the predictor value $X$.
+
+$$\begin{eqnarray*}
+\hat{p} & = & \frac{\exp(a + bx)}{1 + \exp(a + bx)}
+\end{eqnarray*}$$
+
+- For the above example,
+$$\begin{eqnarray*}
+\hat{p} & = & \frac{\exp(-1.09 + 0.70x)}{1 + \exp(-1.09 + 0.70x)}
+\end{eqnarray*}$$
+
+
+
+---
+
+### Prediction
+
+- Therefore, the estimated probability of having a low birthweight baby for non-smoking mothers, $x=0$, is
+$$\begin{eqnarray*}
+\hat{p} & = & \frac{\exp(-1.09)}{1 + \exp(-1.09)} = 0.25
+\end{eqnarray*}$$
+
+- This probability increases for mothers who smoke during pregnancy, $x=1$,
+$$\begin{eqnarray*}
+\hat{p} & = & \frac{\exp(-1.09 + 0.7)}{1 + \exp(-1.09 + 0.7)} = 0.40
+\end{eqnarray*}$$
+
+- That is, the risk of having a low birthweight baby increases by 60% if a mother smokes during her pregnancy. 
+
+
+
+
+
+
+---
+
+### Logistic Regression with One Numerical Predictor
+
+
+- For the most part, we follow similar steps to fit the model, estimate regression parameters, perform hypothesis testing, and predict unknown values of the response variable. 
+
+- As an example, we want to investigate the relationship between having a low birthweight baby, $Y$, and mother's age at the time of pregnancy, $X$. 
+
+
+
+---
+
+### Logistic Regression with One Numerical Predictor
+
+
+
+```{r}
+fit <- glm(low ~ age, family = 'binomial', data = birthwt)
+fit
+```
+
+
+---
+
+### Logistic Regression with One Numerical Predictor
+
+
+- Finding confidence intervals and performing hypothesis testing remain as before, so we focus on prediction and interpreting the point estimates.
+
+- For the above example, the point estimates for the regression parameters are $a=0.38$ and $b=-0.05$. 
+
+- While the intercept is the log odds when $x=0$, it is not reasonable to interpret its exponential as the baseline odds since mother's age cannot be zero. 
+
+
+---
+
+### Logistic Regression with One Numerical Predictor
+
+- To interpret $b$, consider mothers whose age is 20 years old at the time of pregnancy, 
+$$\begin{eqnarray*}
+\log \Big(\frac{\hat{p}_{20}}{1- \hat{p}_{20}} \Big) & = & 0.38 - 0.05 \times 20\\ 
+\frac{\hat{p}_{20}}{1- \hat{p}_{20}} & = &  \exp(0.38 - 0.05 \times 20)\\
+& = &  \exp(0.38) \exp(- 0.05 \times 20)
+\end{eqnarray*}$$
+
+---
+
+### Logistic Regression with One Numerical Predictor
+
+- For mothers who are one year older (i.e., one unit increase in age), we have
+$$\begin{eqnarray*}
+\log \Big(\frac{\hat{p}_{21}}{1- \hat{p}_{21}} \Big) & = & 0.38 - 0.05 \times 21\\ 
+\frac{\hat{p}_{21}}{1- \hat{p}_{21}} & = &  \exp(0.38 - 0.05 \times 21)\\
+& = &  \exp(0.38) \exp(- 0.05 \times 21)
+\end{eqnarray*}$$
+
+
+---
+
+### Logistic Regression with One Numerical Predictor
+
+- The odds ratio for comparing 21 year old mothers to 20 year old mothers is
+$$\begin{eqnarray*}
+\frac{\frac{\hat{p}_{21}}{1- \hat{p}_{21}}}{\frac{\hat{p}_{20}}{1- \hat{p}_{20}}} & = &  \frac{ \exp(0.38) \exp(- 0.05 \times 21))}{ \exp(0.38) \exp(- 0.05 \times 20)}\\
+& = & \exp(- 0.05 \times 21 + 0.05 \times 20)\\
+& = & \exp(- 0.05)
+\end{eqnarray*}$$
+
+- Therefore, $\exp(b)$ is the estimated odds ratio comparing 21 year old mothers to 20 year old mothers. 
+
+---
+
+### Logistic Regression with One Numerical Predictor
+
+- In general, $\exp(b)$ is the estimated odds ratio for comparing two subpopulations, whose predictor values are $x+1$ and $x$,
+$$\begin{eqnarray*}
+\frac{\frac{\hat{p}_{x+1}}{1- \hat{p}_{x+1}}}{\frac{\hat{p}_{x}}{1- \hat{p}_{x}}} & = & \exp(b)
+\end{eqnarray*}$$
+
+
+---
+
+### Logistic Regression with One Numerical Predictor
+
+
+- As before, we can use the estimated regression parameters to find $\hat{p}$ and predict the unknown value of the response variable. 
+$$\begin{eqnarray*}
+\hat{p} & = & \frac{\exp(a + bx)}{1 + \exp(a + bx)} & = & \frac{\exp(0.38 -0.05x)}{1 + \exp(0.38 -0.05x)}.
+\end{eqnarray*}$$
+
+- For example, for mother who are 20 years old at the time of pregnancy, the estimated probability of having a low birthweight baby is
+$$\begin{eqnarray*}
+\hat{p} & = & \frac{\exp(0.38 -0.05 \times 20)}{1 + \exp(0.38 -0.05 \times 20)} = 0.35.
+\end{eqnarray*}$$
+
+
+
+---
+
+### Logistic Regression with Multiple Variables
+
+- Including multiple explanatory variables (predictors) in a logistic regression model is easy. 
+
+- Similar to linear regression models, we specify the model formula by entering the response variable on the left side of the "~" symbol and the explanatory variables (separated by "+" sings) on the right side. 
+
+
+
+---
+
+### Logistic Regression with Multiple Variables
+
+```{r}
+fit <- glm(low ~ age + smoke, family = 'binomial', 
+           data = birthwt)
+fit
+```
+
+
+---
+
+### Logistic Regression with Multiple Variables
+
+```{r}
+confint(fit)
+```
+
+
+
+---
+
+### Logistic Regression with Multiple Variables
+
+```{r}
+summary(fit)
+```
