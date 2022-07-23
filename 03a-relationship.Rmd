@@ -305,7 +305,7 @@ that the two variables have __linear relationship__.
 
 - The sign of $r$ shows the direction (negative or positive) of the linear relationship. 
 
-- For observed pairs of values, $(x_{n}, y_{n}), (x_{n},y_{n}), \ldots, (x_{n}, y_{n})$, 
+- For observed pairs of values, $(x_{1}, y_{1}), (x_{1},y_{1}), \ldots, (x_{n}, y_{n})$, 
 
 $$\begin{eqnarray*}
 r_{xy} = \frac{\sum_{i=1}^{n}(x_{i}-\bar{x})(y_{i}- \bar{y})}{(n-1)s_{x}s_{y}}

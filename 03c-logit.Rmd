@@ -116,6 +116,7 @@ data(birthwt)
 birthwt$low <- factor(birthwt$low)
 birthwt$smoke <- factor(birthwt$smoke)
 fit <- glm(low ~ smoke, family = 'binomial', data = birthwt)
+fit
 ```
 
 

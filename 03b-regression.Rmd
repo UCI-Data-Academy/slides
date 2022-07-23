@@ -303,8 +303,19 @@ confint(lm_res)
 
 ### Hypothesis testing
 
+- The null hypothesis indicates that the population regression coefficient is zero, $$H_0: \beta = 0$$ 
+
+- This is interpreted as no linear relationship between the response variable and the explanatory variable 
+
+- The alternative hypothesis is usually two-sided
+$$H_A: \beta \ne 0$$
+- The corresponding p-value is provided by the `glm()` function.
+
+---
+
+### Hypothesis testing
+
 ```{r, message=FALSE}
-lm_res <- glm(BP ~ salt, data=saltBP)
 summary(lm_res)
 ```
 
@@ -367,6 +378,7 @@ $$\begin{equation*}
 library(MASS)
 data("birthwt")
 bwt_mod <- glm(bwt ~ age + factor(smoke), data=birthwt)
+bwt_mod
 ```
 
 

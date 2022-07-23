@@ -112,6 +112,20 @@ data(birthwt)
 birthwt$low &lt;- factor(birthwt$low)
 birthwt$smoke &lt;- factor(birthwt$smoke)
 fit &lt;- glm(low ~ smoke, family = 'binomial', data = birthwt)
+fit
+```
+
+```
+## 
+## Call:  glm(formula = low ~ smoke, family = "binomial", data = birthwt)
+## 
+## Coefficients:
+## (Intercept)       smoke1  
+##     -1.0871       0.7041  
+## 
+## Degrees of Freedom: 188 Total (i.e. Null);  187 Residual
+## Null Deviance:	    234.7 
+## Residual Deviance: 229.8 	AIC: 233.8
 ```
 
 

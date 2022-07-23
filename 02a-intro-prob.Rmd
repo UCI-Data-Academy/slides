@@ -544,6 +544,8 @@ $$P(X=x) = \left\{ \begin{array}{l@{\quad}l}
 
 - The pmf of a binomial distribution specifies the probability of each possible value (integers from 0 through $n$) of the random variable.
 
+- Binomial includes Bernoulli as a special case (n = 1). 
+
 
 ---
 
