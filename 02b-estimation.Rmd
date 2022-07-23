@@ -1,6 +1,6 @@
 ---
 title: "Estimation"
-author: "Babak Shahbaba"
+author: "Babak Shahbaba <br> Jessica Jaynes"
 output: 
   xaringan::moon_reader:
     css: ["slide-style.css"]

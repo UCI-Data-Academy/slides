@@ -1,6 +1,6 @@
 ---
 title: "Welcome"
-author: "Babak Shahbaba <br> Sam Behseta <br> Jessica Jaynes"
+author: "Dr. Babak Shahbaba <br> Dr. Sam Behseta <br> Dr. Jessica Jaynes"
 output: 
   xaringan::moon_reader:
     css: ["slide-style.css", "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"]
