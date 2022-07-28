@@ -217,7 +217,7 @@ library(car)
 ```{r fig.height=3.9, fig.align='center', warning=FALSE}
 library(car)
 scatterplot(rhippo ~ lhippo | female, 
-            boxplots = "xy",
+            boxplots = c("x","y"),
             xlab="left hippocampus volume", ylab="Right hippocampus volume",
             main="Enhanced Scatter Plot")
 ```
