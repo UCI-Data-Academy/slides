@@ -70,7 +70,7 @@ class: center middle
 ## Lynn Gao
 
 ```{r echo=FALSE, fig.align='center', out.width="30%"}
-knitr::include_graphics("img/lynn.jpeg")
+knitr::include_graphics("img/lynn.png")
 ```
 
 ---
