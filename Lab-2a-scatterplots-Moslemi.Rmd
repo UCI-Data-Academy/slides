@@ -1,0 +1,244 @@
+---
+title: "Scatterplots"
+author: "Zahra Moslemi"
+output: 
+  xaringan::moon_reader:
+    css: ["slide-style.css", "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"]
+    lib_dir: libs
+    seal: false
+    nature:
+      beforeInit: "cols_macro.js"
+      ratio: 16:9
+      highlightStyle: "pygments"
+      highlightLines: true
+      highlightLanguage: "r"
+
+---
+
+class: title-slide
+
+```{r echo = FALSE, warning=FALSE}
+library(fabricerin)
+
+```
+
+<br>
+<br>
+.right-panel[ 
+
+# `r rmarkdown::metadata$title`
+## `r rmarkdown::metadata$author`
+
+]
+
+
+---
+### Scatterplot
+
+- A Scatterplot displays the relationship between 2 numeric variables. 
+
+- Each dot represents an observation. Their position on the X (horizontal) and Y (vertical) axis represents the values of the 2 variables. 
+
+- Using ggplot2, scatterplots are built thanks to the **geom_point**
+
+
+---
+ 
+- The _plot()_ function of R allows to build a scatterplot. Both numeric variables of the input dataframe must be specified in the _x_ and _y_ argument.
+
+-  Let’s consider the correlation between the right hippocampus volume of the subjects versus their left hippocampus volume.
+
+```{r warning=FALSE, message=FALSE, include=FALSE}
+library(tidyverse)
+
+data <- read_csv("https://raw.githubusercontent.com/COSMOS-DataScience/slides/main/data/alzheimer_data.csv")
+
+attach(data)
+```
+
+```{r, fig.height=4.9, fig.align='center'}
+plot(lhippo,rhippo)
+```
+
+---
+
+### Customizations
+- cex: circle size
+- xlim and ylim: limits of the X and Y axis
+- pch: [shape of markers.](http://www.sthda.com/english/wiki/r-plot-pch-symbols-the-different-point-shapes-available-in-r)
+- xlab and ylab: X and Y axis labels
+- col: [marker color](https://bit.ly/colors-r)
+- main: chart title
+
+---
+
+```{r, fig.height=4.4, fig.align='center'}
+plot(lhippo,rhippo,
+     xlim=c(0,6) , ylim=c(0,6), 
+     pch=19, 
+     cex=1, 
+     col="cadetblue3",
+     xlab="left hippocampus volume", ylab="Right hippocampus volume",
+     main="A simple scatterplot"
+     )
+```
+
+---
+
+
+### Map the marker color to a categorical variable
+
+```{r, fig.height=4.4, fig.align='center', fig.show='hide'}
+plot(lhippo,rhippo,
+     xlim=c(0,6) , ylim=c(0,6), 
+     pch=19, 
+     cex=2, 
+     col=factor(female),
+     xlab="left hippocampus volume", ylab="Right hippocampus volume",
+     main="A simple scatterplot"
+     )
+```
+---
+```{r, fig.height=6, fig.align='center', echo=FALSE}
+plot(lhippo,rhippo,
+     xlim=c(0,6) , ylim=c(0,6), 
+     pch=19, 
+     cex=1, 
+     col=factor(female),
+     xlab="left hippocampus volume", ylab="Right hippocampus volume",
+     main="A simple scatterplot"
+     )
+```
+---
+
+### Add legend to a plot 
+- Legend function in R adds legend box to the plot. 
+- legend() function in R makes graph easier to read and interpret in better way.
+
+```{r, fig.height=4.4, fig.align='center', fig.show='hide'}
+plot(lhippo,rhippo,
+     xlim=c(0,6) , ylim=c(0,6), 
+     pch=19, 
+     cex=1, 
+     col=factor(female),
+     xlab="left hippocampus volume", ylab="Right hippocampus volume",
+     main="A simple scatterplot"
+     )
+legend("topleft"
+       ,legend = c("male","female"),
+       pch = 19, col = factor(levels(factor(female)))
+       )
+```
+
+---
+```{r, fig.height=4.4, fig.align='center',  echo=FALSE}
+plot(lhippo,rhippo,
+     xlim=c(0,6) , ylim=c(0,6), 
+     pch=19, 
+     cex=1, 
+     col=factor(female),
+     xlab="left hippocampus volume", ylab="Right hippocampus volume",
+     main="A simple scatterplot"
+     )
+legend("topleft"
+       ,legend = c("male","female"),
+       pch = 19, col = factor(levels(factor(female)))
+       )
+```
+---
+
+## Add fit lines
+
+```{r, fig.height=4.4, fig.align='center', fig.show='hide'}
+plot(lhippo,rhippo,
+     xlim=c(0,6) , ylim=c(0,6), 
+     pch=19, 
+     cex=1, 
+     col="black",
+     xlab="left hippocampus volume", ylab="Right hippocampus volume",
+     main="A simple scatterplot"
+     )
+abline(lm(rhippo~lhippo), col="red")
+```
+
+---
+
+```{r, fig.height=4.4, fig.align='center', echo = FALSE}
+plot(lhippo,rhippo,
+     xlim=c(0,6) , ylim=c(0,6), 
+     pch=19, 
+     cex=1, 
+     col="black",
+     xlab="left hippocampus volume", ylab="Right hippocampus volume",
+     main="A simple scatterplot"
+     )
+abline(lm(rhippo~lhippo), col="red")
+```
+---
+
+```{r, fig.height=4.4, fig.align='center', fig.show='hide'}
+plot(lhippo,rhippo,
+     xlim=c(0,6) , ylim=c(0,6), 
+     pch=19, 
+     cex=1, 
+     col=factor(female),
+     xlab="left hippocampus volume", ylab="Right hippocampus volume",
+     main="A simple scatterplot"
+     )
+abline(lm(rhippo[female=="1"]~lhippo[female=="1"]), col="red")
+abline(lm(rhippo[female=="0"]~lhippo[female=="0"]), col="blue")
+```
+---
+```{r, fig.height=6, fig.align='center', echo=FALSE}
+plot(lhippo,rhippo,
+     xlim=c(0,6) , ylim=c(0,6), 
+     pch=19, 
+     cex=1, 
+     col=factor(female),
+     xlab="left hippocampus volume", ylab="Right hippocampus volume",
+     main="A simple scatterplot"
+     )
+abline(lm(rhippo[female=="1"]~lhippo[female=="1"]), col="red")
+abline(lm(rhippo[female=="0"]~lhippo[female=="0"]), col="blue")
+
+```
+
+
+
+---
+- The scatterplot( ) function in the car package offers many enhanced features, including fit lines, marginal box plots and conditioning on a factor. Each of these features is optional.
+
+```{r error = FALSE, message=FALSE,warning=FALSE, include=FALSE}
+library(car)
+```
+
+---
+
+```{r fig.height=3.9, fig.align='center', warning=FALSE}
+library(car)
+scatterplot(rhippo ~ lhippo | female, 
+            boxplots = c("x","y"),
+            xlab="left hippocampus volume", ylab="Right hippocampus volume",
+            main="Enhanced Scatter Plot")
+```
+
+---
+### Basic Scatterplot Matrix
+
+```{r fig.show='hide'}
+ran <- sample(1:2700,30)
+new_data <- data[ran,]
+
+pairs(~naccicv + csfvol + lhippo + rhippo + frcort,
+      data=new_data,
+      main="Simple Scatterplot Matrix")
+```
+---
+
+```{r fig.align='center', echo=FALSE}
+ran <- sample(1:2700,30)
+new_data <- data[ran,]
+
+pairs(~naccicv + csfvol + lhippo + rhippo + frcort, data=new_data,
+   main="Simple Scatterplot Matrix")
+```

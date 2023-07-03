@@ -1,0 +1,90 @@
+---
+title: 'Data Visualization Practice'
+author: ""
+output: html_document
+---
+
+```{r message = FALSE, echo=FALSE}
+library(tidyverse)
+library(janitor)
+bike <- read_csv("https://raw.githubusercontent.com/COSMOS-DataScience/slides/main/week01/data/metro-bike-share-trips.csv")
+```
+
+## Question 1
+
+Look at the distribution of duration of bike rides with a histogram. 
+Is the distribution symmetric or skewed? If skewed, to which direction is it skewed?
+In such distributions would you expect mean > median or median < mean? 
+Calculate the mean and median to confirm.
+
+
+```{r echo=FALSE, message=FALSE}
+#generate graph code here
+
+
+#calculate mean duration and median duration here
+mean_dur = NA
+
+med_dur = NA
+
+```
+
+
+We create a new variable called `standard_bike`. This variable indicates whether a bike is standard or not. Make sure to "save" this variable to your data  frame.
+
+```{r echo=FALSE, message=FALSE}
+bike <- 
+  bike %>%
+    mutate(standard_bike = case_when(
+             bike_type == "standard" ~ TRUE, 
+             bike_type != "standard" ~ FALSE))
+
+glimpse(bike)
+```
+
+
+## Question 2
+
+Make a visual comparing the duration of bike rides for standard and non-standard bikes.
+```{r echo=FALSE, message=FALSE}
+#Use an appropriate graph to compare distribution of bike ride durations
+
+```
+
+
+It seems like there are some bike rentals that are 1440 minutes long which is basically a day. How many of the bike rentals that took the whole day? Answer with inline code.
+
+```{r echo=FALSE, message=FALSE}
+whole_day_dur<-bike %>% 
+  filter(duration >= 1440) %>% 
+  nrow()
+```
+
+`r whole_day_dur` bike rentals took the whole day.
+
+We create a new variable called `day_long` this variable should show whether a bike rental is day long (1440 minutes) or not. Make sure to save this variable in your data frame.
+
+```{r echo=FALSE, message=FALSE}
+bike <- 
+  bike %>%
+    mutate(day_long = case_when(
+             duration >= 1440 ~ TRUE, 
+             duration < 1440 ~ FALSE))
+
+glimpse(bike)
+```
+
+Change the type of the `passholder_type` to a correct type and save it in the data frame accordingly. 
+
+```{r}
+bike <- bike %>% 
+  mutate(passholder_type = as.factor(passholder_type))
+```
+
+## Question 3
+
+Make a visual the relationship between `passholder_type` and `day_long`
+
+```{r echo = FALSE, message = FALSE, warning = FALSE}
+
+```
