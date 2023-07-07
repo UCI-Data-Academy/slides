@@ -4,7 +4,7 @@
     <title>Introduction to Probability</title>
     <meta charset="utf-8" />
     <meta name="author" content="Babak Shahbaba   Jessica Jaynes" />
-    <script src="libs/header-attrs-2.14/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.22/header-attrs.js"></script>
     <link rel="stylesheet" href="slide-style.css" type="text/css" />
   </head>
   <body>
@@ -213,20 +213,20 @@ probabilities of those outcomes.
 
 - In contrast, we refer to probabilities `\(P(E_{1})\)` and `\(P(E_{2})\)` as the **marginal probabilities** of events `\(E_{1}\)` and `\(E_{2}\)`.
 
-- For any two events `\(E_{1}\)` and `\(E_{2}\)`, we have
+&lt;!-- - For any two events `\(E_{1}\)` and `\(E_{2}\)`, we have --&gt;
 
-`$$P(E_{1} \cup E_{2}) = P(E_{1}) + P(E_{2}) - P(E_{1} \cap E_{2}).$$`
-- That is, the probability of the union `\(P(E_1 \cup E_2)\)` is the sum of their marginal probabilities minus their joint probability. 
+&lt;!-- `$$P(E_{1} \cup E_{2}) = P(E_{1}) + P(E_{2}) - P(E_{1} \cap E_{2}).$$` --&gt;
+&lt;!-- - That is, the probability of the union `\(P(E_1 \cup E_2)\)` is the sum of their marginal probabilities minus their joint probability.  --&gt;
 
----
+&lt;!-- --- --&gt;
 
-## Joint vs. marginal probability
+&lt;!-- ## Joint vs. marginal probability --&gt;
 
-- For example, the union of the heterozygous and the no-disease events is
-`$$\begin{eqnarray*}
-P(HM  \cup ND)  &amp;=&amp;  P(HM ) + P(ND) - P(HM  \cap ND) \\
-  &amp;= &amp; 0.58 + 0.91 - 0.49 = 1.
-\end{eqnarray*}$$`
+&lt;!-- - For example, the union of the heterozygous and the no-disease events is --&gt;
+&lt;!-- $$\begin{eqnarray*} --&gt;
+&lt;!-- P(HM  \cup ND)  &amp;=&amp;  P(HM ) + P(ND) - P(HM  \cap ND) \\ --&gt;
+&lt;!--   &amp;= &amp; 0.58 + 0.91 - 0.49 = 1. --&gt;
+&lt;!-- \end{eqnarray*}$$ --&gt;
 
 ---
 
@@ -238,30 +238,25 @@ elements (outcomes) in common, and their intersection is the empty set.
 
 - For the above example, if a person is heterozygous, we know that he does not have the disease so the two events `\(HT\)` and `\(D\)` are disjoint. 
 
-
----
-
-## Disjoint events
-
 - For two disjoint events `\(E_{1}\)` and `\(E_{2}\)`, the probability of their
 intersection (i.e., their joint probability) is zero: 
 `$$P(E_{1} \cap E_{2}) = P(\phi) =  0$$`
-- Therefore, the probability of the union of the two disjoint events is simply the sum of their marginal probabilities: 
-`$$P(E_{1} \cup E_{2}) = P(E_{1}) + P(E_{2})$$`
-- In general, if we have multiple disjoint events, `\(E_1\)`, `\(E_2\)`, ..., `\(E_n\)`, then the probability of their union is the sum of the marginal probabilities:
-`$$P(E_1 \cup E_2 \cup ... \cup E_n) = P(E_1) + P(E_2) + ... + P(E_n)$$`
+&lt;!-- - Therefore, the probability of the union of the two disjoint events is simply the sum of their marginal probabilities:  --&gt;
+&lt;!-- `$$P(E_{1} \cup E_{2}) = P(E_{1}) + P(E_{2})$$` --&gt;
+&lt;!-- - In general, if we have multiple disjoint events, `\(E_1\)`, `\(E_2\)`, ..., `\(E_n\)`, then the probability of their union is the sum of the marginal probabilities: --&gt;
+&lt;!-- `$$P(E_1 \cup E_2 \cup ... \cup E_n) = P(E_1) + P(E_2) + ... + P(E_n)$$` --&gt;
 
----
+&lt;!-- --- --&gt;
 
-## Partition
+&lt;!-- ## Partition --&gt;
 
-- When two or more events are disjoint and their union is the sample
-space `\(S\)`, we say that the events form a **partition** of the
-sample space.
+&lt;!-- - When two or more events are disjoint and their union is the sample --&gt;
+&lt;!-- space `\(S\)`, we say that the events form a **partition** of the --&gt;
+&lt;!-- sample space. --&gt;
 
-- Two complementary events `\(E\)` and `\(E^{c}\)` always form a partition of the
-sample space since they are disjoint and their union is the sample
-space.
+&lt;!-- - Two complementary events `\(E\)` and `\(E^{c}\)` always form a partition of the --&gt;
+&lt;!-- sample space since they are disjoint and their union is the sample --&gt;
+&lt;!-- space. --&gt;
 
 ---
 
@@ -274,33 +269,32 @@ occurrence of another event.
 - The **conditional probability**, denoted  `\(P(E_{1}|E_{2})\)`, is the
 probability of event `\(E_1\)` given that another event `\(E_2\)` has occurred.
 
-- The conditional probability of event `\(E_1\)` given event `\(E_2\)` can be
-calculated as follows: (assuming `\(P(E_{2}) \ne 0\)`)
+&lt;!-- - The conditional probability of event `\(E_1\)` given event `\(E_2\)` can be --&gt;
+&lt;!-- calculated as follows: (assuming `\(P(E_{2}) \ne 0\)`) --&gt;
 
-`$$P(E_{1}|E_{2}) = \frac{P(E_{1} \cap E_{2})}{P(E_{2})}.$$`
+&lt;!-- `$$P(E_{1}|E_{2}) = \frac{P(E_{1} \cap E_{2})}{P(E_{2})}.$$` --&gt;
 
-- This is the joint probability of the two events divided
-by the marginal probability of the event on which we are conditioning.
+&lt;!-- - This is the joint probability of the two events divided --&gt;
+&lt;!-- by the marginal probability of the event on which we are conditioning. --&gt;
 
 
----
+&lt;!-- --- --&gt;
 
-## The law of total probability
+&lt;!-- ## The law of total probability --&gt;
 
-- By rearranging the equation for conditional probabilities, we have
-`$$P(E_{1} \cap E_{2}) = P(E_{1}|E_{2})P(E_{2}).$$`
+&lt;!-- - By rearranging the equation for conditional probabilities, we have --&gt;
+&lt;!-- `$$P(E_{1} \cap E_{2}) = P(E_{1}|E_{2})P(E_{2}).$$` --&gt;
 
-- Now suppose that a set of `\(K\)` events `\(B_1, B_2, \ldots, B_K\)` forms a
-partition of the sample space.
-&lt;img src="img/generalPartition.png" width="50%" style="display: block; margin: auto;" /&gt;
+&lt;!-- - Now suppose that a set of `\(K\)` events `\(B_1, B_2, \ldots, B_K\)` forms a partition of the sample space. --&gt;
 
----
 
-## The law of total probability
+&lt;!-- --- --&gt;
 
-- Using the above equation, we have
-`$$P(A)  =  P(A|B_{1})P(B_{1}) + \cdots + P(A|B_{K})P(B_{K}).$$`
-- This is known as the **law of total probability**.
+&lt;!-- ## The law of total probability --&gt;
+
+&lt;!-- - Using the above equation, we have --&gt;
+&lt;!-- `$$P(A)  =  P(A|B_{1})P(B_{1}) + \cdots + P(A|B_{K})P(B_{K}).$$` --&gt;
+&lt;!-- - This is known as the **law of total probability**. --&gt;
 
 
 
@@ -319,60 +313,60 @@ P(E_{2}|E_{1}) &amp; = &amp; P(E_{2}).
 
 - For example, if a disease is not genetic, knowing a person has a specific genotype (e.g., `\(AA\)`) does not  change the probability of having that disease. 
 
----
+&lt;!-- --- --&gt;
 
-## Independent events
+&lt;!-- ## Independent events --&gt;
 
-- When two events `\(E_{1}\)` and `\(E_{2}\)` are independent, the probability
-that `\(E_{1}\)` and `\(E_{2}\)` occur simultaneously, i.e., their joint
-probability, is the product of their marginal probabilities:
+&lt;!-- - When two events `\(E_{1}\)` and `\(E_{2}\)` are independent, the probability --&gt;
+&lt;!-- that `\(E_{1}\)` and `\(E_{2}\)` occur simultaneously, i.e., their joint --&gt;
+&lt;!-- probability, is the product of their marginal probabilities: --&gt;
 
-`$$P(E_{1} \cap E_{2}) = P(E_{1})\times P(E_{2})$$`
+&lt;!-- `$$P(E_{1} \cap E_{2}) = P(E_{1})\times P(E_{2})$$` --&gt;
 
-- Therefore, the probability of the union of two independent events is as follows:
-`$$P(E_{1} \cup E_{2}) = P(E_{1}) + P(E_{2}) - P(E_{1}) \times P(E_{2}).$$`
-
-
----
-
-## Bayes' theorem
-
-- Sometimes, we know the conditional
-probability of `\(E_{1}\)` given `\(E_{2}\)`, but we are interested in the
-conditional probability of `\(E_{2}\)` given `\(E_{1}\)`. 
-
-- For example, suppose
-that the probability of having lung cancer is `\(P(C) = 0.001\)` and that
-the probability of being a smoker is `\(P(SM) = 0.25\)`. 
-
-- Further, suppose
-we know that if a person has lung cancer, the probability of being a
-smoker increases to `\(P(SM |C) = 0.40\)`.  
-
-- We are, however, interested in
-the probability of developing lung cancer if a person is a smoker,
-`\(P(C|SM)\)`. 
+&lt;!-- - Therefore, the probability of the union of two independent events is as follows: --&gt;
+&lt;!-- `$$P(E_{1} \cup E_{2}) = P(E_{1}) + P(E_{2}) - P(E_{1}) \times P(E_{2}).$$` --&gt;
 
 
----
+&lt;!-- --- --&gt;
 
-## Bayes' theorem
+&lt;!-- ## Bayes' theorem --&gt;
 
-- In general, for two events `\(E_1\)` and `\(E_2\)`, the following equation
-shows the relationship between `\(P(E_{2}|E_{1})\)` and `\(P(E_{1}|E_{2})\)`:
-`$$P(E_{2}|E_{1})  =  \frac{P(E_{1}|E_{2})P(E_{2})}{P(E_{1})}.$$`
+&lt;!-- - Sometimes, we know the conditional --&gt;
+&lt;!-- probability of `\(E_{1}\)` given `\(E_{2}\)`, but we are interested in the --&gt;
+&lt;!-- conditional probability of `\(E_{2}\)` given `\(E_{1}\)`.  --&gt;
 
-- This formula is known as **Bayes' theorem** or **Bayes' rule**.
+&lt;!-- - For example, suppose --&gt;
+&lt;!-- that the probability of having lung cancer is `\(P(C) = 0.001\)` and that --&gt;
+&lt;!-- the probability of being a smoker is `\(P(SM) = 0.25\)`.  --&gt;
 
----
+&lt;!-- - Further, suppose --&gt;
+&lt;!-- we know that if a person has lung cancer, the probability of being a --&gt;
+&lt;!-- smoker increases to `\(P(SM |C) = 0.40\)`.   --&gt;
 
-## Bayes' theorem
+&lt;!-- - We are, however, interested in --&gt;
+&lt;!-- the probability of developing lung cancer if a person is a smoker, --&gt;
+&lt;!-- `\(P(C|SM)\)`.  --&gt;
 
-- For the above example, 
-`$$P(C|SM)  =  \frac{P(SM|C)P(C) }{P(SM)} = \frac{ 0.4 \times 0.001}{0.25} = 0.0016.$$`
 
-- Therefore, the probability of lung cancer for smokers increases from
-0.001 to 0.0016. 
+&lt;!-- --- --&gt;
+
+&lt;!-- ## Bayes' theorem --&gt;
+
+&lt;!-- - In general, for two events `\(E_1\)` and `\(E_2\)`, the following equation --&gt;
+&lt;!-- shows the relationship between `\(P(E_{2}|E_{1})\)` and `\(P(E_{1}|E_{2})\)`: --&gt;
+&lt;!-- `$$P(E_{2}|E_{1})  =  \frac{P(E_{1}|E_{2})P(E_{2})}{P(E_{1})}.$$` --&gt;
+
+&lt;!-- - This formula is known as **Bayes' theorem** or **Bayes' rule**. --&gt;
+
+&lt;!-- --- --&gt;
+
+&lt;!-- ## Bayes' theorem --&gt;
+
+&lt;!-- - For the above example,  --&gt;
+&lt;!-- `$$P(C|SM)  =  \frac{P(SM|C)P(C) }{P(SM)} = \frac{ 0.4 \times 0.001}{0.25} = 0.0016.$$` --&gt;
+
+&lt;!-- - Therefore, the probability of lung cancer for smokers increases from --&gt;
+&lt;!-- 0.001 to 0.0016.  --&gt;
 
 
 
@@ -677,16 +671,18 @@ P(25 &lt; X \le 30) = P(X \le 30) - P(X \le 25).
 &lt;img src="img/normal95.png" width="40%" height="49%" style="display: block; margin: auto;" /&gt;
 
 
----
+&lt;!-- --- --&gt;
 
-## Student's t-distribution
+&lt;!-- ## Student's t-distribution --&gt;
 
-Another continuous probability distribution that is used very often in
-statistics is the __Student's__ `\(t\)`-__distribution__ or
-simply the `\(t\)`-distribution.
+&lt;!-- Another continuous probability distribution that is used very often in --&gt;
+&lt;!-- statistics is the __Student's__ `\(t\)`-__distribution__ or --&gt;
+&lt;!-- simply the `\(t\)`-distribution. --&gt;
 
 
-&lt;img src="img/standNormT.png" width="35%" height="35%" style="display: block; margin: auto;" /&gt;
+&lt;!-- ```{r, echo=FALSE,out.width='35%',out.height='35%',fig.show='hold',fig.align='center'} --&gt;
+&lt;!-- knitr::include_graphics("img/standNormT.png") --&gt;
+&lt;!-- ``` --&gt;
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
