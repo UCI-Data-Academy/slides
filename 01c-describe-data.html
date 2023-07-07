@@ -66,88 +66,6 @@ class: middle center
 
 
 
----
-
-class: inverse center middle
-
-.font100[Alzheimer's Data]
-
----
-
-
-```r
-head(alzheimer_data)
-```
-
-```
-##        id diagnosis age educ female height weight
-## 1 S060833         0  74   12      0   65.0    233
-## 2 S932623         0  56   16      1   62.0    110
-## 3 S755478         0  77   18      1   65.0    137
-## 4 S852291         0  74   20      1   62.0    112
-## 5 S011143         1  75   14      0   62.0    127
-## 6 S069106         0  72   16      1   61.8    141
-```
-
----
-
-
-
-```r
-tail(alzheimer_data)
-```
-
-```
-##           id diagnosis age educ female height weight
-## 2695 S583416         0  65   16      1   64.0    109
-## 2696 S650443         2  73   20      0   68.7    158
-## 2697 S772964         1  70   16      1   65.0    129
-## 2698 S778766         0  67   14      1   62.5    149
-## 2699 S968945         1  66   16      0   68.5    211
-## 2700 S447866         0  67   20      1   70.0    143
-```
-
----
-
-
-
-```r
-glimpse(alzheimer_data)
-```
-
-```
-## Rows: 2,700
-## Columns: 7
-## $ id        &lt;chr&gt; "S060833", "S932623", "S755478", "S852291", "S011143", "S069…
-## $ diagnosis &lt;fct&gt; 0, 0, 0, 0, 1, 0, 0, 2, 0, 2, 0, 0, 0, 1, 0, 1, 2, 2, 2, 1, …
-## $ age       &lt;int&gt; 74, 56, 77, 74, 75, 72, 64, 78, 73, 81, 66, 65, 66, 73, 78, …
-## $ educ      &lt;int&gt; 12, 16, 18, 20, 14, 16, 16, 17, 18, 13, 16, 16, 17, 20, 13, …
-## $ female    &lt;fct&gt; 0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, …
-## $ height    &lt;dbl&gt; 65.0, 62.0, 65.0, 62.0, 62.0, 61.8, 60.0, 69.0, 65.0, 71.0, …
-## $ weight    &lt;int&gt; 233, 110, 137, 112, 127, 141, 124, 152, 131, 197, 134, 144, …
-```
-
----
-
-
-```r
-ncol(alzheimer_data)
-```
-
-```
-## [1] 7
-```
-
----
-
-
-```r
-nrow(alzheimer_data)
-```
-
-```
-## [1] 2700
-```
 
 
 
@@ -162,7 +80,7 @@ class: inverse middle center
 
 ---
 
-## Variables
+## Alzheimer's Data
 
 &lt;img src="img/AlzheimerData.png" width="90%" style="display: block; margin: auto;" /&gt;
 
@@ -231,7 +149,7 @@ the value with the highest frequency.
 
 ## Bar graph
 
-&lt;img src="01c-describe-data_files/figure-html/unnamed-chunk-9-1.png" width="45%" style="display: block; margin: auto;" /&gt;
+&lt;img src="01c-describe-data_files/figure-html/unnamed-chunk-4-1.png" width="45%" style="display: block; margin: auto;" /&gt;
 
 
 
@@ -278,7 +196,7 @@ scattered the values are around the location.
 ---
 ## Histogram
 
-&lt;img src="01c-describe-data_files/figure-html/unnamed-chunk-11-1.png" width="45%" style="display: block; margin: auto;" /&gt;
+&lt;img src="01c-describe-data_files/figure-html/unnamed-chunk-6-1.png" width="45%" style="display: block; margin: auto;" /&gt;
 
 
 ---

@@ -81,43 +81,6 @@ knitr::include_graphics('img/data-cycle.png')
 
 
 
----
-
-class: inverse center middle
-
-.font100[Alzheimer's Data]
-
----
-
-```{r}
-head(alzheimer_data)
-```
-
----
-
-
-```{r}
-tail(alzheimer_data)
-```
-
----
-
-
-```{r}
-glimpse(alzheimer_data)
-```
-
----
-
-```{r}
-ncol(alzheimer_data)
-```
-
----
-
-```{r}
-nrow(alzheimer_data)
-```
 
 
 
@@ -132,7 +95,7 @@ class: inverse middle center
 
 ---
 
-## Variables
+## Alzheimer's Data
 
 ```{r echo=FALSE, out.width='90%', fig.align='center'}
 knitr::include_graphics('img/AlzheimerData.png')
