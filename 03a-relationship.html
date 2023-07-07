@@ -4,7 +4,7 @@
     <title>Examining Relationships</title>
     <meta charset="utf-8" />
     <meta name="author" content="Babak Shahbaba   Jessica Jaynes" />
-    <script src="libs/header-attrs-2.14/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.22/header-attrs.js"></script>
     <link rel="stylesheet" href="slide-style.css" type="text/css" />
   </head>
   <body>
@@ -242,12 +242,12 @@ t.test(Platelet$Before, Platelet$After, paired = TRUE)
 ## 
 ## data:  Platelet$Before and Platelet$After
 ## t = -4.2716, df = 10, p-value = 0.001633
-## alternative hypothesis: true difference in means is not equal to 0
+## alternative hypothesis: true mean difference is not equal to 0
 ## 95 percent confidence interval:
 ##  -15.63114  -4.91431
 ## sample estimates:
-## mean of the differences 
-##               -10.27273
+## mean difference 
+##       -10.27273
 ```
 
 
@@ -554,85 +554,45 @@ chisq.test(asp)
 ```
 
 
----
+&lt;!-- --- --&gt;
 
-### Smoking and low birthweight babies
+&lt;!-- ### Smoking and low birthweight babies --&gt;
 
-As another example, we will examine the association between smoking during pregnancy and having low birth weight babies using the `birthwt` from the `MASS` package. 
+&lt;!-- As another example, we will examine the association between smoking during pregnancy and having low birth weight babies using the `birthwt` from the `MASS` package.  --&gt;
 
----
+&lt;!-- --- --&gt;
 
-### Smoking and low birthweight babies
+&lt;!-- ### Smoking and low birthweight babies --&gt;
 
-
-```r
-library(MASS)
-data("birthwt") 
-birthwt &lt;- birthwt %&gt;% 
-  as_tibble() %&gt;% 
-  mutate(across(c(low, race, smoke, ht), as.factor))
-head(birthwt)
-```
-
-```
-## # A tibble: 6 × 10
-##   low     age   lwt race  smoke   ptl ht       ui   ftv   bwt
-##   &lt;fct&gt; &lt;int&gt; &lt;int&gt; &lt;fct&gt; &lt;fct&gt; &lt;int&gt; &lt;fct&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
-## 1 0        19   182 2     0         0 0         1     0  2523
-## 2 0        33   155 3     0         0 0         0     3  2551
-## 3 0        20   105 1     1         0 0         0     1  2557
-## 4 0        21   108 1     1         0 0         1     2  2594
-## 5 0        18   107 1     1         0 0         1     0  2600
-## 6 0        21   124 3     0         0 0         0     0  2622
-```
+&lt;!-- ```{r, message=FALSE} --&gt;
+&lt;!-- library(MASS) --&gt;
+&lt;!-- data("birthwt")  --&gt;
+&lt;!-- birthwt &lt;- birthwt %&gt;%  --&gt;
+&lt;!--   as_tibble() %&gt;%  --&gt;
+&lt;!--   mutate(across(c(low, race, smoke, ht), as.factor)) --&gt;
+&lt;!-- head(birthwt) --&gt;
+&lt;!-- ``` --&gt;
 
 
----
+&lt;!-- --- --&gt;
 
-### Smoking and low birthweight babies
+&lt;!-- ### Smoking and low birthweight babies --&gt;
 
-
-```r
-tab &lt;- table(birthwt$smoke, birthwt$low)
-res &lt;- chisq.test(tab)
-res
-```
-
-```
-## 
-## 	Pearson's Chi-squared test with Yates' continuity correction
-## 
-## data:  tab
-## X-squared = 4.2359, df = 1, p-value = 0.03958
-```
+&lt;!-- ```{r} --&gt;
+&lt;!-- tab &lt;- table(birthwt$smoke, birthwt$low) --&gt;
+&lt;!-- res &lt;- chisq.test(tab) --&gt;
+&lt;!-- res --&gt;
+&lt;!-- ``` --&gt;
 
 
----
+&lt;!-- --- --&gt;
 
-### Smoking and low birthweight babies
+&lt;!-- ### Smoking and low birthweight babies --&gt;
 
-
-```r
-res$observed
-```
-
-```
-##    
-##      0  1
-##   0 86 29
-##   1 44 30
-```
-
-```r
-res$expected
-```
-
-```
-##    
-##            0        1
-##   0 79.10053 35.89947
-##   1 50.89947 23.10053
-```
+&lt;!-- ```{r} --&gt;
+&lt;!-- res$observed --&gt;
+&lt;!-- res$expected --&gt;
+&lt;!-- ``` --&gt;
 
 
     </textarea>

@@ -498,44 +498,44 @@ chisq.test(asp)
 ```
 
 
----
+<!-- --- -->
 
-### Smoking and low birthweight babies
+<!-- ### Smoking and low birthweight babies -->
 
-As another example, we will examine the association between smoking during pregnancy and having low birth weight babies using the `birthwt` from the `MASS` package. 
+<!-- As another example, we will examine the association between smoking during pregnancy and having low birth weight babies using the `birthwt` from the `MASS` package.  -->
 
----
+<!-- --- -->
 
-### Smoking and low birthweight babies
+<!-- ### Smoking and low birthweight babies -->
 
-```{r, message=FALSE}
-library(MASS)
-data("birthwt") 
-birthwt <- birthwt %>% 
-  as_tibble() %>% 
-  mutate(across(c(low, race, smoke, ht), as.factor))
-head(birthwt)
-```
-
-
----
-
-### Smoking and low birthweight babies
-
-```{r}
-tab <- table(birthwt$smoke, birthwt$low)
-res <- chisq.test(tab)
-res
-```
+<!-- ```{r, message=FALSE} -->
+<!-- library(MASS) -->
+<!-- data("birthwt")  -->
+<!-- birthwt <- birthwt %>%  -->
+<!--   as_tibble() %>%  -->
+<!--   mutate(across(c(low, race, smoke, ht), as.factor)) -->
+<!-- head(birthwt) -->
+<!-- ``` -->
 
 
----
+<!-- --- -->
 
-### Smoking and low birthweight babies
+<!-- ### Smoking and low birthweight babies -->
 
-```{r}
-res$observed
-res$expected
-```
+<!-- ```{r} -->
+<!-- tab <- table(birthwt$smoke, birthwt$low) -->
+<!-- res <- chisq.test(tab) -->
+<!-- res -->
+<!-- ``` -->
+
+
+<!-- --- -->
+
+<!-- ### Smoking and low birthweight babies -->
+
+<!-- ```{r} -->
+<!-- res$observed -->
+<!-- res$expected -->
+<!-- ``` -->
 
 
