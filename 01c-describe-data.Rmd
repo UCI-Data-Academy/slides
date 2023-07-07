@@ -47,7 +47,6 @@ class: middle
 ## Reminder
 
 - Close all apps on your computer other than RStudio.  
-- Open slides for this session from the cluster website (https://cosmos-datascience.netlify.app). 
 
 
 ---
@@ -516,114 +515,114 @@ outliers.
 
 
 
----
+<!-- --- -->
 
-class: center middle inverse
+<!-- class: center middle inverse -->
 
-.font150[Using R]
+<!-- .font150[Using R] -->
 
----
+<!-- --- -->
 
-```{r}
-glimpse(alzheimer_data)
-```
+<!-- ```{r} -->
+<!-- glimpse(alzheimer_data) -->
+<!-- ``` -->
 
----
+<!-- --- -->
 
-## Counts
+<!-- ## Counts -->
 
-```{r}
-count(alzheimer_data, diagnosis)
-```
-
-
----
-
-## Proportions
+<!-- ```{r} -->
+<!-- count(alzheimer_data, diagnosis) -->
+<!-- ``` -->
 
 
-```{r}
-tabyl(alzheimer_data, diagnosis)
-```
+<!-- --- -->
+
+<!-- ## Proportions -->
 
 
----
-
-## Mean
-
-```{r}
-summarize(alzheimer_data, mean(age))
-```
-
-```{r}
-mean(alzheimer_data$age)
-```
-
----
-
-## Median
-
-```{r}
-summarize(alzheimer_data, median(age))
-```
-
-```{r}
-median(alzheimer_data$age)
-```
+<!-- ```{r} -->
+<!-- tabyl(alzheimer_data, diagnosis) -->
+<!-- ``` -->
 
 
----
+<!-- --- -->
 
-## Quantile
+<!-- ## Mean -->
 
-You can specify a quantile
+<!-- ```{r} -->
+<!-- summarize(alzheimer_data, mean(age)) -->
+<!-- ``` -->
 
-```{r}
-summarize(alzheimer_data, quantile(age, 0.35))
-```
+<!-- ```{r} -->
+<!-- mean(alzheimer_data$age) -->
+<!-- ``` -->
 
-```{r}
-quantile(alzheimer_data$age, 0.35)
-```
+<!-- --- -->
 
----
+<!-- ## Median -->
 
-## Five-number summary
+<!-- ```{r} -->
+<!-- summarize(alzheimer_data, median(age)) -->
+<!-- ``` -->
 
-```{r}
-quantile(alzheimer_data$age, c(0, 0.25, 0.5, 0.75, 1))
-```
+<!-- ```{r} -->
+<!-- median(alzheimer_data$age) -->
+<!-- ``` -->
 
----
 
-## Standard Deviation and Variance
+<!-- --- -->
 
-```{r}
-summarize(alzheimer_data, sd(age))
-```
+<!-- ## Quantile -->
 
-```{r}
-summarize(alzheimer_data, var(age))
-```
+<!-- You can specify a quantile -->
 
----
+<!-- ```{r} -->
+<!-- summarize(alzheimer_data, quantile(age, 0.35)) -->
+<!-- ``` -->
 
-## Multiple summaries 
+<!-- ```{r} -->
+<!-- quantile(alzheimer_data$age, 0.35) -->
+<!-- ``` -->
 
-You can use `summarize()` to obtain multiple summaries
+<!-- --- -->
 
-```{r}
-summarize(alzheimer_data, mean(weight), median(weight), 
-          var(weight))
-```
+<!-- ## Five-number summary -->
 
----
-## Multiple summaries 
+<!-- ```{r} -->
+<!-- quantile(alzheimer_data$age, c(0, 0.25, 0.5, 0.75, 1)) -->
+<!-- ``` -->
 
-You can also define their names
+<!-- --- -->
 
-```{r}
-summarize(alzheimer_data, mean_age = mean(age), 
-          med_age = median(age), 
-          var_age = var(age))
-```
+<!-- ## Standard Deviation and Variance -->
+
+<!-- ```{r} -->
+<!-- summarize(alzheimer_data, sd(age)) -->
+<!-- ``` -->
+
+<!-- ```{r} -->
+<!-- summarize(alzheimer_data, var(age)) -->
+<!-- ``` -->
+
+<!-- --- -->
+
+<!-- ## Multiple summaries  -->
+
+<!-- You can use `summarize()` to obtain multiple summaries -->
+
+<!-- ```{r} -->
+<!-- summarize(alzheimer_data, mean(weight), median(weight),  -->
+<!--           var(weight)) -->
+<!-- ``` -->
+
+<!-- --- -->
+<!-- ## Multiple summaries  -->
+
+<!-- You can also define their names -->
+
+<!-- ```{r} -->
+<!-- summarize(alzheimer_data, mean_age = mean(age),  -->
+<!--           med_age = median(age),  -->
+<!--           var_age = var(age)) -->
+<!-- ``` -->

@@ -4,7 +4,7 @@
     <title>Describing Data</title>
     <meta charset="utf-8" />
     <meta name="author" content="Babak Shahbaba   Jessica Jaynes" />
-    <script src="libs/header-attrs-2.14/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.22/header-attrs.js"></script>
     <link rel="stylesheet" href="slide-style.css" type="text/css" />
   </head>
   <body>
@@ -34,7 +34,6 @@ class: middle
 ## Reminder
 
 - Close all apps on your computer other than RStudio.  
-- Open slides for this session from the cluster website (https://cosmos-datascience.netlify.app). 
 
 
 ---
@@ -534,210 +533,117 @@ outliers.
 
 
 
----
+&lt;!-- --- --&gt;
 
-class: center middle inverse
+&lt;!-- class: center middle inverse --&gt;
 
-.font150[Using R]
+&lt;!-- .font150[Using R] --&gt;
 
----
+&lt;!-- --- --&gt;
 
+&lt;!-- ```{r} --&gt;
+&lt;!-- glimpse(alzheimer_data) --&gt;
+&lt;!-- ``` --&gt;
 
-```r
-glimpse(alzheimer_data)
-```
+&lt;!-- --- --&gt;
 
-```
-## Rows: 2,700
-## Columns: 7
-## $ id        &lt;chr&gt; "S060833", "S932623", "S755478", "S852291", "S011143", "S069…
-## $ diagnosis &lt;fct&gt; 0, 0, 0, 0, 1, 0, 0, 2, 0, 2, 0, 0, 0, 1, 0, 1, 2, 2, 2, 1, …
-## $ age       &lt;int&gt; 74, 56, 77, 74, 75, 72, 64, 78, 73, 81, 66, 65, 66, 73, 78, …
-## $ educ      &lt;int&gt; 12, 16, 18, 20, 14, 16, 16, 17, 18, 13, 16, 16, 17, 20, 13, …
-## $ female    &lt;fct&gt; 0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, …
-## $ height    &lt;dbl&gt; 65.0, 62.0, 65.0, 62.0, 62.0, 61.8, 60.0, 69.0, 65.0, 71.0, …
-## $ weight    &lt;int&gt; 233, 110, 137, 112, 127, 141, 124, 152, 131, 197, 134, 144, …
-```
+&lt;!-- ## Counts --&gt;
 
----
+&lt;!-- ```{r} --&gt;
+&lt;!-- count(alzheimer_data, diagnosis) --&gt;
+&lt;!-- ``` --&gt;
 
-## Counts
 
+&lt;!-- --- --&gt;
 
-```r
-count(alzheimer_data, diagnosis)
-```
+&lt;!-- ## Proportions --&gt;
 
-```
-##   diagnosis    n
-## 1         0 1534
-## 2         1  613
-## 3         2  553
-```
 
+&lt;!-- ```{r} --&gt;
+&lt;!-- tabyl(alzheimer_data, diagnosis) --&gt;
+&lt;!-- ``` --&gt;
 
----
 
-## Proportions
+&lt;!-- --- --&gt;
 
+&lt;!-- ## Mean --&gt;
 
+&lt;!-- ```{r} --&gt;
+&lt;!-- summarize(alzheimer_data, mean(age)) --&gt;
+&lt;!-- ``` --&gt;
 
-```r
-tabyl(alzheimer_data, diagnosis)
-```
+&lt;!-- ```{r} --&gt;
+&lt;!-- mean(alzheimer_data$age) --&gt;
+&lt;!-- ``` --&gt;
 
-```
-##  diagnosis    n   percent
-##          0 1534 0.5681481
-##          1  613 0.2270370
-##          2  553 0.2048148
-```
+&lt;!-- --- --&gt;
 
+&lt;!-- ## Median --&gt;
 
----
+&lt;!-- ```{r} --&gt;
+&lt;!-- summarize(alzheimer_data, median(age)) --&gt;
+&lt;!-- ``` --&gt;
 
-## Mean
+&lt;!-- ```{r} --&gt;
+&lt;!-- median(alzheimer_data$age) --&gt;
+&lt;!-- ``` --&gt;
 
 
-```r
-summarize(alzheimer_data, mean(age))
-```
+&lt;!-- --- --&gt;
 
-```
-##   mean(age)
-## 1  70.04963
-```
+&lt;!-- ## Quantile --&gt;
 
+&lt;!-- You can specify a quantile --&gt;
 
-```r
-mean(alzheimer_data$age)
-```
+&lt;!-- ```{r} --&gt;
+&lt;!-- summarize(alzheimer_data, quantile(age, 0.35)) --&gt;
+&lt;!-- ``` --&gt;
 
-```
-## [1] 70.04963
-```
+&lt;!-- ```{r} --&gt;
+&lt;!-- quantile(alzheimer_data$age, 0.35) --&gt;
+&lt;!-- ``` --&gt;
 
----
+&lt;!-- --- --&gt;
 
-## Median
+&lt;!-- ## Five-number summary --&gt;
 
+&lt;!-- ```{r} --&gt;
+&lt;!-- quantile(alzheimer_data$age, c(0, 0.25, 0.5, 0.75, 1)) --&gt;
+&lt;!-- ``` --&gt;
 
-```r
-summarize(alzheimer_data, median(age))
-```
+&lt;!-- --- --&gt;
 
-```
-##   median(age)
-## 1          72
-```
+&lt;!-- ## Standard Deviation and Variance --&gt;
 
+&lt;!-- ```{r} --&gt;
+&lt;!-- summarize(alzheimer_data, sd(age)) --&gt;
+&lt;!-- ``` --&gt;
 
-```r
-median(alzheimer_data$age)
-```
+&lt;!-- ```{r} --&gt;
+&lt;!-- summarize(alzheimer_data, var(age)) --&gt;
+&lt;!-- ``` --&gt;
 
-```
-## [1] 72
-```
+&lt;!-- --- --&gt;
 
+&lt;!-- ## Multiple summaries  --&gt;
 
----
+&lt;!-- You can use `summarize()` to obtain multiple summaries --&gt;
 
-## Quantile
+&lt;!-- ```{r} --&gt;
+&lt;!-- summarize(alzheimer_data, mean(weight), median(weight),  --&gt;
+&lt;!--           var(weight)) --&gt;
+&lt;!-- ``` --&gt;
 
-You can specify a quantile
+&lt;!-- --- --&gt;
+&lt;!-- ## Multiple summaries  --&gt;
 
+&lt;!-- You can also define their names --&gt;
 
-```r
-summarize(alzheimer_data, quantile(age, 0.35))
-```
-
-```
-##   quantile(age, 0.35)
-## 1                  67
-```
-
-
-```r
-quantile(alzheimer_data$age, 0.35)
-```
-
-```
-## 35% 
-##  67
-```
-
----
-
-## Five-number summary
-
-
-```r
-quantile(alzheimer_data$age, c(0, 0.25, 0.5, 0.75, 1))
-```
-
-```
-##   0%  25%  50%  75% 100% 
-##   21   64   72   78  100
-```
-
----
-
-## Standard Deviation and Variance
-
-
-```r
-summarize(alzheimer_data, sd(age))
-```
-
-```
-##    sd(age)
-## 1 11.54586
-```
-
-
-```r
-summarize(alzheimer_data, var(age))
-```
-
-```
-##   var(age)
-## 1 133.3069
-```
-
----
-
-## Multiple summaries 
-
-You can use `summarize()` to obtain multiple summaries
-
-
-```r
-summarize(alzheimer_data, mean(weight), median(weight), 
-          var(weight))
-```
-
-```
-##   mean(weight) median(weight) var(weight)
-## 1     167.2685            164    1279.803
-```
-
----
-## Multiple summaries 
-
-You can also define their names
-
-
-```r
-summarize(alzheimer_data, mean_age = mean(age), 
-          med_age = median(age), 
-          var_age = var(age))
-```
-
-```
-##   mean_age med_age  var_age
-## 1 70.04963      72 133.3069
-```
+&lt;!-- ```{r} --&gt;
+&lt;!-- summarize(alzheimer_data, mean_age = mean(age),  --&gt;
+&lt;!--           med_age = median(age),  --&gt;
+&lt;!--           var_age = var(age)) --&gt;
+&lt;!-- ``` --&gt;
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
