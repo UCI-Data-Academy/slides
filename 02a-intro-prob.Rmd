@@ -270,7 +270,7 @@ $$P(E_{1} \cap E_{2}) = P(\phi) =  0$$
 
 ## Conditional probability
 
-- Ver often, we need to discuss possible changes in the
+- Very often, we need to discuss possible changes in the
 probability of one event based on our knowledge regarding the
 occurrence of another event.
 
