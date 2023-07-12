@@ -1,0 +1,258 @@
+---
+title: "Exploring Alzheimer's Data with R"
+author: "Brian Schetzsle"
+output: 
+  xaringan::moon_reader:
+    css: ["slide-style.css", "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"]
+    lib_dir: libs
+    seal: false
+    nature:
+      beforeInit: "cols_macro.js"
+      ratio: 16:9
+      highlightStyle: "pygments"
+      highlightLines: true
+      highlightLanguage: "r"
+
+---
+
+class: title-slide
+
+```{r echo = FALSE, warning=FALSE}
+library(fabricerin)
+
+```
+
+<br>
+<br>
+.right-panel[ 
+
+# `r rmarkdown::metadata$title`
+## `r rmarkdown::metadata$author`
+
+Adapted from slides by Sam Behseta
+
+```{r include = FALSE}
+library(magrittr)
+library(tidyverse)
+```
+
+]
+
+---
+
+class: middle
+
+Read in the Alzheimer's data
+
+```{r}
+data <- read.csv("data/alzheimer_data.csv")
+```
+
+---
+
+class: middle
+
+Inspect the data
+
+```{r}
+dim(data)
+```
+
+---
+
+class: middle
+
+Inspect the data
+
+```{r}
+glimpse(data)
+```
+
+---
+
+class: middle
+
+Subset the data
+
+```{r}
+data_subset <- data %>% select(id,diagnosis,educ)
+head(data_subset)
+```
+
+---
+
+class: middle
+
+Recoding a variable
+
+```{r}
+data_subset <- data_subset %>% 
+  mutate(diagnosis = as.factor(diagnosis))
+summary(data_subset$diagnosis)
+```
+
+---
+
+class: middle
+
+Visualize the distribution of a categorical variable
+
+```{r}
+ggplot(data_subset) +
+  geom_bar(aes(x = diagnosis)) +
+  labs(x = "Diagnosis", y = "Frequency", 
+       title = "Frequency of Diagnoses in the Alzheimer's Data")
+```
+
+---
+
+class: middle
+
+Visualize the distribution of a categorical variable
+
+```{r}
+data_subset %>% 
+  ggplot() +
+  geom_bar(aes(x = as.factor(diagnosis) )) +
+  scale_x_discrete(breaks = c(0, 1, 2), labels = c("Normal", "Low", "Severe"))  +
+  labs(x = "Diagnosis", y = "Frequency", 
+       title = "Frequency of Diagnoses in the Alzheimer's Data")
+```
+
+---
+
+```{r}
+c(4, 8, 16)
+```
+
+--
+
+<hr>
+
+```{r}
+mean(c(4, 8, 16))
+```
+
+--
+
+<hr>
+
+```{r}
+round(mean(c(4, 8, 16)))
+```
+
+---
+
+class: middle
+
+**Problem with writing functions within functions**
+
+Things will get messy and more difficult to read and debug as we deal with more complex operations on data.
+
+---
+
+class: middle inverse
+
+.font50[Solution 2: Creating Objects]
+
+---
+
+class: middle
+
+```{r}
+numbers <- c(4, 8, 16)
+numbers
+```
+
+--
+
+<hr>
+
+```{r}
+avg_number <- mean(numbers)
+avg_number
+```
+
+--
+
+<hr>
+
+```{r}
+round(avg_number)
+```
+
+---
+
+class: middle
+
+**Problem with creating many objects**
+
+We will end up with too many objects in `Environment`. 
+
+---
+
+class: middle inverse
+
+.font50[Solution 3: The (forward) Pipe Operator %>% ]
+
+---
+
+class: middle
+
+.font75[Shortcut: <br>Ctrl (Command) + Shift + M]
+
+---
+class: middle
+
+.pull-left[
+```{r}
+c(4, 8, 16) %>% 
+  mean() %>% 
+  round()
+```
+]
+
+.pull-right[
+
+Combine 4, 8, and 16 `and then`  
+Take the mean   `and then`  
+Round the output
+
+]
+
+
+---
+
+class: middle
+
+The output of the first function is the first argument of the second function.
+
+---
+
+Do you recall composite functions such as $f \circ g(x)$?
+
+--
+
+Now we have $f \circ g \circ h (x)$ or `round(mean(c(4, 8, 16)))`
+
+--
+
+.pull-left[
+
+```{r eval = FALSE}
+h(x) %>% 
+  g() %>% 
+  f()
+```
+
+]
+
+.pull-right[
+
+```{r eval = FALSE}
+c(4, 8, 16) %>% 
+  mean() %>% 
+  round()
+```
+
+]

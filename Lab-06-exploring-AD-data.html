@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Exploring Alzheimer’s Data with R</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Brian Schetzsle" />
+    <script src="libs/header-attrs-2.22/header-attrs.js"></script>
+    <link rel="stylesheet" href="slide-style.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+class: title-slide
+
+
+
+&lt;br&gt;
+&lt;br&gt;
+.right-panel[ 
+
+# Exploring Alzheimer's Data with R
+## Brian Schetzsle
+
+Adapted from slides by Sam Behseta
+
+
+
+]
+
+---
+
+class: middle
+
+Read in the Alzheimer's data
+
+
+```r
+data &lt;- read.csv("data/alzheimer_data.csv")
+```
+
+---
+
+class: middle
+
+Inspect the data
+
+
+```r
+dim(data)
+```
+
+```
+## [1] 2700   57
+```
+
+---
+
+class: middle
+
+Inspect the data
+
+
+```r
+glimpse(data)
+```
+
+```
+## Rows: 2,700
+## Columns: 57
+## $ id        &lt;chr&gt; "S060833", "S932623", "S755478", "S852291", "S011143", "S069…
+## $ diagnosis &lt;int&gt; 0, 0, 0, 0, 1, 0, 0, 2, 0, 2, 0, 0, 0, 1, 0, 1, 2, 2, 2, 1, …
+## $ age       &lt;int&gt; 74, 56, 77, 74, 75, 72, 64, 78, 73, 81, 66, 65, 66, 73, 78, …
+## $ educ      &lt;int&gt; 12, 16, 18, 20, 14, 16, 16, 17, 18, 13, 16, 16, 17, 20, 13, …
+## $ female    &lt;int&gt; 0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, …
+## $ height    &lt;dbl&gt; 65.0, 62.0, 65.0, 62.0, 62.0, 61.8, 60.0, 69.0, 65.0, 71.0, …
+## $ weight    &lt;int&gt; 233, 110, 137, 112, 127, 141, 124, 152, 131, 197, 134, 144, …
+## $ bpsys     &lt;int&gt; 148, 110, 144, 120, 145, 107, 112, 134, 122, 120, 150, 126, …
+## $ bpdias    &lt;int&gt; 100, 75, 60, 60, 61, 65, 70, 74, 60, 70, 85, 78, 60, 72, 80,…
+## $ hrate     &lt;int&gt; 72, 60, 64, 72, 58, 83, 76, 70, 60, 76, 60, 60, 76, 60, 68, …
+## $ cdrglob   &lt;dbl&gt; 0.5, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.5, 0.0, 1.0, 0.0, 0.0, …
+## $ naccgds   &lt;int&gt; 5, 1, 0, 0, 4, 1, 2, 0, 0, 5, 0, 1, 0, 0, 0, 6, 3, 1, 3, 4, …
+## $ delsev    &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ hallsev   &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ agitsev   &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 0, …
+## $ depdsev   &lt;int&gt; 2, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 0, 0, 0, 3, 0, 0, 0, 0, …
+## $ anxsev    &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 2, 0, …
+## $ elatsev   &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ apasev    &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 1, 0, 0, 0, 2, 1, 0, 0, 0, …
+## $ disnsev   &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, …
+## $ irrsev    &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, …
+## $ motsev    &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ nitesev   &lt;int&gt; 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ appsev    &lt;int&gt; 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ bills     &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 8, 1, 3, 2, …
+## $ taxes     &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1, 8, 2, 3, 3, …
+## $ shopping  &lt;int&gt; 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 2, 1, …
+## $ games     &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 8, 0, 0, 8, 3, 0, 1, 0, …
+## $ stove     &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, …
+## $ mealprep  &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 8, 0, 0, 1, 3, 8, 0, 0, …
+## $ events    &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 3, 0, 0, 2, …
+## $ payattn   &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 2, 1, 1, 1, …
+## $ remdates  &lt;int&gt; 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 3, 0, 1, 2, …
+## $ travel    &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 3, 0, 3, 1, …
+## $ naccmmse  &lt;int&gt; 30, 29, 30, 30, 27, 30, 30, 26, 29, 28, 30, 30, 29, 30, 29, …
+## $ memunits  &lt;int&gt; 8, 17, 19, 11, 6, 16, 11, 6, 4, 3, 14, 9, 13, 17, 14, 12, 9,…
+## $ digif     &lt;int&gt; 7, 11, 7, 6, 8, 7, 8, 9, 4, 7, 12, 9, 6, 10, 7, 6, 1, 8, 5, …
+## $ animals   &lt;int&gt; 17, 25, 19, 23, 19, 14, 28, 14, 14, 16, 16, 21, 11, 14, 21, …
+## $ traila    &lt;int&gt; 49, 16, 38, 54, 40, 44, 31, 69, 53, 34, 46, 27, 22, 38, 38, …
+## $ trailb    &lt;int&gt; 130, 47, 83, 100, 67, 100, 55, 168, 123, 90, 118, 72, 47, 85…
+## $ naccicv   &lt;dbl&gt; 1389.520, 1366.945, 1367.420, 1359.850, 1367.420, 1240.390, …
+## $ csfvol    &lt;dbl&gt; 381.840, 366.622, 343.176, 332.880, 390.415, 345.600, 310.43…
+## $ lhippo    &lt;dbl&gt; 2.2900, 3.2606, 2.6990, 3.0600, 2.9342, 3.2100, 3.6800, 1.73…
+## $ rhippo    &lt;dbl&gt; 2.9200, 3.3321, 2.5028, 3.0000, 3.2890, 3.0600, 3.8200, 2.30…
+## $ frcort    &lt;dbl&gt; 160.570, 187.874, 163.214, 165.120, 149.138, 140.220, 195.24…
+## $ lparcort  &lt;dbl&gt; 46.7100, 43.1023, 40.1172, 46.0700, 40.2664, 42.9700, 48.740…
+## $ rparcort  &lt;dbl&gt; 47.7300, 43.8414, 38.2377, 46.3700, 42.1025, 43.1300, 48.240…
+## $ ltempcor  &lt;dbl&gt; 57.9700, 60.3437, 58.8357, 54.2100, 57.3215, 55.2600, 66.770…
+## $ rtempcor  &lt;dbl&gt; 58.5800, 58.7091, 51.5753, 56.1600, 54.4138, 51.6100, 60.530…
+## $ lcac      &lt;dbl&gt; 3.3200, 3.7060, 3.2748, 2.6300, 3.8628, 2.2600, 2.7800, 2.98…
+## $ rcac      &lt;dbl&gt; 1.9800, 2.1906, 1.7054, 1.4400, 1.5277, 1.9300, 1.8600, 1.36…
+## $ lent      &lt;dbl&gt; 3.2000, 3.6755, 3.6207, 4.3300, 4.2328, 3.8200, 4.5000, 2.73…
+## $ rent      &lt;dbl&gt; 3.7300, 4.6463, 2.5787, 4.1000, 4.4572, 3.4900, 4.3700, 2.58…
+## $ lparhip   &lt;dbl&gt; 3.5800, 3.5534, 3.7515, 3.6000, 3.7079, 4.0700, 5.1100, 3.63…
+## $ rparhip   &lt;dbl&gt; 3.6800, 4.1952, 3.6703, 3.9200, 3.4988, 4.0100, 5.1300, 3.12…
+## $ lposcin   &lt;dbl&gt; 3.7500, 3.9091, 3.8686, 3.4500, 3.1321, 3.4500, 4.3700, 4.38…
+## $ rposcin   &lt;dbl&gt; 3.4400, 4.2362, 3.7062, 3.5300, 2.9051, 2.9200, 4.1800, 3.85…
+```
+
+---
+
+class: middle
+
+Subset the data
+
+
+```r
+data_subset &lt;- data %&gt;% select(id,diagnosis,educ)
+head(data_subset)
+```
+
+```
+##        id diagnosis educ
+## 1 S060833         0   12
+## 2 S932623         0   16
+## 3 S755478         0   18
+## 4 S852291         0   20
+## 5 S011143         1   14
+## 6 S069106         0   16
+```
+
+---
+
+class: middle
+
+Recoding a variable
+
+
+```r
+data_subset &lt;- data_subset %&gt;% 
+  mutate(diagnosis = as.factor(diagnosis))
+summary(data_subset$diagnosis)
+```
+
+```
+##    0    1    2 
+## 1534  613  553
+```
+
+---
+
+class: middle
+
+Visualize the distribution of a categorical variable
+
+
+```r
+ggplot(data_subset) +
+  geom_bar(aes(x = diagnosis)) +
+  labs(x = "Diagnosis", y = "Frequency", 
+       title = "Frequency of Diagnoses in the Alzheimer's Data")
+```
+
+![](Lab-06-exploring-AD-data_files/figure-html/unnamed-chunk-8-1.png)&lt;!-- --&gt;
+
+---
+
+class: middle
+
+Visualize the distribution of a categorical variable
+
+
+```r
+data_subset %&gt;% 
+  ggplot() +
+  geom_bar(aes(x = as.factor(diagnosis) )) +
+  scale_x_discrete(breaks = c(0, 1, 2), labels = c("Normal", "Low", "Severe"))  +
+  labs(x = "Diagnosis", y = "Frequency", 
+       title = "Frequency of Diagnoses in the Alzheimer's Data")
+```
+
+![](Lab-06-exploring-AD-data_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
+
+---
+
+
+```r
+c(4, 8, 16)
+```
+
+```
+## [1]  4  8 16
+```
+
+--
+
+&lt;hr&gt;
+
+
+```r
+mean(c(4, 8, 16))
+```
+
+```
+## [1] 9.333333
+```
+
+--
+
+&lt;hr&gt;
+
+
+```r
+round(mean(c(4, 8, 16)))
+```
+
+```
+## [1] 9
+```
+
+---
+
+class: middle
+
+**Problem with writing functions within functions**
+
+Things will get messy and more difficult to read and debug as we deal with more complex operations on data.
+
+---
+
+class: middle inverse
+
+.font50[Solution 2: Creating Objects]
+
+---
+
+class: middle
+
+
+```r
+numbers &lt;- c(4, 8, 16)
+numbers
+```
+
+```
+## [1]  4  8 16
+```
+
+--
+
+&lt;hr&gt;
+
+
+```r
+avg_number &lt;- mean(numbers)
+avg_number
+```
+
+```
+## [1] 9.333333
+```
+
+--
+
+&lt;hr&gt;
+
+
+```r
+round(avg_number)
+```
+
+```
+## [1] 9
+```
+
+---
+
+class: middle
+
+**Problem with creating many objects**
+
+We will end up with too many objects in `Environment`. 
+
+---
+
+class: middle inverse
+
+.font50[Solution 3: The (forward) Pipe Operator %&gt;% ]
+
+---
+
+class: middle
+
+.font75[Shortcut: &lt;br&gt;Ctrl (Command) + Shift + M]
+
+---
+class: middle
+
+.pull-left[
+
+```r
+c(4, 8, 16) %&gt;% 
+  mean() %&gt;% 
+  round()
+```
+
+```
+## [1] 9
+```
+]
+
+.pull-right[
+
+Combine 4, 8, and 16 `and then`  
+Take the mean   `and then`  
+Round the output
+
+]
+
+
+---
+
+class: middle
+
+The output of the first function is the first argument of the second function.
+
+---
+
+Do you recall composite functions such as `\(f \circ g(x)\)`?
+
+--
+
+Now we have `\(f \circ g \circ h (x)\)` or `round(mean(c(4, 8, 16)))`
+
+--
+
+.pull-left[
+
+
+```r
+h(x) %&gt;% 
+  g() %&gt;% 
+  f()
+```
+
+]
+
+.pull-right[
+
+
+```r
+c(4, 8, 16) %&gt;% 
+  mean() %&gt;% 
+  round()
+```
+
+]
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="cols_macro.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "pygments",
+"highlightLines": true,
+"highlightLanguage": "r"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

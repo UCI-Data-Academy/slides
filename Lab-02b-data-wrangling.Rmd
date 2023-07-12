@@ -19,7 +19,6 @@ class: title-slide
 
 ```{r echo = FALSE, warning=FALSE}
 library(fabricerin)
-
 ```
 
 <br>
@@ -38,7 +37,7 @@ Adapted from slides by Mine Dogucu
 ```{r echo = FALSE, message = FALSE}
 library(tidyverse)
 
-AD <- read_csv("data/alzheimer_data.csv") %>% 
+AD <- read_csv("./data/alzheimer_data.csv") %>% 
   janitor::clean_names() %>% 
   mutate(female = case_when(female == 1 ~ "female",
                    female == 0 ~ "male")) %>% 
@@ -47,7 +46,6 @@ AD <- read_csv("data/alzheimer_data.csv") %>%
                    diagnosis == 2 ~ "Dementia due to AD",
                    diagnosis == 0 ~ "Normal cognition")) %>% 
   mutate(diagnosis = as.factor(diagnosis)) 
-
 ```
 
 
@@ -95,9 +93,7 @@ select(AD, age, cdrglob)
 ```
 ]
 
----
-
-Now let's use `select` with the pipe operator.
+--
 
 .right-panel[
 
@@ -170,7 +166,7 @@ slice(AD, 3:7)
 
 ]
 
----
+--
 
 .pull-right[
 
