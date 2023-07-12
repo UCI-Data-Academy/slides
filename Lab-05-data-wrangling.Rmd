@@ -1,0 +1,367 @@
+---
+title: "Data Wrangling in R"
+author: "Zahra Moslemi"
+output: 
+  xaringan::moon_reader:
+    css: ["slide-style.css", "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"]
+    lib_dir: libs
+    seal: false
+    nature:
+      beforeInit: "cols_macro.js"
+      ratio: 16:9
+      highlightStyle: "pygments"
+      highlightLines: true
+      highlightLanguage: "r"
+
+---
+
+class: title-slide
+
+```{r echo = FALSE, warning=FALSE}
+library(fabricerin)
+
+```
+
+<br>
+<br>
+.right-panel[ 
+
+# `r rmarkdown::metadata$title`
+## `r rmarkdown::metadata$author`
+
+Adapted from slides by Mine Dogucu
+]
+
+
+---
+
+```{r echo = FALSE, message = FALSE}
+library(tidyverse)
+
+AD <- read_csv("data/alzheimer_data.csv") %>% 
+  janitor::clean_names() %>% 
+  mutate(female = case_when(female == 1 ~ "female",
+                   female == 0 ~ "male")) %>% 
+  mutate(female = as.factor(female)) %>% 
+  mutate(diagnosis = case_when(diagnosis == 1 ~ "Mild cognitive impairment",
+                   diagnosis == 2 ~ "Dementia due to AD",
+                   diagnosis == 0 ~ "Normal cognition")) %>% 
+  mutate(diagnosis = as.factor(diagnosis)) 
+
+```
+
+
+```{r}
+glimpse(AD)
+```
+
+---
+
+```{r}
+colnames(AD)
+```
+
+---
+
+## subsetting variables/columns
+
+```{r echo = FALSE, out.width="80%"}
+knitr::include_graphics("img/data-wrangle.001.jpeg")
+```
+
+--
+
+`select()`
+
+---
+
+## subsetting observations/rows
+
+```{r echo = FALSE, out.width="80%"}
+knitr::include_graphics("img/data-wrangle.002.jpeg")
+```
+
+`slice()` and `filter()` 
+
+---
+
+`select` is used to select certain variables in the data frame. 
+
+
+.left-panel[
+```{r}
+select(AD, age, cdrglob)
+# cdrglob is the Global Clinical Dementia Rating (CDR) Score
+```
+]
+
+---
+
+Now let's use `select` with the pipe operator.
+
+.right-panel[
+
+```{r}
+AD %>% 
+  select(age, cdrglob)
+```
+
+]
+
+---
+
+`select` can also be used to drop certain variables if used with a negative sign.
+
+```{r}
+select(AD, -id, -female)
+```
+
+---
+
+## Selection helpers
+
+`starts_with()`  
+`ends_with()`  
+`contains()`  
+
+```{r}
+select(AD, starts_with("cdrglob"))
+```
+
+---
+
+```{r}
+select(AD, contains("ght"))
+```
+
+---
+
+## subsetting variables/columns
+
+```{r echo = FALSE, out.width="80%"}
+knitr::include_graphics("img/data-wrangle.001.jpeg")
+```
+
+--
+
+`select()`
+
+---
+
+## subsetting observations/rows
+
+```{r echo = FALSE, out.width="80%"}
+knitr::include_graphics("img/data-wrangle.002.jpeg")
+```
+
+`slice()` and `filter()` 
+
+---
+
+.pull-left[
+`slice()` subsetting rows based on a row number.
+
+The data below include all the rows from third to seventh. Including third and seventh.
+
+```{r}
+slice(AD, 3:7)
+```
+
+
+]
+
+---
+
+.pull-right[
+
+`filter()` subsetting rows based on a condition.
+
+The data below includes rows when the age is 90.
+
+```{r}
+filter(AD, age == 90)
+```
+
+]
+
+---
+
+.pull-left[
+
+### Relational Operators in R
+
+
+| Operator | Description              |
+|----------|--------------------------|
+| <        | Less than                |
+| >        | Greater than             |
+| <=       | Less than or equal to    |
+| >=       | Greater than or equal to |
+| ==       | Equal to                 |
+| !=       | Not equal to             |
+
+]
+
+.pull-right[
+
+### Logical Operators in R
+
+| Operator | Description |
+|----------|-------------|
+| &        | and         |
+| &#124;   | or          |
+
+]
+
+
+---
+
+
+Recall that when CDRGLOB (Global Clinical Dementia Rating (CDR) Score) == 3.0 it was identified as severe impairment in the data dictionary
+
+```{r}
+AD %>% 
+  filter(age >= 80 & cdrglob == 3.0)
+```
+
+
+---
+
+
+```{r}
+AD %>% 
+  filter(age >= 80 & cdrglob == 3.0) %>% 
+  nrow()
+```
+
+Here is when piping helps. We can pipe into other functions such as `nrow()`
+
+---
+
+
+Q. How many patients are diagnosed with questionable or mild dementia impairment (i.e. CDRGLOB > 0 and ≤ 1)? 
+
+--
+
+```{r}
+AD %>% 
+  filter(cdrglob > 0 & cdrglob <= 1)
+```
+
+---
+
+Q. How many patients have moderate to severe impairment (CDFGLOB >= 2.0) and are female?
+
+--
+
+```{r}
+AD %>% 
+  filter(cdrglob >= 2 & female == "female") %>% 
+  nrow()
+```
+
+---
+
+We have done all sorts of selections, slicing, filtering on `AD` but it has not changed at all. Why do you think so?
+
+```{r}
+glimpse(AD)
+```
+
+---
+
+Moving forward we are only going to use, `age`, `diagnosis` `female`, `bpsys` and `cdrglob`. Let's clean our data accordingly and move on with the smaller `AD` data that we need.
+
+--
+
+```{r}
+AD %>% 
+  select(age, diagnosis, 
+         female, bpsys,
+         cdrglob)
+```
+
+--
+
+```{r}
+AD <- 
+  AD %>% 
+  select(age, diagnosis, 
+         female, bpsys,
+         cdrglob)
+```
+
+
+---
+
+```{r}
+glimpse(AD)
+```
+
+
+---
+`mutate()` adds new variables and preserves existing ones
+
+```{r}
+AD <-
+  AD %>% 
+  mutate(age_days = 365*age)
+
+colnames(AD)
+```
+
+---
+
+class: inverse
+
+.font50[Grouping Data]
+
+---
+
+class: inverse
+
+.font50[Question: ]
+
+> Do females have higher or lower CDRGLOB overall when compared with the males?
+
+
+---
+
+The function group_by() from dplyr groups the rows by the unique values in the column specified to it. Note that there is no perceptible change to the dataset after running group_by(), until another dplyr verb such as mutate(), summarise(), or arrange() is applied on the “grouped” data frame.
+
+```{r}
+AD
+```
+
+---
+
+Once we group the data, we won't see much difference other than `Groups:   female [2]` statement, everything else will be similar. 
+
+```{r}
+AD %>% 
+  group_by(female) 
+```
+
+
+---
+
+```{r}
+AD %>% 
+  group_by(female) %>% 
+  summarize(median(cdrglob, na.rm = TRUE))
+```
+
+---
+
+We can also calculate other descriptives as well as number of observations for each group.
+
+```{r}
+AD %>% 
+  group_by(female) %>% 
+  summarize(med_cdrglob = median(cdrglob, na.rm = TRUE),
+            mean_cdrglob = mean(cdrglob, na.rm = TRUE),
+            n_cdrglob = n())
+```
+
+
+

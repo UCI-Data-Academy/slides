@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Data Wrangling in R</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Zahra Moslemi" />
+    <script src="libs/header-attrs-2.23/header-attrs.js"></script>
+    <link rel="stylesheet" href="slide-style.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+class: title-slide
+
+
+
+&lt;br&gt;
+&lt;br&gt;
+.right-panel[ 
+
+# Data Wrangling in R
+## Zahra Moslemi
+
+Adapted from slides by Mine Dogucu
+]
+
+
+---
+
+
+
+
+
+```r
+glimpse(AD)
+```
+
+```
+## Rows: 2,700
+## Columns: 57
+## $ id        &lt;chr&gt; "S060833", "S932623", "S755478", "S852291", "S011143", "S069…
+## $ diagnosis &lt;fct&gt; Normal cognition, Normal cognition, Normal cognition, Normal…
+## $ age       &lt;dbl&gt; 74, 56, 77, 74, 75, 72, 64, 78, 73, 81, 66, 65, 66, 73, 78, …
+## $ educ      &lt;dbl&gt; 12, 16, 18, 20, 14, 16, 16, 17, 18, 13, 16, 16, 17, 20, 13, …
+## $ female    &lt;fct&gt; male, female, female, female, male, female, female, male, fe…
+## $ height    &lt;dbl&gt; 65.0, 62.0, 65.0, 62.0, 62.0, 61.8, 60.0, 69.0, 65.0, 71.0, …
+## $ weight    &lt;dbl&gt; 233, 110, 137, 112, 127, 141, 124, 152, 131, 197, 134, 144, …
+## $ bpsys     &lt;dbl&gt; 148, 110, 144, 120, 145, 107, 112, 134, 122, 120, 150, 126, …
+## $ bpdias    &lt;dbl&gt; 100, 75, 60, 60, 61, 65, 70, 74, 60, 70, 85, 78, 60, 72, 80,…
+## $ hrate     &lt;dbl&gt; 72, 60, 64, 72, 58, 83, 76, 70, 60, 76, 60, 60, 76, 60, 68, …
+## $ cdrglob   &lt;dbl&gt; 0.5, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.5, 0.0, 1.0, 0.0, 0.0, …
+## $ naccgds   &lt;dbl&gt; 5, 1, 0, 0, 4, 1, 2, 0, 0, 5, 0, 1, 0, 0, 0, 6, 3, 1, 3, 4, …
+## $ delsev    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ hallsev   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ agitsev   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 0, …
+## $ depdsev   &lt;dbl&gt; 2, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 0, 0, 0, 3, 0, 0, 0, 0, …
+## $ anxsev    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 2, 0, …
+## $ elatsev   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ apasev    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 1, 0, 0, 0, 2, 1, 0, 0, 0, …
+## $ disnsev   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, …
+## $ irrsev    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, …
+## $ motsev    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ nitesev   &lt;dbl&gt; 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ appsev    &lt;dbl&gt; 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ bills     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 8, 1, 3, 2, …
+## $ taxes     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1, 8, 2, 3, 3, …
+## $ shopping  &lt;dbl&gt; 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 2, 1, …
+## $ games     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 8, 0, 0, 8, 3, 0, 1, 0, …
+## $ stove     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, …
+## $ mealprep  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 8, 0, 0, 1, 3, 8, 0, 0, …
+## $ events    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 3, 0, 0, 2, …
+## $ payattn   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 2, 1, 1, 1, …
+## $ remdates  &lt;dbl&gt; 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 3, 0, 1, 2, …
+## $ travel    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 3, 0, 3, 1, …
+## $ naccmmse  &lt;dbl&gt; 30, 29, 30, 30, 27, 30, 30, 26, 29, 28, 30, 30, 29, 30, 29, …
+## $ memunits  &lt;dbl&gt; 8, 17, 19, 11, 6, 16, 11, 6, 4, 3, 14, 9, 13, 17, 14, 12, 9,…
+## $ digif     &lt;dbl&gt; 7, 11, 7, 6, 8, 7, 8, 9, 4, 7, 12, 9, 6, 10, 7, 6, 1, 8, 5, …
+## $ animals   &lt;dbl&gt; 17, 25, 19, 23, 19, 14, 28, 14, 14, 16, 16, 21, 11, 14, 21, …
+## $ traila    &lt;dbl&gt; 49, 16, 38, 54, 40, 44, 31, 69, 53, 34, 46, 27, 22, 38, 38, …
+## $ trailb    &lt;dbl&gt; 130, 47, 83, 100, 67, 100, 55, 168, 123, 90, 118, 72, 47, 85…
+## $ naccicv   &lt;dbl&gt; 1389.520, 1366.945, 1367.420, 1359.850, 1367.420, 1240.390, …
+## $ csfvol    &lt;dbl&gt; 381.840, 366.622, 343.176, 332.880, 390.415, 345.600, 310.43…
+## $ lhippo    &lt;dbl&gt; 2.2900, 3.2606, 2.6990, 3.0600, 2.9342, 3.2100, 3.6800, 1.73…
+## $ rhippo    &lt;dbl&gt; 2.9200, 3.3321, 2.5028, 3.0000, 3.2890, 3.0600, 3.8200, 2.30…
+## $ frcort    &lt;dbl&gt; 160.570, 187.874, 163.214, 165.120, 149.138, 140.220, 195.24…
+## $ lparcort  &lt;dbl&gt; 46.7100, 43.1023, 40.1172, 46.0700, 40.2664, 42.9700, 48.740…
+## $ rparcort  &lt;dbl&gt; 47.7300, 43.8414, 38.2377, 46.3700, 42.1025, 43.1300, 48.240…
+## $ ltempcor  &lt;dbl&gt; 57.9700, 60.3437, 58.8357, 54.2100, 57.3215, 55.2600, 66.770…
+## $ rtempcor  &lt;dbl&gt; 58.5800, 58.7091, 51.5753, 56.1600, 54.4138, 51.6100, 60.530…
+## $ lcac      &lt;dbl&gt; 3.3200, 3.7060, 3.2748, 2.6300, 3.8628, 2.2600, 2.7800, 2.98…
+## $ rcac      &lt;dbl&gt; 1.9800, 2.1906, 1.7054, 1.4400, 1.5277, 1.9300, 1.8600, 1.36…
+## $ lent      &lt;dbl&gt; 3.2000, 3.6755, 3.6207, 4.3300, 4.2328, 3.8200, 4.5000, 2.73…
+## $ rent      &lt;dbl&gt; 3.7300, 4.6463, 2.5787, 4.1000, 4.4572, 3.4900, 4.3700, 2.58…
+## $ lparhip   &lt;dbl&gt; 3.5800, 3.5534, 3.7515, 3.6000, 3.7079, 4.0700, 5.1100, 3.63…
+## $ rparhip   &lt;dbl&gt; 3.6800, 4.1952, 3.6703, 3.9200, 3.4988, 4.0100, 5.1300, 3.12…
+## $ lposcin   &lt;dbl&gt; 3.7500, 3.9091, 3.8686, 3.4500, 3.1321, 3.4500, 4.3700, 4.38…
+## $ rposcin   &lt;dbl&gt; 3.4400, 4.2362, 3.7062, 3.5300, 2.9051, 2.9200, 4.1800, 3.85…
+```
+
+---
+
+
+```r
+colnames(AD)
+```
+
+```
+##  [1] "id"        "diagnosis" "age"       "educ"      "female"    "height"   
+##  [7] "weight"    "bpsys"     "bpdias"    "hrate"     "cdrglob"   "naccgds"  
+## [13] "delsev"    "hallsev"   "agitsev"   "depdsev"   "anxsev"    "elatsev"  
+## [19] "apasev"    "disnsev"   "irrsev"    "motsev"    "nitesev"   "appsev"   
+## [25] "bills"     "taxes"     "shopping"  "games"     "stove"     "mealprep" 
+## [31] "events"    "payattn"   "remdates"  "travel"    "naccmmse"  "memunits" 
+## [37] "digif"     "animals"   "traila"    "trailb"    "naccicv"   "csfvol"   
+## [43] "lhippo"    "rhippo"    "frcort"    "lparcort"  "rparcort"  "ltempcor" 
+## [49] "rtempcor"  "lcac"      "rcac"      "lent"      "rent"      "lparhip"  
+## [55] "rparhip"   "lposcin"   "rposcin"
+```
+
+---
+
+## subsetting variables/columns
+
+&lt;img src="img/data-wrangle.001.jpeg" width="80%" /&gt;
+
+--
+
+`select()`
+
+---
+
+## subsetting observations/rows
+
+&lt;img src="img/data-wrangle.002.jpeg" width="80%" /&gt;
+
+`slice()` and `filter()` 
+
+---
+
+`select` is used to select certain variables in the data frame. 
+
+
+.left-panel[
+
+```r
+select(AD, age, cdrglob)
+```
+
+```
+## # A tibble: 2,700 × 2
+##      age cdrglob
+##    &lt;dbl&gt;   &lt;dbl&gt;
+##  1    74     0.5
+##  2    56     0  
+##  3    77     0  
+##  4    74     0  
+##  5    75     0.5
+##  6    72     0  
+##  7    64     0  
+##  8    78     0.5
+##  9    73     0  
+## 10    81     1  
+## # ℹ 2,690 more rows
+```
+
+```r
+# cdrglob is the Global Clinical Dementia Rating (CDR) Score
+```
+]
+
+---
+
+Now let's use `select` with the pipe operator.
+
+.right-panel[
+
+
+```r
+AD %&gt;% 
+  select(age, cdrglob)
+```
+
+```
+## # A tibble: 2,700 × 2
+##      age cdrglob
+##    &lt;dbl&gt;   &lt;dbl&gt;
+##  1    74     0.5
+##  2    56     0  
+##  3    77     0  
+##  4    74     0  
+##  5    75     0.5
+##  6    72     0  
+##  7    64     0  
+##  8    78     0.5
+##  9    73     0  
+## 10    81     1  
+## # ℹ 2,690 more rows
+```
+
+]
+
+---
+
+`select` can also be used to drop certain variables if used with a negative sign.
+
+
+```r
+select(AD, -id, -female)
+```
+
+```
+## # A tibble: 2,700 × 55
+##    diagnosis   age  educ height weight bpsys bpdias hrate cdrglob naccgds delsev
+##    &lt;fct&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;
+##  1 Normal c…    74    12   65      233   148    100    72     0.5       5      0
+##  2 Normal c…    56    16   62      110   110     75    60     0         1      0
+##  3 Normal c…    77    18   65      137   144     60    64     0         0      0
+##  4 Normal c…    74    20   62      112   120     60    72     0         0      0
+##  5 Mild cog…    75    14   62      127   145     61    58     0.5       4      0
+##  6 Normal c…    72    16   61.8    141   107     65    83     0         1      0
+##  7 Normal c…    64    16   60      124   112     70    76     0         2      0
+##  8 Dementia…    78    17   69      152   134     74    70     0.5       0      0
+##  9 Normal c…    73    18   65      131   122     60    60     0         0      0
+## 10 Dementia…    81    13   71      197   120     70    76     1         5      0
+## # ℹ 2,690 more rows
+## # ℹ 44 more variables: hallsev &lt;dbl&gt;, agitsev &lt;dbl&gt;, depdsev &lt;dbl&gt;,
+## #   anxsev &lt;dbl&gt;, elatsev &lt;dbl&gt;, apasev &lt;dbl&gt;, disnsev &lt;dbl&gt;, irrsev &lt;dbl&gt;,
+## #   motsev &lt;dbl&gt;, nitesev &lt;dbl&gt;, appsev &lt;dbl&gt;, bills &lt;dbl&gt;, taxes &lt;dbl&gt;,
+## #   shopping &lt;dbl&gt;, games &lt;dbl&gt;, stove &lt;dbl&gt;, mealprep &lt;dbl&gt;, events &lt;dbl&gt;,
+## #   payattn &lt;dbl&gt;, remdates &lt;dbl&gt;, travel &lt;dbl&gt;, naccmmse &lt;dbl&gt;,
+## #   memunits &lt;dbl&gt;, digif &lt;dbl&gt;, animals &lt;dbl&gt;, traila &lt;dbl&gt;, trailb &lt;dbl&gt;, …
+```
+
+---
+
+## Selection helpers
+
+`starts_with()`  
+`ends_with()`  
+`contains()`  
+
+
+```r
+select(AD, starts_with("cdrglob"))
+```
+
+```
+## # A tibble: 2,700 × 1
+##    cdrglob
+##      &lt;dbl&gt;
+##  1     0.5
+##  2     0  
+##  3     0  
+##  4     0  
+##  5     0.5
+##  6     0  
+##  7     0  
+##  8     0.5
+##  9     0  
+## 10     1  
+## # ℹ 2,690 more rows
+```
+
+---
+
+
+```r
+select(AD, contains("ght"))
+```
+
+```
+## # A tibble: 2,700 × 2
+##    height weight
+##     &lt;dbl&gt;  &lt;dbl&gt;
+##  1   65      233
+##  2   62      110
+##  3   65      137
+##  4   62      112
+##  5   62      127
+##  6   61.8    141
+##  7   60      124
+##  8   69      152
+##  9   65      131
+## 10   71      197
+## # ℹ 2,690 more rows
+```
+
+---
+
+## subsetting variables/columns
+
+&lt;img src="img/data-wrangle.001.jpeg" width="80%" /&gt;
+
+--
+
+`select()`
+
+---
+
+## subsetting observations/rows
+
+&lt;img src="img/data-wrangle.002.jpeg" width="80%" /&gt;
+
+`slice()` and `filter()` 
+
+---
+
+.pull-left[
+`slice()` subsetting rows based on a row number.
+
+The data below include all the rows from third to seventh. Including third and seventh.
+
+
+```r
+slice(AD, 3:7)
+```
+
+```
+## # A tibble: 5 × 57
+##   id      diagnosis    age  educ female height weight bpsys bpdias hrate cdrglob
+##   &lt;chr&gt;   &lt;fct&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;
+## 1 S755478 Normal co…    77    18 female   65      137   144     60    64     0  
+## 2 S852291 Normal co…    74    20 female   62      112   120     60    72     0  
+## 3 S011143 Mild cogn…    75    14 male     62      127   145     61    58     0.5
+## 4 S069106 Normal co…    72    16 female   61.8    141   107     65    83     0  
+## 5 S283729 Normal co…    64    16 female   60      124   112     70    76     0  
+## # ℹ 46 more variables: naccgds &lt;dbl&gt;, delsev &lt;dbl&gt;, hallsev &lt;dbl&gt;,
+## #   agitsev &lt;dbl&gt;, depdsev &lt;dbl&gt;, anxsev &lt;dbl&gt;, elatsev &lt;dbl&gt;, apasev &lt;dbl&gt;,
+## #   disnsev &lt;dbl&gt;, irrsev &lt;dbl&gt;, motsev &lt;dbl&gt;, nitesev &lt;dbl&gt;, appsev &lt;dbl&gt;,
+## #   bills &lt;dbl&gt;, taxes &lt;dbl&gt;, shopping &lt;dbl&gt;, games &lt;dbl&gt;, stove &lt;dbl&gt;,
+## #   mealprep &lt;dbl&gt;, events &lt;dbl&gt;, payattn &lt;dbl&gt;, remdates &lt;dbl&gt;, travel &lt;dbl&gt;,
+## #   naccmmse &lt;dbl&gt;, memunits &lt;dbl&gt;, digif &lt;dbl&gt;, animals &lt;dbl&gt;, traila &lt;dbl&gt;,
+## #   trailb &lt;dbl&gt;, naccicv &lt;dbl&gt;, csfvol &lt;dbl&gt;, lhippo &lt;dbl&gt;, rhippo &lt;dbl&gt;, …
+```
+
+
+]
+
+---
+
+.pull-right[
+
+`filter()` subsetting rows based on a condition.
+
+The data below includes rows when the age is 90.
+
+
+```r
+filter(AD, age == 90)
+```
+
+```
+## # A tibble: 8 × 57
+##   id      diagnosis    age  educ female height weight bpsys bpdias hrate cdrglob
+##   &lt;chr&gt;   &lt;fct&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;
+## 1 S600123 Dementia …    90    13 female   63      138   166     70    72       1
+## 2 S203848 Dementia …    90    16 male     67.5    140    98     56    57       1
+## 3 S687424 Normal co…    90    18 male     68      166   138     78    76       0
+## 4 S953670 Dementia …    90    14 female   62.5    168   155     75    72       1
+## 5 S146311 Normal co…    90    12 female   60.5    132   158     62    69       0
+## 6 S514308 Normal co…    90    12 female   63.5    153   128     70    72       0
+## 7 S979192 Dementia …    90    16 female   65.3    162   138     72    72       1
+## 8 S744331 Normal co…    90    14 female   62      169   132     71    62       0
+## # ℹ 46 more variables: naccgds &lt;dbl&gt;, delsev &lt;dbl&gt;, hallsev &lt;dbl&gt;,
+## #   agitsev &lt;dbl&gt;, depdsev &lt;dbl&gt;, anxsev &lt;dbl&gt;, elatsev &lt;dbl&gt;, apasev &lt;dbl&gt;,
+## #   disnsev &lt;dbl&gt;, irrsev &lt;dbl&gt;, motsev &lt;dbl&gt;, nitesev &lt;dbl&gt;, appsev &lt;dbl&gt;,
+## #   bills &lt;dbl&gt;, taxes &lt;dbl&gt;, shopping &lt;dbl&gt;, games &lt;dbl&gt;, stove &lt;dbl&gt;,
+## #   mealprep &lt;dbl&gt;, events &lt;dbl&gt;, payattn &lt;dbl&gt;, remdates &lt;dbl&gt;, travel &lt;dbl&gt;,
+## #   naccmmse &lt;dbl&gt;, memunits &lt;dbl&gt;, digif &lt;dbl&gt;, animals &lt;dbl&gt;, traila &lt;dbl&gt;,
+## #   trailb &lt;dbl&gt;, naccicv &lt;dbl&gt;, csfvol &lt;dbl&gt;, lhippo &lt;dbl&gt;, rhippo &lt;dbl&gt;, …
+```
+
+]
+
+---
+
+.pull-left[
+
+### Relational Operators in R
+
+
+| Operator | Description              |
+|----------|--------------------------|
+| &lt;        | Less than                |
+| &gt;        | Greater than             |
+| &lt;=       | Less than or equal to    |
+| &gt;=       | Greater than or equal to |
+| ==       | Equal to                 |
+| !=       | Not equal to             |
+
+]
+
+.pull-right[
+
+### Logical Operators in R
+
+| Operator | Description |
+|----------|-------------|
+| &amp;        | and         |
+| &amp;#124;   | or          |
+
+]
+
+
+---
+
+
+Recall that when CDRGLOB (Global Clinical Dementia Rating (CDR) Score) == 3.0 it was identified as severe impairment in the data dictionary
+
+
+```r
+AD %&gt;% 
+  filter(age &gt;= 80 &amp; cdrglob == 3.0)
+```
+
+```
+## # A tibble: 6 × 57
+##   id      diagnosis    age  educ female height weight bpsys bpdias hrate cdrglob
+##   &lt;chr&gt;   &lt;fct&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;
+## 1 S544159 Dementia …    96    12 male     65.5    164   118     68    88       3
+## 2 S738631 Dementia …    81    16 male     65.5    164   174     75    89       3
+## 3 S863026 Dementia …    81    18 female   65.5    141   115     70    80       3
+## 4 S689289 Dementia …    91    12 female   62      191   154     80    75       3
+## 5 S278130 Dementia …    87    16 male     64      165   140     55    64       3
+## 6 S219669 Dementia …    86    12 female   60       96   100     70    64       3
+## # ℹ 46 more variables: naccgds &lt;dbl&gt;, delsev &lt;dbl&gt;, hallsev &lt;dbl&gt;,
+## #   agitsev &lt;dbl&gt;, depdsev &lt;dbl&gt;, anxsev &lt;dbl&gt;, elatsev &lt;dbl&gt;, apasev &lt;dbl&gt;,
+## #   disnsev &lt;dbl&gt;, irrsev &lt;dbl&gt;, motsev &lt;dbl&gt;, nitesev &lt;dbl&gt;, appsev &lt;dbl&gt;,
+## #   bills &lt;dbl&gt;, taxes &lt;dbl&gt;, shopping &lt;dbl&gt;, games &lt;dbl&gt;, stove &lt;dbl&gt;,
+## #   mealprep &lt;dbl&gt;, events &lt;dbl&gt;, payattn &lt;dbl&gt;, remdates &lt;dbl&gt;, travel &lt;dbl&gt;,
+## #   naccmmse &lt;dbl&gt;, memunits &lt;dbl&gt;, digif &lt;dbl&gt;, animals &lt;dbl&gt;, traila &lt;dbl&gt;,
+## #   trailb &lt;dbl&gt;, naccicv &lt;dbl&gt;, csfvol &lt;dbl&gt;, lhippo &lt;dbl&gt;, rhippo &lt;dbl&gt;, …
+```
+
+
+---
+
+
+
+```r
+AD %&gt;% 
+  filter(age &gt;= 80 &amp; cdrglob == 3.0) %&gt;% 
+  nrow()
+```
+
+```
+## [1] 6
+```
+
+Here is when piping helps. We can pipe into other functions such as `nrow()`
+
+---
+
+
+Q. How many patients are diagnosed with questionable or mild dementia impairment (i.e. CDRGLOB &gt; 0 and ≤ 1)? 
+
+--
+
+
+```r
+AD %&gt;% 
+  filter(cdrglob &gt; 0 &amp; cdrglob &lt;= 1)
+```
+
+```
+## # A tibble: 1,211 × 57
+##    id      diagnosis   age  educ female height weight bpsys bpdias hrate cdrglob
+##    &lt;chr&gt;   &lt;fct&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;
+##  1 S060833 Normal c…    74    12 male     65      233   148    100    72     0.5
+##  2 S011143 Mild cog…    75    14 male     62      127   145     61    58     0.5
+##  3 S122622 Dementia…    78    17 male     69      152   134     74    70     0.5
+##  4 S297075 Dementia…    81    13 male     71      197   120     70    76     1  
+##  5 S194401 Mild cog…    75    16 female   68      110   145     60    66     0.5
+##  6 S227329 Dementia…    75    12 male     66      180   128     84    64     0.5
+##  7 S982276 Dementia…    56    16 male     67.5    166   130     80    70     0.5
+##  8 S275920 Dementia…    81     9 female   64      184   150     80    52     0.5
+##  9 S121348 Mild cog…    71    16 female   62.2    131   146     86    58     0.5
+## 10 S763522 Dementia…    81    14 male     73.5    212   124     60    64     1  
+## # ℹ 1,201 more rows
+## # ℹ 46 more variables: naccgds &lt;dbl&gt;, delsev &lt;dbl&gt;, hallsev &lt;dbl&gt;,
+## #   agitsev &lt;dbl&gt;, depdsev &lt;dbl&gt;, anxsev &lt;dbl&gt;, elatsev &lt;dbl&gt;, apasev &lt;dbl&gt;,
+## #   disnsev &lt;dbl&gt;, irrsev &lt;dbl&gt;, motsev &lt;dbl&gt;, nitesev &lt;dbl&gt;, appsev &lt;dbl&gt;,
+## #   bills &lt;dbl&gt;, taxes &lt;dbl&gt;, shopping &lt;dbl&gt;, games &lt;dbl&gt;, stove &lt;dbl&gt;,
+## #   mealprep &lt;dbl&gt;, events &lt;dbl&gt;, payattn &lt;dbl&gt;, remdates &lt;dbl&gt;, travel &lt;dbl&gt;,
+## #   naccmmse &lt;dbl&gt;, memunits &lt;dbl&gt;, digif &lt;dbl&gt;, animals &lt;dbl&gt;, traila &lt;dbl&gt;, …
+```
+
+---
+
+Q. How many patients have moderate to severe impairment (CDFGLOB &gt;= 2.0) and are female?
+
+--
+
+
+```r
+AD %&gt;% 
+  filter(cdrglob &gt;= 2 &amp; female == "female") %&gt;% 
+  nrow()
+```
+
+```
+## [1] 34
+```
+
+---
+
+We have done all sorts of selections, slicing, filtering on `AD` but it has not changed at all. Why do you think so?
+
+
+```r
+glimpse(AD)
+```
+
+```
+## Rows: 2,700
+## Columns: 57
+## $ id        &lt;chr&gt; "S060833", "S932623", "S755478", "S852291", "S011143", "S069…
+## $ diagnosis &lt;fct&gt; Normal cognition, Normal cognition, Normal cognition, Normal…
+## $ age       &lt;dbl&gt; 74, 56, 77, 74, 75, 72, 64, 78, 73, 81, 66, 65, 66, 73, 78, …
+## $ educ      &lt;dbl&gt; 12, 16, 18, 20, 14, 16, 16, 17, 18, 13, 16, 16, 17, 20, 13, …
+## $ female    &lt;fct&gt; male, female, female, female, male, female, female, male, fe…
+## $ height    &lt;dbl&gt; 65.0, 62.0, 65.0, 62.0, 62.0, 61.8, 60.0, 69.0, 65.0, 71.0, …
+## $ weight    &lt;dbl&gt; 233, 110, 137, 112, 127, 141, 124, 152, 131, 197, 134, 144, …
+## $ bpsys     &lt;dbl&gt; 148, 110, 144, 120, 145, 107, 112, 134, 122, 120, 150, 126, …
+## $ bpdias    &lt;dbl&gt; 100, 75, 60, 60, 61, 65, 70, 74, 60, 70, 85, 78, 60, 72, 80,…
+## $ hrate     &lt;dbl&gt; 72, 60, 64, 72, 58, 83, 76, 70, 60, 76, 60, 60, 76, 60, 68, …
+## $ cdrglob   &lt;dbl&gt; 0.5, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.5, 0.0, 1.0, 0.0, 0.0, …
+## $ naccgds   &lt;dbl&gt; 5, 1, 0, 0, 4, 1, 2, 0, 0, 5, 0, 1, 0, 0, 0, 6, 3, 1, 3, 4, …
+## $ delsev    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ hallsev   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ agitsev   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 0, …
+## $ depdsev   &lt;dbl&gt; 2, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 0, 0, 0, 3, 0, 0, 0, 0, …
+## $ anxsev    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 2, 0, …
+## $ elatsev   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ apasev    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 1, 0, 0, 0, 2, 1, 0, 0, 0, …
+## $ disnsev   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, …
+## $ irrsev    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, …
+## $ motsev    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ nitesev   &lt;dbl&gt; 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ appsev    &lt;dbl&gt; 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ bills     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 8, 1, 3, 2, …
+## $ taxes     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1, 8, 2, 3, 3, …
+## $ shopping  &lt;dbl&gt; 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 2, 1, …
+## $ games     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 8, 0, 0, 8, 3, 0, 1, 0, …
+## $ stove     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, …
+## $ mealprep  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 8, 0, 0, 1, 3, 8, 0, 0, …
+## $ events    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 3, 0, 0, 2, …
+## $ payattn   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 2, 1, 1, 1, …
+## $ remdates  &lt;dbl&gt; 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 3, 0, 1, 2, …
+## $ travel    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 3, 0, 3, 1, …
+## $ naccmmse  &lt;dbl&gt; 30, 29, 30, 30, 27, 30, 30, 26, 29, 28, 30, 30, 29, 30, 29, …
+## $ memunits  &lt;dbl&gt; 8, 17, 19, 11, 6, 16, 11, 6, 4, 3, 14, 9, 13, 17, 14, 12, 9,…
+## $ digif     &lt;dbl&gt; 7, 11, 7, 6, 8, 7, 8, 9, 4, 7, 12, 9, 6, 10, 7, 6, 1, 8, 5, …
+## $ animals   &lt;dbl&gt; 17, 25, 19, 23, 19, 14, 28, 14, 14, 16, 16, 21, 11, 14, 21, …
+## $ traila    &lt;dbl&gt; 49, 16, 38, 54, 40, 44, 31, 69, 53, 34, 46, 27, 22, 38, 38, …
+## $ trailb    &lt;dbl&gt; 130, 47, 83, 100, 67, 100, 55, 168, 123, 90, 118, 72, 47, 85…
+## $ naccicv   &lt;dbl&gt; 1389.520, 1366.945, 1367.420, 1359.850, 1367.420, 1240.390, …
+## $ csfvol    &lt;dbl&gt; 381.840, 366.622, 343.176, 332.880, 390.415, 345.600, 310.43…
+## $ lhippo    &lt;dbl&gt; 2.2900, 3.2606, 2.6990, 3.0600, 2.9342, 3.2100, 3.6800, 1.73…
+## $ rhippo    &lt;dbl&gt; 2.9200, 3.3321, 2.5028, 3.0000, 3.2890, 3.0600, 3.8200, 2.30…
+## $ frcort    &lt;dbl&gt; 160.570, 187.874, 163.214, 165.120, 149.138, 140.220, 195.24…
+## $ lparcort  &lt;dbl&gt; 46.7100, 43.1023, 40.1172, 46.0700, 40.2664, 42.9700, 48.740…
+## $ rparcort  &lt;dbl&gt; 47.7300, 43.8414, 38.2377, 46.3700, 42.1025, 43.1300, 48.240…
+## $ ltempcor  &lt;dbl&gt; 57.9700, 60.3437, 58.8357, 54.2100, 57.3215, 55.2600, 66.770…
+## $ rtempcor  &lt;dbl&gt; 58.5800, 58.7091, 51.5753, 56.1600, 54.4138, 51.6100, 60.530…
+## $ lcac      &lt;dbl&gt; 3.3200, 3.7060, 3.2748, 2.6300, 3.8628, 2.2600, 2.7800, 2.98…
+## $ rcac      &lt;dbl&gt; 1.9800, 2.1906, 1.7054, 1.4400, 1.5277, 1.9300, 1.8600, 1.36…
+## $ lent      &lt;dbl&gt; 3.2000, 3.6755, 3.6207, 4.3300, 4.2328, 3.8200, 4.5000, 2.73…
+## $ rent      &lt;dbl&gt; 3.7300, 4.6463, 2.5787, 4.1000, 4.4572, 3.4900, 4.3700, 2.58…
+## $ lparhip   &lt;dbl&gt; 3.5800, 3.5534, 3.7515, 3.6000, 3.7079, 4.0700, 5.1100, 3.63…
+## $ rparhip   &lt;dbl&gt; 3.6800, 4.1952, 3.6703, 3.9200, 3.4988, 4.0100, 5.1300, 3.12…
+## $ lposcin   &lt;dbl&gt; 3.7500, 3.9091, 3.8686, 3.4500, 3.1321, 3.4500, 4.3700, 4.38…
+## $ rposcin   &lt;dbl&gt; 3.4400, 4.2362, 3.7062, 3.5300, 2.9051, 2.9200, 4.1800, 3.85…
+```
+
+---
+
+Moving forward we are only going to use, `age`, `diagnosis` `female`, `bpsys` and `cdrglob`. Let's clean our data accordingly and move on with the smaller `AD` data that we need.
+
+--
+
+
+```r
+AD %&gt;% 
+  select(age, diagnosis, 
+         female, bpsys,
+         cdrglob)
+```
+
+```
+## # A tibble: 2,700 × 5
+##      age diagnosis                 female bpsys cdrglob
+##    &lt;dbl&gt; &lt;fct&gt;                     &lt;fct&gt;  &lt;dbl&gt;   &lt;dbl&gt;
+##  1    74 Normal cognition          male     148     0.5
+##  2    56 Normal cognition          female   110     0  
+##  3    77 Normal cognition          female   144     0  
+##  4    74 Normal cognition          female   120     0  
+##  5    75 Mild cognitive impairment male     145     0.5
+##  6    72 Normal cognition          female   107     0  
+##  7    64 Normal cognition          female   112     0  
+##  8    78 Dementia due to AD        male     134     0.5
+##  9    73 Normal cognition          female   122     0  
+## 10    81 Dementia due to AD        male     120     1  
+## # ℹ 2,690 more rows
+```
+
+--
+
+
+```r
+AD &lt;- 
+  AD %&gt;% 
+  select(age, diagnosis, 
+         female, bpsys,
+         cdrglob)
+```
+
+
+---
+
+
+```r
+glimpse(AD)
+```
+
+```
+## Rows: 2,700
+## Columns: 5
+## $ age       &lt;dbl&gt; 74, 56, 77, 74, 75, 72, 64, 78, 73, 81, 66, 65, 66, 73, 78, …
+## $ diagnosis &lt;fct&gt; Normal cognition, Normal cognition, Normal cognition, Normal…
+## $ female    &lt;fct&gt; male, female, female, female, male, female, female, male, fe…
+## $ bpsys     &lt;dbl&gt; 148, 110, 144, 120, 145, 107, 112, 134, 122, 120, 150, 126, …
+## $ cdrglob   &lt;dbl&gt; 0.5, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.5, 0.0, 1.0, 0.0, 0.0, …
+```
+
+
+---
+`mutate()` adds new variables and preserves existing ones
+
+
+```r
+AD &lt;-
+  AD %&gt;% 
+  mutate(age_days = 365*age)
+
+colnames(AD)
+```
+
+```
+## [1] "age"       "diagnosis" "female"    "bpsys"     "cdrglob"   "age_days"
+```
+
+---
+
+class: inverse
+
+.font50[Grouping Data]
+
+---
+
+class: inverse
+
+.font50[Question: ]
+
+&gt; Do females have higher or lower CDRGLOB overall when compared with the males?
+
+
+---
+
+The function group_by() from dplyr groups the rows by the unique values in the column specified to it. Note that there is no perceptible change to the dataset after running group_by(), until another dplyr verb such as mutate(), summarise(), or arrange() is applied on the “grouped” data frame.
+
+
+```r
+AD
+```
+
+```
+## # A tibble: 2,700 × 6
+##      age diagnosis                 female bpsys cdrglob age_days
+##    &lt;dbl&gt; &lt;fct&gt;                     &lt;fct&gt;  &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;
+##  1    74 Normal cognition          male     148     0.5    27010
+##  2    56 Normal cognition          female   110     0      20440
+##  3    77 Normal cognition          female   144     0      28105
+##  4    74 Normal cognition          female   120     0      27010
+##  5    75 Mild cognitive impairment male     145     0.5    27375
+##  6    72 Normal cognition          female   107     0      26280
+##  7    64 Normal cognition          female   112     0      23360
+##  8    78 Dementia due to AD        male     134     0.5    28470
+##  9    73 Normal cognition          female   122     0      26645
+## 10    81 Dementia due to AD        male     120     1      29565
+## # ℹ 2,690 more rows
+```
+
+---
+
+Once we group the data, we won't see much difference other than `Groups:   female [2]` statement, everything else will be similar. 
+
+
+```r
+AD %&gt;% 
+  group_by(female) 
+```
+
+```
+## # A tibble: 2,700 × 6
+## # Groups:   female [2]
+##      age diagnosis                 female bpsys cdrglob age_days
+##    &lt;dbl&gt; &lt;fct&gt;                     &lt;fct&gt;  &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;
+##  1    74 Normal cognition          male     148     0.5    27010
+##  2    56 Normal cognition          female   110     0      20440
+##  3    77 Normal cognition          female   144     0      28105
+##  4    74 Normal cognition          female   120     0      27010
+##  5    75 Mild cognitive impairment male     145     0.5    27375
+##  6    72 Normal cognition          female   107     0      26280
+##  7    64 Normal cognition          female   112     0      23360
+##  8    78 Dementia due to AD        male     134     0.5    28470
+##  9    73 Normal cognition          female   122     0      26645
+## 10    81 Dementia due to AD        male     120     1      29565
+## # ℹ 2,690 more rows
+```
+
+
+---
+
+
+```r
+AD %&gt;% 
+  group_by(female) %&gt;% 
+  summarize(median(cdrglob, na.rm = TRUE))
+```
+
+```
+## # A tibble: 2 × 2
+##   female `median(cdrglob, na.rm = TRUE)`
+##   &lt;fct&gt;                            &lt;dbl&gt;
+## 1 female                             0  
+## 2 male                               0.5
+```
+
+---
+
+We can also calculate other descriptives as well as number of observations for each group.
+
+
+```r
+AD %&gt;% 
+  group_by(female) %&gt;% 
+  summarize(med_cdrglob = median(cdrglob, na.rm = TRUE),
+            mean_cdrglob = mean(cdrglob, na.rm = TRUE),
+            n_cdrglob = n())
+```
+
+```
+## # A tibble: 2 × 4
+##   female med_cdrglob mean_cdrglob n_cdrglob
+##   &lt;fct&gt;        &lt;dbl&gt;        &lt;dbl&gt;     &lt;int&gt;
+## 1 female         0          0.271      1549
+## 2 male           0.5        0.417      1151
+```
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="cols_macro.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "pygments",
+"highlightLines": true,
+"highlightLanguage": "r"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
