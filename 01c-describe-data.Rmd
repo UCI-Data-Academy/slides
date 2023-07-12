@@ -40,14 +40,6 @@ alzheimer_data <- read.csv('data/alzheimer_data.csv') %>%
 
 ]
 
----
-
-class: middle
-
-## Reminder
-
-- Close all apps on your computer other than RStudio.  
-
 
 ---
 
