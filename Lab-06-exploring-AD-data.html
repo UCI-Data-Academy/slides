@@ -25,8 +25,6 @@ class: title-slide
 
 Adapted from slides by Sam Behseta
 
-
-
 ]
 
 ---
@@ -176,206 +174,67 @@ Visualize the distribution of a categorical variable
 
 
 ```r
-ggplot(data_subset) +
-  geom_bar(aes(x = diagnosis)) +
-  labs(x = "Diagnosis", y = "Frequency", 
-       title = "Frequency of Diagnoses in the Alzheimer's Data")
-```
-
-![](Lab-06-exploring-AD-data_files/figure-html/unnamed-chunk-8-1.png)&lt;!-- --&gt;
-
----
-
-class: middle
-
-Visualize the distribution of a categorical variable
-
-
-```r
 data_subset %&gt;% 
   ggplot() +
   geom_bar(aes(x = as.factor(diagnosis) )) +
-  scale_x_discrete(breaks = c(0, 1, 2), labels = c("Normal", "Low", "Severe"))  +
+  scale_x_discrete(breaks = c(0, 1, 2), 
+                   labels = c("Normal", "Low", "Severe"))  +
   labs(x = "Diagnosis", y = "Frequency", 
        title = "Frequency of Diagnoses in the Alzheimer's Data")
 ```
 
-![](Lab-06-exploring-AD-data_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
-
----
-
-
-```r
-c(4, 8, 16)
-```
-
-```
-## [1]  4  8 16
-```
-
---
-
-&lt;hr&gt;
-
-
-```r
-mean(c(4, 8, 16))
-```
-
-```
-## [1] 9.333333
-```
-
---
-
-&lt;hr&gt;
-
-
-```r
-round(mean(c(4, 8, 16)))
-```
-
-```
-## [1] 9
-```
+&lt;img src="Lab-06-exploring-AD-data_files/figure-html/unnamed-chunk-7-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
 class: middle
 
-**Problem with writing functions within functions**
+The `naccicv` feature is a numerical variable representing the overall volume of the brain. For the patients with more progressive AlZheimer's the volume is typically smaller.
 
-Things will get messy and more difficult to read and debug as we deal with more complex operations on data.
+Visualize the distribution of this numerical (continuous) variable.
 
----
 
-class: middle inverse
+```r
+data %&gt;% 
+  select(naccicv) %&gt;% 
+  ggplot() +
+  geom_histogram(aes(x = naccicv))
+```
 
-.font50[Solution 2: Creating Objects]
+&lt;img src="Lab-06-exploring-AD-data_files/figure-html/unnamed-chunk-8-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
 class: middle
 
-
-```r
-numbers &lt;- c(4, 8, 16)
-numbers
-```
-
-```
-## [1]  4  8 16
-```
-
---
-
-&lt;hr&gt;
+A boxplot can also be an effective way of quickly visualizing the distribution of a continuous variable.
 
 
 ```r
-avg_number &lt;- mean(numbers)
-avg_number
+data %&gt;% 
+  ggplot(aes(x = "", y = naccicv)) +
+  geom_boxplot() +
+  labs(x = "NACCICV", y = "Units", 
+       title = "Distribution of Intracranial Volume")
 ```
 
-```
-## [1] 9.333333
-```
-
---
-
-&lt;hr&gt;
-
-
-```r
-round(avg_number)
-```
-
-```
-## [1] 9
-```
+&lt;img src="Lab-06-exploring-AD-data_files/figure-html/unnamed-chunk-9-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
 class: middle
 
-**Problem with creating many objects**
-
-We will end up with too many objects in `Environment`. 
-
----
-
-class: middle inverse
-
-.font50[Solution 3: The (forward) Pipe Operator %&gt;% ]
-
----
-
-class: middle
-
-.font75[Shortcut: &lt;br&gt;Ctrl (Command) + Shift + M]
-
----
-class: middle
-
-.pull-left[
-
-```r
-c(4, 8, 16) %&gt;% 
-  mean() %&gt;% 
-  round()
-```
-
-```
-## [1] 9
-```
-]
-
-.pull-right[
-
-Combine 4, 8, and 16 `and then`  
-Take the mean   `and then`  
-Round the output
-
-]
-
-
----
-
-class: middle
-
-The output of the first function is the first argument of the second function.
-
----
-
-Do you recall composite functions such as `\(f \circ g(x)\)`?
-
---
-
-Now we have `\(f \circ g \circ h (x)\)` or `round(mean(c(4, 8, 16)))`
-
---
-
-.pull-left[
+Are you curious about what the quartile values are displayed in the boxplot? You can retrieve those with the `quantile()` function in R.
 
 
 ```r
-h(x) %&gt;% 
-  g() %&gt;% 
-  f()
+quantile(data$naccicv)
 ```
 
-]
-
-.pull-right[
-
-
-```r
-c(4, 8, 16) %&gt;% 
-  mean() %&gt;% 
-  round()
 ```
-
-]
+##       0%      25%      50%      75%     100% 
+##  956.372 1293.191 1367.420 1454.981 1891.500
+```
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
