@@ -213,7 +213,7 @@ filter(AD, age == 90)
 ---
 
 
-Recall that when CDRGLOB (Global Clinical Dementia Rating (CDR) Score) == 3.0 it was identified as severe impairment in the data dictionary
+Recall that when cdrglob (Global Clinical Dementia Rating (CDR) Score) == 3.0 it was identified as severe impairment in the data dictionary
 
 ```{r}
 AD %>% 
@@ -235,7 +235,7 @@ Here is when piping helps. We can pipe into other functions such as `nrow()`
 ---
 
 
-Q. How many patients are diagnosed with questionable or mild dementia impairment (i.e. CDRGLOB > 0 and ≤ 1)? 
+Q. How many patients are diagnosed with questionable or mild dementia impairment (i.e. cdrglob > 0 and ≤ 1)? 
 
 --
 
@@ -246,7 +246,7 @@ AD %>%
 
 ---
 
-Q. How many patients have moderate to severe impairment (CDFGLOB >= 2.0) and are female?
+Q. How many patients have moderate to severe impairment (cdrglob >= 2.0) and are female?
 
 --
 
@@ -268,8 +268,6 @@ glimpse(AD)
 
 Moving forward we are only going to use, `age`, `diagnosis` `female`, `bpsys` and `cdrglob`. Let's clean our data accordingly and move on with the smaller `AD` data that we need.
 
---
-
 ```{r}
 AD %>% 
   select(age, diagnosis, 
@@ -277,7 +275,9 @@ AD %>%
          cdrglob)
 ```
 
---
+---
+
+Moving forward we are only going to use, `age`, `diagnosis` `female`, `bpsys` and `cdrglob`. Let's clean our data accordingly and move on with the smaller `AD` data that we need.
 
 ```{r}
 AD <- 
