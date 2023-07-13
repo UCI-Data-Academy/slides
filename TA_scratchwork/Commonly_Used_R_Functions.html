@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Commonly Used R Functions</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Lynn Gao" />
+    <script src="libs/header-attrs-2.22/header-attrs.js"></script>
+    <link rel="stylesheet" href="slide-style.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+class: title-slide
+
+
+
+&lt;br&gt;
+&lt;br&gt;
+.right-panel[ 
+
+# Commonly Used R Functions
+## Lynn Gao
+
+]
+
+
+---
+
+
+
+## Looking at the data
+
+`glimpse` is used to take a quick 'glimpse' of all the variables in the data frame. 
+
+
+```r
+glimpse(AD)
+```
+
+```
+## Rows: 2,700
+## Columns: 57
+## $ id        &lt;chr&gt; "S060833", "S932623", "S755478", "S852291", "S011143", "S069…
+## $ diagnosis &lt;fct&gt; Normal cognition, Normal cognition, Normal cognition, Normal…
+## $ age       &lt;dbl&gt; 74, 56, 77, 74, 75, 72, 64, 78, 73, 81, 66, 65, 66, 73, 78, …
+## $ educ      &lt;dbl&gt; 12, 16, 18, 20, 14, 16, 16, 17, 18, 13, 16, 16, 17, 20, 13, …
+## $ female    &lt;fct&gt; male, female, female, female, male, female, female, male, fe…
+## $ height    &lt;dbl&gt; 65.0, 62.0, 65.0, 62.0, 62.0, 61.8, 60.0, 69.0, 65.0, 71.0, …
+## $ weight    &lt;dbl&gt; 233, 110, 137, 112, 127, 141, 124, 152, 131, 197, 134, 144, …
+## $ bpsys     &lt;dbl&gt; 148, 110, 144, 120, 145, 107, 112, 134, 122, 120, 150, 126, …
+## $ bpdias    &lt;dbl&gt; 100, 75, 60, 60, 61, 65, 70, 74, 60, 70, 85, 78, 60, 72, 80,…
+## $ hrate     &lt;dbl&gt; 72, 60, 64, 72, 58, 83, 76, 70, 60, 76, 60, 60, 76, 60, 68, …
+## $ cdrglob   &lt;dbl&gt; 0.5, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.5, 0.0, 1.0, 0.0, 0.0, …
+## $ naccgds   &lt;dbl&gt; 5, 1, 0, 0, 4, 1, 2, 0, 0, 5, 0, 1, 0, 0, 0, 6, 3, 1, 3, 4, …
+## $ delsev    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ hallsev   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ agitsev   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 0, …
+## $ depdsev   &lt;dbl&gt; 2, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 0, 0, 0, 3, 0, 0, 0, 0, …
+## $ anxsev    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 2, 0, …
+## $ elatsev   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ apasev    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 1, 0, 0, 0, 2, 1, 0, 0, 0, …
+## $ disnsev   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, …
+## $ irrsev    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, …
+## $ motsev    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ nitesev   &lt;dbl&gt; 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ appsev    &lt;dbl&gt; 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ bills     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 8, 1, 3, 2, …
+## $ taxes     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1, 8, 2, 3, 3, …
+## $ shopping  &lt;dbl&gt; 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 2, 1, …
+## $ games     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 8, 0, 0, 8, 3, 0, 1, 0, …
+## $ stove     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, …
+## $ mealprep  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 8, 0, 0, 1, 3, 8, 0, 0, …
+## $ events    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 3, 0, 0, 2, …
+## $ payattn   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 2, 1, 1, 1, …
+## $ remdates  &lt;dbl&gt; 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 3, 0, 1, 2, …
+## $ travel    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 3, 0, 3, 1, …
+## $ naccmmse  &lt;dbl&gt; 30, 29, 30, 30, 27, 30, 30, 26, 29, 28, 30, 30, 29, 30, 29, …
+## $ memunits  &lt;dbl&gt; 8, 17, 19, 11, 6, 16, 11, 6, 4, 3, 14, 9, 13, 17, 14, 12, 9,…
+## $ digif     &lt;dbl&gt; 7, 11, 7, 6, 8, 7, 8, 9, 4, 7, 12, 9, 6, 10, 7, 6, 1, 8, 5, …
+## $ animals   &lt;dbl&gt; 17, 25, 19, 23, 19, 14, 28, 14, 14, 16, 16, 21, 11, 14, 21, …
+## $ traila    &lt;dbl&gt; 49, 16, 38, 54, 40, 44, 31, 69, 53, 34, 46, 27, 22, 38, 38, …
+## $ trailb    &lt;dbl&gt; 130, 47, 83, 100, 67, 100, 55, 168, 123, 90, 118, 72, 47, 85…
+## $ naccicv   &lt;dbl&gt; 1389.520, 1366.945, 1367.420, 1359.850, 1367.420, 1240.390, …
+## $ csfvol    &lt;dbl&gt; 381.840, 366.622, 343.176, 332.880, 390.415, 345.600, 310.43…
+## $ lhippo    &lt;dbl&gt; 2.2900, 3.2606, 2.6990, 3.0600, 2.9342, 3.2100, 3.6800, 1.73…
+## $ rhippo    &lt;dbl&gt; 2.9200, 3.3321, 2.5028, 3.0000, 3.2890, 3.0600, 3.8200, 2.30…
+## $ frcort    &lt;dbl&gt; 160.570, 187.874, 163.214, 165.120, 149.138, 140.220, 195.24…
+## $ lparcort  &lt;dbl&gt; 46.7100, 43.1023, 40.1172, 46.0700, 40.2664, 42.9700, 48.740…
+## $ rparcort  &lt;dbl&gt; 47.7300, 43.8414, 38.2377, 46.3700, 42.1025, 43.1300, 48.240…
+## $ ltempcor  &lt;dbl&gt; 57.9700, 60.3437, 58.8357, 54.2100, 57.3215, 55.2600, 66.770…
+## $ rtempcor  &lt;dbl&gt; 58.5800, 58.7091, 51.5753, 56.1600, 54.4138, 51.6100, 60.530…
+## $ lcac      &lt;dbl&gt; 3.3200, 3.7060, 3.2748, 2.6300, 3.8628, 2.2600, 2.7800, 2.98…
+## $ rcac      &lt;dbl&gt; 1.9800, 2.1906, 1.7054, 1.4400, 1.5277, 1.9300, 1.8600, 1.36…
+## $ lent      &lt;dbl&gt; 3.2000, 3.6755, 3.6207, 4.3300, 4.2328, 3.8200, 4.5000, 2.73…
+## $ rent      &lt;dbl&gt; 3.7300, 4.6463, 2.5787, 4.1000, 4.4572, 3.4900, 4.3700, 2.58…
+## $ lparhip   &lt;dbl&gt; 3.5800, 3.5534, 3.7515, 3.6000, 3.7079, 4.0700, 5.1100, 3.63…
+## $ rparhip   &lt;dbl&gt; 3.6800, 4.1952, 3.6703, 3.9200, 3.4988, 4.0100, 5.1300, 3.12…
+## $ lposcin   &lt;dbl&gt; 3.7500, 3.9091, 3.8686, 3.4500, 3.1321, 3.4500, 4.3700, 4.38…
+## $ rposcin   &lt;dbl&gt; 3.4400, 4.2362, 3.7062, 3.5300, 2.9051, 2.9200, 4.1800, 3.85…
+```
+
+You can also use `glimpse` on columns and vectors.  
+
+```r
+glimpse(AD$age)
+```
+
+```
+##  num [1:2700] 74 56 77 74 75 72 64 78 73 81 ...
+```
+
+---
+
+`head` and `tail` can be use to look at the first 6 rows and last 6 rows of the data, respectively. 
+
+
+```r
+head(AD)
+```
+
+```
+## # A tibble: 6 × 57
+##   id      diagnosis    age  educ female height weight bpsys bpdias hrate cdrglob
+##   &lt;chr&gt;   &lt;fct&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;
+## 1 S060833 Normal co…    74    12 male     65      233   148    100    72     0.5
+## 2 S932623 Normal co…    56    16 female   62      110   110     75    60     0  
+## 3 S755478 Normal co…    77    18 female   65      137   144     60    64     0  
+## 4 S852291 Normal co…    74    20 female   62      112   120     60    72     0  
+## 5 S011143 Mild cogn…    75    14 male     62      127   145     61    58     0.5
+## 6 S069106 Normal co…    72    16 female   61.8    141   107     65    83     0  
+## # ℹ 46 more variables: naccgds &lt;dbl&gt;, delsev &lt;dbl&gt;, hallsev &lt;dbl&gt;,
+## #   agitsev &lt;dbl&gt;, depdsev &lt;dbl&gt;, anxsev &lt;dbl&gt;, elatsev &lt;dbl&gt;, apasev &lt;dbl&gt;,
+## #   disnsev &lt;dbl&gt;, irrsev &lt;dbl&gt;, motsev &lt;dbl&gt;, nitesev &lt;dbl&gt;, appsev &lt;dbl&gt;,
+## #   bills &lt;dbl&gt;, taxes &lt;dbl&gt;, shopping &lt;dbl&gt;, games &lt;dbl&gt;, stove &lt;dbl&gt;,
+## #   mealprep &lt;dbl&gt;, events &lt;dbl&gt;, payattn &lt;dbl&gt;, remdates &lt;dbl&gt;, travel &lt;dbl&gt;,
+## #   naccmmse &lt;dbl&gt;, memunits &lt;dbl&gt;, digif &lt;dbl&gt;, animals &lt;dbl&gt;, traila &lt;dbl&gt;,
+## #   trailb &lt;dbl&gt;, naccicv &lt;dbl&gt;, csfvol &lt;dbl&gt;, lhippo &lt;dbl&gt;, rhippo &lt;dbl&gt;, …
+```
+
+
+```r
+tail(AD)
+```
+
+```
+## # A tibble: 6 × 57
+##   id      diagnosis    age  educ female height weight bpsys bpdias hrate cdrglob
+##   &lt;chr&gt;   &lt;fct&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;
+## 1 S583416 Normal co…    65    16 female   64      109   133     77    53     0  
+## 2 S650443 Dementia …    73    20 male     68.7    158   129     90    54     1  
+## 3 S772964 Mild cogn…    70    16 female   65      129   131     74    62     0.5
+## 4 S778766 Normal co…    67    14 female   62.5    149   130     74    74     0  
+## 5 S968945 Mild cogn…    66    16 male     68.5    211   136     72    68     0.5
+## 6 S447866 Normal co…    67    20 female   70      143   120     70    59     0  
+## # ℹ 46 more variables: naccgds &lt;dbl&gt;, delsev &lt;dbl&gt;, hallsev &lt;dbl&gt;,
+## #   agitsev &lt;dbl&gt;, depdsev &lt;dbl&gt;, anxsev &lt;dbl&gt;, elatsev &lt;dbl&gt;, apasev &lt;dbl&gt;,
+## #   disnsev &lt;dbl&gt;, irrsev &lt;dbl&gt;, motsev &lt;dbl&gt;, nitesev &lt;dbl&gt;, appsev &lt;dbl&gt;,
+## #   bills &lt;dbl&gt;, taxes &lt;dbl&gt;, shopping &lt;dbl&gt;, games &lt;dbl&gt;, stove &lt;dbl&gt;,
+## #   mealprep &lt;dbl&gt;, events &lt;dbl&gt;, payattn &lt;dbl&gt;, remdates &lt;dbl&gt;, travel &lt;dbl&gt;,
+## #   naccmmse &lt;dbl&gt;, memunits &lt;dbl&gt;, digif &lt;dbl&gt;, animals &lt;dbl&gt;, traila &lt;dbl&gt;,
+## #   trailb &lt;dbl&gt;, naccicv &lt;dbl&gt;, csfvol &lt;dbl&gt;, lhippo &lt;dbl&gt;, rhippo &lt;dbl&gt;, …
+```
+
+
+---
+
+If you want to take a look at the column names of a dataset, you can use `colnames`.  
+
+```r
+colnames(AD)
+```
+
+```
+##  [1] "id"        "diagnosis" "age"       "educ"      "female"    "height"   
+##  [7] "weight"    "bpsys"     "bpdias"    "hrate"     "cdrglob"   "naccgds"  
+## [13] "delsev"    "hallsev"   "agitsev"   "depdsev"   "anxsev"    "elatsev"  
+## [19] "apasev"    "disnsev"   "irrsev"    "motsev"    "nitesev"   "appsev"   
+## [25] "bills"     "taxes"     "shopping"  "games"     "stove"     "mealprep" 
+## [31] "events"    "payattn"   "remdates"  "travel"    "naccmmse"  "memunits" 
+## [37] "digif"     "animals"   "traila"    "trailb"    "naccicv"   "csfvol"   
+## [43] "lhippo"    "rhippo"    "frcort"    "lparcort"  "rparcort"  "ltempcor" 
+## [49] "rtempcor"  "lcac"      "rcac"      "lent"      "rent"      "lparhip"  
+## [55] "rparhip"   "lposcin"   "rposcin"
+```
+
+You can also use `rownames` if you want to see the names of all the rows in the dataset.
+
+
+```r
+head(rownames(AD))
+```
+
+```
+## [1] "1" "2" "3" "4" "5" "6"
+```
+
+
+---
+
+## Summary Statistics
+
+`summary` is a great way to get basic information about your dataset, such as mean, median, min, and max for numeric data, and counts for categorical data.
+
+```r
+summary(AD)
+```
+
+```
+##       id                                diagnosis         age        
+##  Length:2700        Dementia due to AD       : 553   Min.   : 21.00  
+##  Class :character   Mild cognitive impairment: 613   1st Qu.: 64.00  
+##  Mode  :character   Normal cognition         :1534   Median : 72.00  
+##                                                      Mean   : 70.05  
+##                                                      3rd Qu.: 78.00  
+##                                                      Max.   :100.00  
+##       educ          female         height          weight          bpsys      
+##  Min.   : 0.00   female:1549   Min.   :51.00   Min.   : 80.0   Min.   : 78.0  
+##  1st Qu.:13.00   male  :1151   1st Qu.:63.00   1st Qu.:140.8   1st Qu.:120.0  
+##  Median :16.00                 Median :65.50   Median :164.0   Median :130.0  
+##  Mean   :15.29                 Mean   :65.72   Mean   :167.3   Mean   :132.4  
+##  3rd Qu.:18.00                 3rd Qu.:68.40   3rd Qu.:189.0   3rd Qu.:143.0  
+##  Max.   :25.00                 Max.   :78.80   Max.   :320.0   Max.   :209.0  
+##      bpdias           hrate           cdrglob          naccgds      
+##  Min.   : 32.00   Min.   : 39.00   Min.   :0.0000   Min.   : 0.000  
+##  1st Qu.: 68.00   1st Qu.: 60.00   1st Qu.:0.0000   1st Qu.: 0.000  
+##  Median : 74.00   Median : 66.00   Median :0.0000   Median : 1.000  
+##  Mean   : 74.24   Mean   : 67.13   Mean   :0.3333   Mean   : 1.709  
+##  3rd Qu.: 80.00   3rd Qu.: 73.00   3rd Qu.:0.5000   3rd Qu.: 2.000  
+##  Max.   :118.00   Max.   :116.00   Max.   :3.0000   Max.   :14.000  
+##      delsev          hallsev           agitsev          depdsev      
+##  Min.   :0.0000   Min.   :0.00000   Min.   :0.0000   Min.   :0.0000  
+##  1st Qu.:0.0000   1st Qu.:0.00000   1st Qu.:0.0000   1st Qu.:0.0000  
+##  Median :0.0000   Median :0.00000   Median :0.0000   Median :0.0000  
+##  Mean   :0.0737   Mean   :0.02889   Mean   :0.2189   Mean   :0.3041  
+##  3rd Qu.:0.0000   3rd Qu.:0.00000   3rd Qu.:0.0000   3rd Qu.:0.0000  
+##  Max.   :3.0000   Max.   :3.00000   Max.   :3.0000   Max.   :3.0000  
+##      anxsev          elatsev            apasev          disnsev     
+##  Min.   :0.0000   Min.   :0.00000   Min.   :0.0000   Min.   :0.000  
+##  1st Qu.:0.0000   1st Qu.:0.00000   1st Qu.:0.0000   1st Qu.:0.000  
+##  Median :0.0000   Median :0.00000   Median :0.0000   Median :0.000  
+##  Mean   :0.2819   Mean   :0.03074   Mean   :0.2144   Mean   :0.137  
+##  3rd Qu.:0.0000   3rd Qu.:0.00000   3rd Qu.:0.0000   3rd Qu.:0.000  
+##  Max.   :3.0000   Max.   :3.00000   Max.   :3.0000   Max.   :3.000  
+##      irrsev           motsev           nitesev           appsev      
+##  Min.   :0.0000   Min.   :0.00000   Min.   :0.0000   Min.   :0.0000  
+##  1st Qu.:0.0000   1st Qu.:0.00000   1st Qu.:0.0000   1st Qu.:0.0000  
+##  Median :0.0000   Median :0.00000   Median :0.0000   Median :0.0000  
+##  Mean   :0.2915   Mean   :0.09519   Mean   :0.2356   Mean   :0.1685  
+##  3rd Qu.:0.0000   3rd Qu.:0.00000   3rd Qu.:0.0000   3rd Qu.:0.0000  
+##  Max.   :3.0000   Max.   :3.00000   Max.   :3.0000   Max.   :3.0000  
+##      bills           taxes          shopping          games      
+##  Min.   :0.000   Min.   :0.000   Min.   :0.0000   Min.   :0.000  
+##  1st Qu.:0.000   1st Qu.:0.000   1st Qu.:0.0000   1st Qu.:0.000  
+##  Median :0.000   Median :0.000   Median :0.0000   Median :0.000  
+##  Mean   :1.234   Mean   :1.461   Mean   :0.5778   Mean   :1.023  
+##  3rd Qu.:2.000   3rd Qu.:2.000   3rd Qu.:0.0000   3rd Qu.:1.000  
+##  Max.   :8.000   Max.   :8.000   Max.   :8.0000   Max.   :8.000  
+##      stove           mealprep         events          payattn      
+##  Min.   :0.0000   Min.   :0.000   Min.   :0.0000   Min.   :0.0000  
+##  1st Qu.:0.0000   1st Qu.:0.000   1st Qu.:0.0000   1st Qu.:0.0000  
+##  Median :0.0000   Median :0.000   Median :0.0000   Median :0.0000  
+##  Mean   :0.2996   Mean   :1.033   Mean   :0.4352   Mean   :0.3485  
+##  3rd Qu.:0.0000   3rd Qu.:0.000   3rd Qu.:0.0000   3rd Qu.:0.0000  
+##  Max.   :8.0000   Max.   :8.000   Max.   :8.0000   Max.   :8.0000  
+##     remdates          travel          naccmmse        memunits     
+##  Min.   :0.0000   Min.   :0.0000   Min.   : 0.00   Min.   : 0.000  
+##  1st Qu.:0.0000   1st Qu.:0.0000   1st Qu.:26.00   1st Qu.: 4.000  
+##  Median :0.0000   Median :0.0000   Median :28.00   Median : 9.000  
+##  Mean   :0.6389   Mean   :0.5759   Mean   :26.86   Mean   : 8.908  
+##  3rd Qu.:1.0000   3rd Qu.:1.0000   3rd Qu.:30.00   3rd Qu.:13.000  
+##  Max.   :8.0000   Max.   :8.0000   Max.   :30.00   Max.   :25.000  
+##      digif           animals          traila           trailb     
+##  Min.   : 0.000   Min.   : 0.00   Min.   : 10.00   Min.   : 23.0  
+##  1st Qu.: 7.000   1st Qu.:13.00   1st Qu.: 25.00   1st Qu.: 62.0  
+##  Median : 8.000   Median :18.00   Median : 34.00   Median : 90.0  
+##  Mean   : 8.092   Mean   :17.94   Mean   : 42.32   Mean   :116.8  
+##  3rd Qu.:10.000   3rd Qu.:22.00   3rd Qu.: 47.00   3rd Qu.:140.0  
+##  Max.   :12.000   Max.   :40.00   Max.   :150.00   Max.   :300.0  
+##     naccicv           csfvol          lhippo           rhippo      
+##  Min.   : 956.4   Min.   :185.9   Min.   :0.5811   Min.   :0.3765  
+##  1st Qu.:1293.2   1st Qu.:298.8   1st Qu.:2.7125   1st Qu.:2.7923  
+##  Median :1367.4   Median :342.2   Median :3.0391   Median :3.1247  
+##  Mean   :1376.9   Mean   :346.7   Mean   :3.0199   Mean   :3.0991  
+##  3rd Qu.:1455.0   3rd Qu.:387.4   3rd Qu.:3.3601   3rd Qu.:3.4210  
+##  Max.   :1891.5   Max.   :623.7   Max.   :4.8604   Max.   :4.7187  
+##      frcort          lparcort         rparcort        ltempcor    
+##  Min.   : 94.56   Min.   : 3.509   Min.   :12.74   Min.   : 0.00  
+##  1st Qu.:155.05   1st Qu.:42.502   1st Qu.:43.29   1st Qu.:54.51  
+##  Median :170.91   Median :46.675   Median :47.51   Median :59.37  
+##  Mean   :170.93   Mean   :46.823   Mean   :47.66   Mean   :59.47  
+##  3rd Qu.:186.24   3rd Qu.:51.150   3rd Qu.:51.96   3rd Qu.:64.14  
+##  Max.   :278.63   Max.   :67.472   Max.   :71.79   Max.   :88.43  
+##     rtempcor          lcac            rcac             lent       
+##  Min.   : 0.00   Min.   :1.410   Min.   :0.5535   Min.   :0.7741  
+##  1st Qu.:52.19   1st Qu.:2.740   1st Qu.:1.5900   1st Qu.:3.5604  
+##  Median :56.72   Median :3.254   Median :1.9660   Median :4.0000  
+##  Mean   :56.93   Mean   :3.327   Mean   :1.9877   Mean   :3.9994  
+##  3rd Qu.:61.63   3rd Qu.:3.858   3rd Qu.:2.3503   3rd Qu.:4.4434  
+##  Max.   :87.51   Max.   :6.940   Max.   :4.3340   Max.   :6.6950  
+##       rent          lparhip          rparhip         lposcin     
+##  Min.   :1.354   Min.   :0.7731   Min.   :1.259   Min.   :2.031  
+##  1st Qu.:3.352   1st Qu.:3.5140   1st Qu.:3.610   1st Qu.:3.601  
+##  Median :3.830   Median :3.8523   Median :3.990   Median :4.040  
+##  Mean   :3.809   Mean   :3.8550   Mean   :3.992   Mean   :4.086  
+##  3rd Qu.:4.274   3rd Qu.:4.1928   3rd Qu.:4.343   3rd Qu.:4.497  
+##  Max.   :6.620   Max.   :6.2700   Max.   :6.310   Max.   :7.196  
+##     rposcin     
+##  Min.   :2.018  
+##  1st Qu.:3.406  
+##  Median :3.826  
+##  Mean   :3.865  
+##  3rd Qu.:4.278  
+##  Max.   :6.887
+```
+
+
+---
+
+Focusing on individual columns, we can use the `quantile` function to find the quantiles of the columns.  
+We can also use any functions that work with lists on the columns. For example, mean, variance, standard deviation, etc.
+
+
+```r
+quantile(AD$age)
+```
+
+```
+##   0%  25%  50%  75% 100% 
+##   21   64   72   78  100
+```
+
+
+
+```r
+mean(AD$age)
+```
+
+```
+## [1] 70.04963
+```
+
+```r
+var(AD$age)
+```
+
+```
+## [1] 133.3069
+```
+
+```r
+sd(AD$age)
+```
+
+```
+## [1] 11.54586
+```
+
+
+If you are interested in how many data points are in a vector or column, you can use `length`.  
+
+
+```r
+length(AD$age)
+```
+
+```
+## [1] 2700
+```
+
+---
+
+## Changing the dataset
+
+As a reminder, we use `$` as a way to not only access columns of a dataframe, but you can also create new columns with it.
+
+
+```r
+head(AD$diagnosis)
+```
+
+```
+## [1] Normal cognition          Normal cognition         
+## [3] Normal cognition          Normal cognition         
+## [5] Mild cognitive impairment Normal cognition         
+## Levels: Dementia due to AD Mild cognitive impairment Normal cognition
+```
+
+```r
+AD$practice &lt;- rep(1, length(AD$age))
+head(AD$practice)
+```
+
+```
+## [1] 1 1 1 1 1 1
+```
+
+When we created the new column, we created a column of all 1's. We used the function `rep`, which stands for replicate.  
+`rep(whatever you want to repeat, number of times you want to repeat)`
+
+---
+
+So how do we create a new column in the `tidyverse` way?
+
+`mutate` is a function that allows us to use pipe operators to create new columns in your dataset.  
+
+
+```r
+AD &lt;- AD %&gt;% 
+  mutate(practice2 = practice + 1)
+head(AD$practice2)
+```
+
+```
+## [1] 2 2 2 2 2 2
+```
+
+--- 
+
+`rename` is a handy function that allows you to rename columns.  
+You start with a list/vector of new_name = "current_name".  
+Then you use the function `rename` with the dataframe and the list. We use another function called `any_of` to tell `rename` that if it can find any columns named "current_name" then it should replace it with new_name.  
+
+
+```r
+p1 &lt;- c(ones = "practice", twos = "practice2")
+colnames(rename(AD, any_of(p1)))
+```
+
+```
+##  [1] "id"        "diagnosis" "age"       "educ"      "female"    "height"   
+##  [7] "weight"    "bpsys"     "bpdias"    "hrate"     "cdrglob"   "naccgds"  
+## [13] "delsev"    "hallsev"   "agitsev"   "depdsev"   "anxsev"    "elatsev"  
+## [19] "apasev"    "disnsev"   "irrsev"    "motsev"    "nitesev"   "appsev"   
+## [25] "bills"     "taxes"     "shopping"  "games"     "stove"     "mealprep" 
+## [31] "events"    "payattn"   "remdates"  "travel"    "naccmmse"  "memunits" 
+## [37] "digif"     "animals"   "traila"    "trailb"    "naccicv"   "csfvol"   
+## [43] "lhippo"    "rhippo"    "frcort"    "lparcort"  "rparcort"  "ltempcor" 
+## [49] "rtempcor"  "lcac"      "rcac"      "lent"      "rent"      "lparhip"  
+## [55] "rparhip"   "lposcin"   "rposcin"   "ones"      "twos"
+```
+
+---
+
+The `melt` function allows you to convert data from long format to wide format, and from wide format to long format. 
+
+
+```r
+library(reshape2)
+df &lt;- data.frame(student=c("A", "B", "C"),
+                 test_score=c(88, 91, 85),
+                 seat_number=c(3, 4, 5))
+df
+```
+
+```
+##   student test_score seat_number
+## 1       A         88           3
+## 2       B         91           4
+## 3       C         85           5
+```
+
+```r
+long_df &lt;- melt(df, id = "student")
+long_df
+```
+
+```
+##   student    variable value
+## 1       A  test_score    88
+## 2       B  test_score    91
+## 3       C  test_score    85
+## 4       A seat_number     3
+## 5       B seat_number     4
+## 6       C seat_number     5
+```
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="cols_macro.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "pygments",
+"highlightLines": true,
+"highlightLanguage": "r"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

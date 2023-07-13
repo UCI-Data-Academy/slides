@@ -1,0 +1,176 @@
+---
+title: "Commonly Used R Functions"
+author: "Lynn Gao"
+output: 
+  xaringan::moon_reader:
+    css: ["slide-style.css", "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"]
+    lib_dir: libs
+    seal: false
+    nature:
+      beforeInit: "cols_macro.js"
+      ratio: 16:9
+      highlightStyle: "pygments"
+      highlightLines: true
+      highlightLanguage: "r"
+
+---
+
+class: title-slide
+
+```{r echo = FALSE, warning=FALSE}
+library(fabricerin)
+```
+
+<br>
+<br>
+.right-panel[ 
+
+# `r rmarkdown::metadata$title`
+## `r rmarkdown::metadata$author`
+
+]
+
+
+---
+
+```{r echo = FALSE, message = FALSE}
+library(tidyverse)
+
+AD <- read_csv("../data/alzheimer_data.csv") %>% 
+  janitor::clean_names() %>% 
+  mutate(female = case_when(female == 1 ~ "female",
+                   female == 0 ~ "male")) %>% 
+  mutate(female = as.factor(female)) %>% 
+  mutate(diagnosis = case_when(diagnosis == 1 ~ "Mild cognitive impairment",
+                   diagnosis == 2 ~ "Dementia due to AD",
+                   diagnosis == 0 ~ "Normal cognition")) %>% 
+  mutate(diagnosis = as.factor(diagnosis)) 
+```
+
+## Looking at the data
+
+`glimpse` is used to take a quick 'glimpse' of all the variables in the data frame. 
+
+```{r}
+glimpse(AD)
+```
+
+You can also use `glimpse` on columns and vectors.  
+```{r}
+glimpse(AD$age)
+```
+
+---
+
+`head` and `tail` can be use to look at the first 6 rows and last 6 rows of the data, respectively. 
+
+```{r}
+head(AD)
+```
+
+```{r}
+tail(AD)
+```
+
+
+---
+
+If you want to take a look at the column names of a dataset, you can use `colnames`.  
+```{r}
+colnames(AD)
+```
+
+You can also use `rownames` if you want to see the names of all the rows in the dataset.
+
+```{r}
+head(rownames(AD))
+```
+
+
+---
+
+## Summary Statistics
+
+`summary` is a great way to get basic information about your dataset, such as mean, median, min, and max for numeric data, and counts for categorical data.
+```{r}
+summary(AD)
+```
+
+
+---
+
+Focusing on individual columns, we can use the `quantile` function to find the quantiles of the columns.  
+We can also use any functions that work with lists on the columns. For example, mean, variance, standard deviation, etc.
+
+```{r}
+quantile(AD$age)
+```
+
+
+```{r}
+mean(AD$age)
+var(AD$age)
+sd(AD$age)
+```
+
+
+If you are interested in how many data points are in a vector or column, you can use `length`.  
+
+```{r}
+length(AD$age)
+```
+
+---
+
+## Changing the dataset
+
+As a reminder, we use `$` as a way to not only access columns of a dataframe, but you can also create new columns with it.
+
+```{r}
+head(AD$diagnosis)
+```
+```{r}
+AD$practice <- rep(1, length(AD$age))
+head(AD$practice)
+```
+
+When we created the new column, we created a column of all 1's. We used the function `rep`, which stands for replicate.  
+`rep(whatever you want to repeat, number of times you want to repeat)`
+
+---
+
+So how do we create a new column in the `tidyverse` way?
+
+`mutate` is a function that allows us to use pipe operators to create new columns in your dataset.  
+
+```{r}
+AD <- AD %>% 
+  mutate(practice2 = practice + 1)
+head(AD$practice2)
+```
+
+--- 
+
+`rename` is a handy function that allows you to rename columns.  
+You start with a list/vector of new_name = "current_name".  
+Then you use the function `rename` with the dataframe and the list. We use another function called `any_of` to tell `rename` that if it can find any columns named "current_name" then it should replace it with new_name.  
+
+```{r}
+p1 <- c(ones = "practice", twos = "practice2")
+colnames(rename(AD, any_of(p1)))
+```
+
+---
+
+The `melt` function allows you to convert data from long format to wide format, and from wide format to long format. 
+
+```{r, message = FALSE}
+library(reshape2)
+df <- data.frame(student=c("A", "B", "C"),
+                 test_score=c(88, 91, 85),
+                 seat_number=c(3, 4, 5))
+df
+
+long_df <- melt(df, id = "student")
+long_df
+```
