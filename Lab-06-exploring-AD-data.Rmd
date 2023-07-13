@@ -41,7 +41,7 @@ Read in the Alzheimer's data and load `tidyverse` package
 
 ```{r eval = FALSE}
 library(tidyverse)
-AD <- read.csv("./data/alzheimer_data.csv")
+AD <- readr::read_csv("./data/alzheimer_data.csv")
 ```
 
 ```{r include = FALSE}
