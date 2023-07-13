@@ -1,0 +1,200 @@
+---
+title: "Linear Regression Examples in R using the Alzheimer's Data"
+author: "Brian Schetzsle"
+output: 
+  xaringan::moon_reader:
+    css: ["slide-style.css", "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"]
+    lib_dir: libs
+    seal: false
+    nature:
+      beforeInit: "cols_macro.js"
+      ratio: 16:9
+      highlightStyle: "pygments"
+      highlightLines: true
+      highlightLanguage: "r"
+
+---
+
+class: title-slide
+
+```{r include=FALSE}
+library(fabricerin)
+```
+
+<br>
+<br>
+.right-panel[ 
+
+# `r rmarkdown::metadata$title`
+## `r rmarkdown::metadata$author`
+
+]
+
+---
+
+class: middle
+
+### Preparation
+
+Load the `tidyverse` package into your environment and load your data into a variable. The code will look different and depends where you saved your data.
+
+
+```{r message = FALSE, fontsize=1}
+library(tidyverse)
+AD <- readr::read_csv("./data/alzheimer_data.csv")
+```
+
+---
+
+### Linear Regression with a One Binary Explanatory Variable
+
+We will treat  the intracranial volume `naccicv` as our continuous response variable $Y$ and `female` as a binary predictor $X$. First plot these two variables against each other to verify this is something worthwhile.
+
+```{r fig.align="center", fig.height=3}
+AD %>% 
+  select(naccicv, female) %>% 
+  ggplot() +
+  geom_point(aes(x = female, y = naccicv))
+```
+
+---
+
+### Linear Regression with a One Binary Explanatory Variable
+
+It's difficult to see all the points, so it's fine to add a little "jitter" along the $X$ axis. The limits on the $Y$ axis also are a little misleading. You can change it so it starts at 0 to put the values in perspective.
+
+```{r fig.align="center", fig.height=3}
+AD %>% 
+  select(naccicv, female) %>% 
+  ggplot() +
+  geom_point(aes(x = jitter(female, factor = 0.2),
+                 y = naccicv)) +
+  coord_cartesian(ylim=c(0,2000))
+```
+
+---
+
+### Linear Regression with a One Binary Explanatory Variable
+
+There does appear to be a difference between the intracranial volumes of males and females. We wish to quantify this difference using a linear regression. We can use `lm()` or `glm()` to accomplish this.
+
+```{r}
+lm(formula = naccicv ~ female, data = AD)
+```
+
+---
+
+### Linear Regression with a One Binary Explanatory Variable
+
+Use your fitted slope and intercept to draw a line on the scatterplot of your data.
+
+```{r fig.align="center", fig.height=3}
+AD %>% 
+  select(naccicv, female) %>% 
+  ggplot() +
+  geom_point(aes(x = jitter(female, factor = 0.2),
+                 y = naccicv)) +
+  coord_cartesian(ylim=c(0,2000)) +
+  geom_abline(intercept = 1458.4, 
+              slope = -142.1, color = "blue")
+```
+
+---
+
+### Practice Linear Regression using a Binary Predictor and Numerical Response from the Alzheimer's Data
+
+- Identify a binary variable (or create your own by binning a numerical variable)
+- Identify a numerical variable
+- Fit a linear model with the binary variable as the predictor and the numerical variable as the response
+- Plot your data with the fitted line
+
+---
+
+### Linear Regression with a One Numerical Explanatory Variable
+
+We will continue to use `naccicv` as our response $Y$ but will now use `animals`, a numerical variable, as our predictor $X$. We first plot the data to see if a linear regression model is reasonable.
+
+```{r fig.align="center", fig.height=3}
+AD %>% 
+  select(naccicv, animals) %>% 
+  ggplot() +
+  geom_point(aes(x = animals, y = naccicv))
+```
+
+---
+
+### Linear Regression with a One Numerical Explanatory Variable
+
+It looks like there may be a slightly positive relationship between the predictor and the response. We can fit a linear model to assess the strength of this relationship.
+
+```{r}
+lm(formula = naccicv ~ animals, data = AD)
+```
+
+---
+
+### Linear Regression with a One Numerical Explanatory Variable
+
+```{r fig.align="center", fig.height=3}
+AD %>% 
+  select(naccicv, animals) %>% 
+  ggplot() +
+  geom_point(aes(x = animals,
+                 y = naccicv)) +
+  geom_abline(intercept = 1327.59, 
+              slope = 2.75, color = "blue")
+```
+
+---
+
+### Linear Regression with a One Numerical Explanatory Variable
+
+Is this fitted line statistically different from a horizontal line (which corresponds to the null hypothesis that there is no relationship between the number of animals that are named during a testing session and the intracranial volume)?
+
+```{r}
+lm(formula = naccicv ~ animals, data = AD) %>% 
+  summary() %>% 
+  coefficients()
+```
+
+---
+
+### Practice Linear Regression using a Numerical Predictor and Numerical Response from the Alzheimer's Data
+
+- Identify two numerical variables
+- Fit a linear model with one variable as the predictor and the other variable as the response
+- Plot your data with the fitted line
+- Verify that the fitted line is statistically different from a horizontal line using `summary()`
+
+---
+
+### Multiple Linear Regression
+
+Now we want to model `naccicv` as a linear function of two predictors, `female` and `animals`, both of which we found to be significant predictors individually.
+
+```{r}
+lm(naccicv ~ female + animals, data = AD)
+```
+
+---
+
+### Multiple Linear Regression
+
+We also want to verify that our coefficients are statistically different from 0, quantified by the p-value.
+
+```{r}
+lm(naccicv ~ female + animals, data = AD) %>% 
+  summary() %>% 
+  coefficients()
+```
+
+---
+
+### Practice Multiple Linear Regression
+
+- Identify a numerical response and a set of two (or more) predictors
+- Fit a multiple linear regression model
+- Test for significance of your fitted coefficients (look at the p-value)
+
+
+

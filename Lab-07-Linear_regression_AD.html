@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Linear Regression Examples in R using the Alzheimer’s Data</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Brian Schetzsle" />
+    <script src="libs/header-attrs-2.22/header-attrs.js"></script>
+    <link rel="stylesheet" href="slide-style.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+class: title-slide
+
+
+
+&lt;br&gt;
+&lt;br&gt;
+.right-panel[ 
+
+# Linear Regression Examples in R using the Alzheimer's Data
+## Brian Schetzsle
+
+]
+
+---
+
+class: middle
+
+### Preparation
+
+Load the `tidyverse` package into your environment and load your data into a variable. The code will look different and depends where you saved your data.
+
+
+
+```r
+library(tidyverse)
+AD &lt;- readr::read_csv("./data/alzheimer_data.csv")
+```
+
+---
+
+### Linear Regression with a One Binary Explanatory Variable
+
+We will treat  the intracranial volume `naccicv` as our continuous response variable `\(Y\)` and `female` as a binary predictor `\(X\)`. First plot these two variables against each other to verify this is something worthwhile.
+
+
+```r
+AD %&gt;% 
+  select(naccicv, female) %&gt;% 
+  ggplot() +
+  geom_point(aes(x = female, y = naccicv))
+```
+
+&lt;img src="Lab-07-Linear_regression_AD_files/figure-html/unnamed-chunk-3-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Linear Regression with a One Binary Explanatory Variable
+
+It's difficult to see all the points, so it's fine to add a little "jitter" along the `\(X\)` axis. The limits on the `\(Y\)` axis also are a little misleading. You can change it so it starts at 0 to put the values in perspective.
+
+
+```r
+AD %&gt;% 
+  select(naccicv, female) %&gt;% 
+  ggplot() +
+  geom_point(aes(x = jitter(female, factor = 0.2),
+                 y = naccicv)) +
+  coord_cartesian(ylim=c(0,2000))
+```
+
+&lt;img src="Lab-07-Linear_regression_AD_files/figure-html/unnamed-chunk-4-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Linear Regression with a One Binary Explanatory Variable
+
+There does appear to be a difference between the intracranial volumes of males and females. We wish to quantify this difference using a linear regression. We can use `lm()` or `glm()` to accomplish this.
+
+
+```r
+lm(formula = naccicv ~ female, data = AD)
+```
+
+```
+## 
+## Call:
+## lm(formula = naccicv ~ female, data = AD)
+## 
+## Coefficients:
+## (Intercept)       female  
+##      1458.4       -142.1
+```
+
+---
+
+### Linear Regression with a One Binary Explanatory Variable
+
+Use your fitted slope and intercept to draw a line on the scatterplot of your data.
+
+
+```r
+AD %&gt;% 
+  select(naccicv, female) %&gt;% 
+  ggplot() +
+  geom_point(aes(x = jitter(female, factor = 0.2),
+                 y = naccicv)) +
+  coord_cartesian(ylim=c(0,2000)) +
+  geom_abline(intercept = 1458.4, 
+              slope = -142.1, color = "blue")
+```
+
+&lt;img src="Lab-07-Linear_regression_AD_files/figure-html/unnamed-chunk-6-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Practice Linear Regression using a Binary Predictor and Numerical Response from the Alzheimer's Data
+
+- Identify a binary variable (or create your own by binning a numerical variable)
+- Identify a numerical variable
+- Fit a linear model with the binary variable as the predictor and the numerical variable as the response
+- Plot your data with the fitted line
+
+---
+
+### Linear Regression with a One Numerical Explanatory Variable
+
+We will continue to use `naccicv` as our response `\(Y\)` but will now use `animals`, a numerical variable, as our predictor `\(X\)`. We first plot the data to see if a linear regression model is reasonable.
+
+
+```r
+AD %&gt;% 
+  select(naccicv, animals) %&gt;% 
+  ggplot() +
+  geom_point(aes(x = animals, y = naccicv))
+```
+
+&lt;img src="Lab-07-Linear_regression_AD_files/figure-html/unnamed-chunk-7-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Linear Regression with a One Numerical Explanatory Variable
+
+It looks like there may be a slightly positive relationship between the predictor and the response. We can fit a linear model to assess the strength of this relationship.
+
+
+```r
+lm(formula = naccicv ~ animals, data = AD)
+```
+
+```
+## 
+## Call:
+## lm(formula = naccicv ~ animals, data = AD)
+## 
+## Coefficients:
+## (Intercept)      animals  
+##     1327.59         2.75
+```
+
+---
+
+### Linear Regression with a One Numerical Explanatory Variable
+
+
+```r
+AD %&gt;% 
+  select(naccicv, animals) %&gt;% 
+  ggplot() +
+  geom_point(aes(x = animals,
+                 y = naccicv)) +
+  geom_abline(intercept = 1327.59, 
+              slope = 2.75, color = "blue")
+```
+
+&lt;img src="Lab-07-Linear_regression_AD_files/figure-html/unnamed-chunk-9-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Linear Regression with a One Numerical Explanatory Variable
+
+Is this fitted line statistically different from a horizontal line (which corresponds to the null hypothesis that there is no relationship between the number of animals that are named during a testing session and the intracranial volume)?
+
+
+```r
+lm(formula = naccicv ~ animals, data = AD) %&gt;% 
+  summary() %&gt;% 
+  coefficients()
+```
+
+```
+##                Estimate Std. Error    t value     Pr(&gt;|t|)
+## (Intercept) 1327.590716  7.1588576 185.447286 0.000000e+00
+## animals        2.749612  0.3724773   7.381958 2.066743e-13
+```
+
+---
+
+### Practice Linear Regression using a Numerical Predictor and Numerical Response from the Alzheimer's Data
+
+- Identify two numerical variables
+- Fit a linear model with one variable as the predictor and the other variable as the response
+- Plot your data with the fitted line
+- Verify that the fitted line is statistically different from a horizontal line using `summary()`
+
+---
+
+### Multiple Linear Regression
+
+Now we want to model `naccicv` as a linear function of two predictors, `female` and `animals`, both of which we found to be significant predictors individually.
+
+
+```r
+lm(naccicv ~ female + animals, data = AD)
+```
+
+```
+## 
+## Call:
+## lm(formula = naccicv ~ female + animals, data = AD)
+## 
+## Coefficients:
+## (Intercept)       female      animals  
+##    1397.825     -145.506        3.488
+```
+
+---
+
+### Multiple Linear Regression
+
+We also want to verify that our coefficients are statistically different from 0, quantified by the p-value.
+
+
+```r
+lm(naccicv ~ female + animals, data = AD) %&gt;% 
+  summary() %&gt;% 
+  coefficients()
+```
+
+```
+##                Estimate Std. Error   t value      Pr(&gt;|t|)
+## (Intercept) 1397.824958  6.3971077 218.50890  0.000000e+00
+## female      -145.506352  4.3905193 -33.14103 2.401902e-202
+## animals        3.487826  0.3148371  11.07819  6.345749e-28
+```
+
+---
+
+### Practice Multiple Linear Regression
+
+- Identify a numerical response and a set of two (or more) predictors
+- Fit a multiple linear regression model
+- Test for significance of your fitted coefficients (look at the p-value)
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="cols_macro.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "pygments",
+"highlightLines": true,
+"highlightLanguage": "r"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
