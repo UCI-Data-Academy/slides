@@ -4,7 +4,7 @@
     <title>Exploring Alzheimer’s Data with R</title>
     <meta charset="utf-8" />
     <meta name="author" content="Brian Schetzsle" />
-    <script src="libs/header-attrs-2.23/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.22/header-attrs.js"></script>
     <link rel="stylesheet" href="slide-style.css" type="text/css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" type="text/css" />
   </head>
@@ -31,12 +31,15 @@ Adapted from slides by Sam Behseta
 
 class: middle
 
-Read in the Alzheimer's data
+Read in the Alzheimer's data and load `tidyverse` package
 
 
 ```r
-data &lt;- read.csv("data/alzheimer_data.csv")
+library(tidyverse)
+AD &lt;- read.csv("./data/alzheimer_data.csv")
 ```
+
+
 
 ---
 
@@ -46,7 +49,7 @@ Inspect the data
 
 
 ```r
-dim(data)
+dim(AD)
 ```
 
 ```
@@ -61,7 +64,7 @@ Inspect the data
 
 
 ```r
-glimpse(data)
+glimpse(AD)
 ```
 
 ```
@@ -130,12 +133,12 @@ glimpse(data)
 
 class: middle
 
-Subset the data
+### Subsetting the data
 
 
 ```r
-data_subset &lt;- data %&gt;% select(id,diagnosis,educ)
-head(data_subset)
+AD_subset &lt;- AD %&gt;% select(id,diagnosis,educ)
+head(AD_subset)
 ```
 
 ```
@@ -152,13 +155,13 @@ head(data_subset)
 
 class: middle
 
-Recoding a variable
+### Recoding a variable
 
 
 ```r
-data_subset &lt;- data_subset %&gt;% 
+AD_subset &lt;- AD_subset %&gt;% 
   mutate(diagnosis = as.factor(diagnosis))
-summary(data_subset$diagnosis)
+summary(AD_subset$diagnosis)
 ```
 
 ```
@@ -174,16 +177,16 @@ Visualize the distribution of a categorical variable
 
 
 ```r
-data_subset %&gt;% 
+AD_subset %&gt;% 
   ggplot() +
-  geom_bar(aes(x = as.factor(diagnosis) )) +
+  geom_bar(aes(x = diagnosis)) +
   scale_x_discrete(breaks = c(0, 1, 2), 
                    labels = c("Normal", "Low", "Severe"))  +
   labs(x = "Diagnosis", y = "Frequency", 
        title = "Frequency of Diagnoses in the Alzheimer's Data")
 ```
 
-&lt;img src="Lab-06-exploring-AD-data_files/figure-html/unnamed-chunk-7-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="Lab-06-exploring-AD-data_files/figure-html/unnamed-chunk-8-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -195,13 +198,13 @@ Visualize the distribution of this numerical (continuous) variable.
 
 
 ```r
-data %&gt;% 
+AD %&gt;% 
   select(naccicv) %&gt;% 
   ggplot() +
   geom_histogram(aes(x = naccicv))
 ```
 
-&lt;img src="Lab-06-exploring-AD-data_files/figure-html/unnamed-chunk-8-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="Lab-06-exploring-AD-data_files/figure-html/unnamed-chunk-9-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -211,14 +214,14 @@ A boxplot can also be an effective way of quickly visualizing the distribution o
 
 
 ```r
-data %&gt;% 
+AD %&gt;% 
   ggplot(aes(x = "", y = naccicv)) +
   geom_boxplot() +
   labs(x = "NACCICV", y = "Units", 
        title = "Distribution of Intracranial Volume")
 ```
 
-&lt;img src="Lab-06-exploring-AD-data_files/figure-html/unnamed-chunk-9-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="Lab-06-exploring-AD-data_files/figure-html/unnamed-chunk-10-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -228,13 +231,21 @@ Are you curious about what the quartile values are displayed in the boxplot? You
 
 
 ```r
-quantile(data$naccicv)
+quantile(AD$naccicv)
 ```
 
 ```
 ##       0%      25%      50%      75%     100% 
 ##  956.372 1293.191 1367.420 1454.981 1891.500
 ```
+
+---
+
+### Practice
+
+- Select a continuous variable from the Alzheimer's data and generate a histogram and a boxplot
+- Select a categorial variable and a continuous variable; generate boxplots for each level of the categorical variable
+- Select two continuous variables; generate a scatterplot using the `geom_point()` function
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
