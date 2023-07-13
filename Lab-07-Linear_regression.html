@@ -136,7 +136,7 @@ glimpse(AD)
 
 ---
 
-According to the data dictionary, `animals` is a variable that represents the total number of animals named in 60 seconds by the patients. This can be used to measure how well these patients can remember (how much impairment caused by AD). 
+According to the data dictionary, `animals` is a variable that represents the total number of animals named in 60 seconds by the patients. This can be used to how well these patients can remember (how much impairment caused by AD). 
 
 
 ```r
@@ -196,40 +196,6 @@ model1
 
 ---
 
-
-```r
-summary(model1)
-```
-
-```
-## 
-## Call:
-## glm(formula = animals ~ sex, data = AD)
-## 
-## Coefficients:
-##             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)  18.3602     0.1749 105.003  &lt; 2e-16 ***
-## sexmale      -0.9866     0.2678  -3.684 0.000234 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## (Dispersion parameter for gaussian family taken to be 47.35891)
-## 
-##     Null deviance: 128417  on 2699  degrees of freedom
-## Residual deviance: 127774  on 2698  degrees of freedom
-## AIC: 18082
-## 
-## Number of Fisher Scoring iterations: 2
-```
-
---
-
-In the above output, we are interested in the `Estimates` and `Pr(&gt;|t|)` section of the `coefficients` table.  
-`Estimates` gives you the coefficients for the regression line.  
-`Pr(&gt;|t|)` is the p-value for the t-test for that coefficient, which gives you information about whether a certain variable is needed in the model. Here, we can see that `Pr(&gt;|t|) = 0.000234` for the sex variable, which indicates that the scores for `animals` is expected to change significantly based on the sex of the person. This indicates that we should keep this variable in our model. 
-
----
-
 ### What if we only want to know certain parts of our model?
 
 We can use `$` to access different parts of our model, including residuals, the original data, fitted (predicted) values, etc. 
@@ -251,7 +217,6 @@ head(model1$fitted.values)
 ##        1        2        3        4        5        6 
 ## 17.37359 18.36023 18.36023 18.36023 17.37359 18.36023
 ```
-
 
 ---
 
@@ -283,37 +248,21 @@ summary(model1)
 ## Number of Fisher Scoring iterations: 2
 ```
 
-Let's try to interpret the estimated coefficient for sex:  Comparing two people, one who is female and one who is male, we expect the person who is male to count 0.98 animals less per 60 seconds than a person who is female.  
+---
+
+In the output on the previous slide, we are interested in the `Estimates` and `Pr(&gt;|t|)` section of the `coefficients` table.  
+`Estimates` gives you the coefficients for the regression line.  
+`Pr(&gt;|t|)` is the p-value for the t-test for that coefficient, which gives you information about whether a certain variable is needed in the model. Here, we can see that `Pr(&gt;|t|) = 0.000234` for the sex variable, which indicates that the scores for `animals` is expected to change significantly based on the sex of the person. This indicates that we should keep this variable in our model. 
+
 
 ---
 
+Let's try to interpret the estimated coefficient for sex:  
+- Comparing two people, one who is female and one who is male, we expect the person who is male to count 0.98 animals less per 60 seconds than a person who is female.  
 
-```r
-summary(model1)
-```
 
-```
-## 
-## Call:
-## glm(formula = animals ~ sex, data = AD)
-## 
-## Coefficients:
-##             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)  18.3602     0.1749 105.003  &lt; 2e-16 ***
-## sexmale      -0.9866     0.2678  -3.684 0.000234 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## (Dispersion parameter for gaussian family taken to be 47.35891)
-## 
-##     Null deviance: 128417  on 2699  degrees of freedom
-## Residual deviance: 127774  on 2698  degrees of freedom
-## AIC: 18082
-## 
-## Number of Fisher Scoring iterations: 2
-```
-
-Let's try to interpret the estimated intercept:  The expected count of animals per 60 seconds is 18.36 for a person who is female. 
+Let's try to interpret the estimated intercept:  
+- The expected count of animals per 60 seconds is 18.36 for a person who is female. 
 
 Because `sex` is a binary variable, we only have to consider the effects of male, female, and how they differ from each other.  
 
@@ -333,16 +282,6 @@ model1_summary$coefficients
 ##               Estimate Std. Error    t value     Pr(&gt;|t|)
 ## (Intercept) 18.3602324  0.1748538 105.003317 0.0000000000
 ## sexmale     -0.9866442  0.2678054  -3.684183 0.0002339473
-```
-
-```r
-model1_summary$cov.unscaled
-```
-
-```
-##               (Intercept)       sexmale
-## (Intercept)  0.0006455778 -0.0006455778
-## sexmale     -0.0006455778  0.0015143875
 ```
 
 
@@ -400,10 +339,7 @@ model2_summary
 ## 
 ## Number of Fisher Scoring iterations: 2
 ```
-Looking at our coefficients table, we can see that the estimated value for age in the regression equation is -0.20636 and we have a p-value of &lt;2e-16. 
-- 2e-16 is scientific notation which means `\(2 \times 10^{-16}\)`, aka a very small number.  
-
-
+ 
 ---
 
 
@@ -416,6 +352,11 @@ model2_summary$coefficients
 ## (Intercept) 32.3953714 0.76629656  42.27524 4.058717e-300
 ## age         -0.2063643 0.01079376 -19.11886  1.616762e-76
 ```
+
+Looking at our coefficients table, we can see that the estimated value for age in the regression equation is -0.20636 and we have a p-value of &lt;2e-16. 
+- 2e-16 is scientific notation which means `\(2 \times 10^{-16}\)`, aka a very small number. 
+
+---
 
 Focusing on our coefficients, let's interpret the effect of age on the number of animals a person can name in a minute:  
 - For a year increase in age, we expect the average count of animals per 60 seconds to decrease by 0.206.  
@@ -498,6 +439,20 @@ Interpreting coefficients in a multiple linear regression requires us to conditi
 
 For example, let's interpret `age`:  
 - For a year increase in age, we expect the average count of animals per 60 seconds to decrease by 0.205, while all other explanatory variables in the model remain fixed (while sex remains fixed).
+
+---
+
+
+```r
+model3_summary$coefficients
+```
+
+```
+##               Estimate Std. Error    t value      Pr(&gt;|t|)
+## (Intercept) 32.5575102  0.7677156  42.408298 1.451115e-301
+## age         -0.2045101  0.0108026 -18.931560  3.788798e-75
+## sexmale     -0.6850274  0.2521591  -2.716648  6.636779e-03
+```
 
 Now let's interpret `sex`:  
 - Comparing two people, one who is female and one who is male, we expect the person who is male to count 0.685 animals less per 60 seconds than a person who is female, while age remains fixed.  

@@ -64,7 +64,7 @@ glimpse(AD)
 
 ---
 
-According to the data dictionary, `animals` is a variable that represents the total number of animals named in 60 seconds by the patients. This can be used to measure how well these patients can remember (how much impairment caused by AD). 
+According to the data dictionary, `animals` is a variable that represents the total number of animals named in 60 seconds by the patients. This can be used to how well these patients can remember (how much impairment caused by AD). 
 
 ```{r}
 summary(AD$animals)
@@ -101,18 +101,6 @@ model1
 
 ---
 
-```{r}
-summary(model1)
-```
-
---
-
-In the above output, we are interested in the `Estimates` and `Pr(>|t|)` section of the `coefficients` table.  
-`Estimates` gives you the coefficients for the regression line.  
-`Pr(>|t|)` is the p-value for the t-test for that coefficient, which gives you information about whether a certain variable is needed in the model. Here, we can see that `Pr(>|t|) = 0.000234` for the sex variable, which indicates that the scores for `animals` is expected to change significantly based on the sex of the person. This indicates that we should keep this variable in our model. 
-
----
-
 ### What if we only want to know certain parts of our model?
 
 We can use `$` to access different parts of our model, including residuals, the original data, fitted (predicted) values, etc. 
@@ -120,7 +108,6 @@ We can use `$` to access different parts of our model, including residuals, the 
 head(model1$residuals)
 head(model1$fitted.values)
 ```
-
 
 ---
 
@@ -130,15 +117,21 @@ We can use the function summary to give us even more information about the model
 summary(model1)
 ```
 
-Let's try to interpret the estimated coefficient for sex:  Comparing two people, one who is female and one who is male, we expect the person who is male to count 0.98 animals less per 60 seconds than a person who is female.  
+---
+
+In the output on the previous slide, we are interested in the `Estimates` and `Pr(>|t|)` section of the `coefficients` table.  
+`Estimates` gives you the coefficients for the regression line.  
+`Pr(>|t|)` is the p-value for the t-test for that coefficient, which gives you information about whether a certain variable is needed in the model. Here, we can see that `Pr(>|t|) = 0.000234` for the sex variable, which indicates that the scores for `animals` is expected to change significantly based on the sex of the person. This indicates that we should keep this variable in our model. 
+
 
 ---
 
-```{r}
-summary(model1)
-```
+Let's try to interpret the estimated coefficient for sex:  
+- Comparing two people, one who is female and one who is male, we expect the person who is male to count 0.98 animals less per 60 seconds than a person who is female.  
 
-Let's try to interpret the estimated intercept:  The expected count of animals per 60 seconds is 18.36 for a person who is female. 
+
+Let's try to interpret the estimated intercept:  
+- The expected count of animals per 60 seconds is 18.36 for a person who is female. 
 
 Because `sex` is a binary variable, we only have to consider the effects of male, female, and how they differ from each other.  
 
@@ -151,7 +144,6 @@ We can assign `summary(model1)` to a variable name. And because of the way summa
 ```{r}
 model1_summary <- summary(model1)
 model1_summary$coefficients
-model1_summary$cov.unscaled
 ```
 
 
@@ -173,15 +165,17 @@ model2
 model2_summary <- summary(model2)
 model2_summary
 ```
-Looking at our coefficients table, we can see that the estimated value for age in the regression equation is -0.20636 and we have a p-value of <2e-16. 
-- 2e-16 is scientific notation which means $2 \times 10^{-16}$, aka a very small number.  
-
-
+ 
 ---
 
 ```{r}
 model2_summary$coefficients
 ```
+
+Looking at our coefficients table, we can see that the estimated value for age in the regression equation is -0.20636 and we have a p-value of <2e-16. 
+- 2e-16 is scientific notation which means $2 \times 10^{-16}$, aka a very small number. 
+
+---
 
 Focusing on our coefficients, let's interpret the effect of age on the number of animals a person can name in a minute:  
 - For a year increase in age, we expect the average count of animals per 60 seconds to decrease by 0.206.  
@@ -219,6 +213,12 @@ Interpreting coefficients in a multiple linear regression requires us to conditi
 
 For example, let's interpret `age`:  
 - For a year increase in age, we expect the average count of animals per 60 seconds to decrease by 0.205, while all other explanatory variables in the model remain fixed (while sex remains fixed).
+
+---
+
+```{r}
+model3_summary$coefficients
+```
 
 Now let's interpret `sex`:  
 - Comparing two people, one who is female and one who is male, we expect the person who is male to count 0.685 animals less per 60 seconds than a person who is female, while age remains fixed.  
