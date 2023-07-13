@@ -1,0 +1,235 @@
+---
+title: "Linear Regression Practice"
+author: "Lynn Gao"
+output: 
+  xaringan::moon_reader:
+    css: ["slide-style.css", "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"]
+    lib_dir: libs
+    seal: false
+    nature:
+      beforeInit: "cols_macro.js"
+      ratio: 16:9
+      highlightStyle: "pygments"
+      highlightLines: true
+      highlightLanguage: "r"
+
+---
+
+class: title-slide
+
+```{r echo = FALSE, warning=FALSE}
+library(fabricerin)
+```
+
+<br>
+<br>
+.right-panel[ 
+
+# `r rmarkdown::metadata$title`
+## `r rmarkdown::metadata$author`
+
+]
+
+
+---
+
+Let's first load in the libraries we need:
+
+```{r, message = FALSE}
+library(tidyverse)
+library(ggplot2)
+```
+
+Next, we can read in our dataset and make some changes to our columns to make it easier for us to understand. 
+
+```{r}
+AD <- read_csv("./data/alzheimer_data.csv") %>% 
+  janitor::clean_names() %>%
+  mutate(sex = case_when(female == 1 ~ "female",
+                   female == 0 ~ "male")) %>%
+  mutate(sex = as.factor(sex)) %>%
+  mutate(diagnosis = case_when(diagnosis == 1 ~ "Mild cognitive impairment",
+                   diagnosis == 2 ~ "Dementia due to AD",
+                   diagnosis == 0 ~ "Normal cognition")) %>%
+  mutate(diagnosis = as.factor(diagnosis))
+```
+
+---
+
+Let's use `glimpse` to take a look at our data. 
+
+```{r}
+glimpse(AD)
+```
+
+---
+
+According to the data dictionary, `animals` is a variable that represents the total number of animals named in 60 seconds by the patients. This can be used to measure how well these patients can remember (how much impairment caused by AD). 
+
+```{r}
+summary(AD$animals)
+```
+
+
+---
+
+### First, let's consider the question of whether the sex of a person significantly changes the amount of animals a person can remember.  
+
+### How can we test this?
+
+---
+
+We can test this informally by looking at plots (comparing histograms of `animals` stratified by sex). 
+
+```{r}
+ggplot(AD,
+       aes(x = animals))  +
+  geom_histogram(binwidth = 1) +
+  facet_grid(female~.) + # facet_grid makes a 'grid' of graphs
+  theme(text = element_text(size=20)) # this changes the text size
+```
+
+
+---
+
+We can formally test this by creating a linear model with y = `animals` and x = `female`. Here, our explanatory variable is binary. 
+
+```{r}
+model1 <- glm(animals~sex, data = AD)
+model1
+```
+
+---
+
+```{r}
+summary(model1)
+```
+
+--
+
+In the above output, we are interested in the `Estimates` and `Pr(>|t|)` section of the `coefficients` table.  
+`Estimates` gives you the coefficients for the regression line.  
+`Pr(>|t|)` is the p-value for the t-test for that coefficient, which gives you information about whether a certain variable is needed in the model. Here, we can see that `Pr(>|t|) = 0.000234` for the sex variable, which indicates that the scores for `animals` is expected to change significantly based on the sex of the person. This indicates that we should keep this variable in our model. 
+
+---
+
+### What if we only want to know certain parts of our model?
+
+We can use `$` to access different parts of our model, including residuals, the original data, fitted (predicted) values, etc. 
+```{r}
+head(model1$residuals)
+head(model1$fitted.values)
+```
+
+
+---
+
+We can use the function summary to give us even more information about the model. 
+
+```{r}
+summary(model1)
+```
+
+Let's try to interpret the estimated coefficient for sex:  Comparing two people, one who is female and one who is male, we expect the person who is male to count 0.98 animals less per 60 seconds than a person who is female.  
+
+---
+
+```{r}
+summary(model1)
+```
+
+Let's try to interpret the estimated intercept:  The expected count of animals per 60 seconds is 18.36 for a person who is female. 
+
+Because `sex` is a binary variable, we only have to consider the effects of male, female, and how they differ from each other.  
+
+---
+
+### What if we only want to know certain parts of the summary instead of printing out the entire summary all the time?
+
+We can assign `summary(model1)` to a variable name. And because of the way summary is formatted for models, we can use `$` to actually access certain parts of the output (ex: coefficients, covariance, etc.). 
+
+```{r}
+model1_summary <- summary(model1)
+model1_summary$coefficients
+model1_summary$cov.unscaled
+```
+
+
+---
+
+### Now let's try to see if the amount of animals a person can remember in 60 seconds changes based on the age of the person.  
+
+Here, we can create a linear model with y = `animals` and x = `age`.  
+`age` is a numerical explanatory variable.  
+
+```{r}
+model2 <- glm(animals~age, data = AD)
+model2
+```
+
+---
+
+```{r}
+model2_summary <- summary(model2)
+model2_summary
+```
+Looking at our coefficients table, we can see that the estimated value for age in the regression equation is -0.20636 and we have a p-value of <2e-16. 
+- 2e-16 is scientific notation which means $2 \times 10^{-16}$, aka a very small number.  
+
+
+---
+
+```{r}
+model2_summary$coefficients
+```
+
+Focusing on our coefficients, let's interpret the effect of age on the number of animals a person can name in a minute:  
+- For a year increase in age, we expect the average count of animals per 60 seconds to decrease by 0.206.  
+- Comparing two people, one who is one year older than the other, the older person is expected to number 0.206 less animals than the younger person.  
+
+To make this interpretation make more sense, we can use a 5 year gap:  
+- For a five year increase in age, we expect the average count of animals per 60 seconds to decrease by 1.03.  
+- Comparing two people, one who is five years older than the other, the older person is expected to number $5 \times 0.206 = 1.03$ less animals than the younger person. 
+
+Looking at the p-value, which is 1.616762e-76 (a very small number that is very close to 0), we can conclude that the amount of animals a person can remember in 60 seconds does change based on the age of the person.  
+
+---
+
+### Now let's try multiple linear regression with both age and sex.
+
+```{r}
+model3 <- glm(animals ~ age + sex, data = AD)
+model3
+```
+
+---
+
+```{r}
+model3_summary <- summary(model3)
+model3_summary
+```
+
+---
+
+```{r}
+model3_summary$coefficients
+```
+
+Interpreting coefficients in a multiple linear regression requires us to condition on the other variables staying the same (fixed). 
+
+For example, let's interpret `age`:  
+- For a year increase in age, we expect the average count of animals per 60 seconds to decrease by 0.205, while all other explanatory variables in the model remain fixed (while sex remains fixed).
+
+Now let's interpret `sex`:  
+- Comparing two people, one who is female and one who is male, we expect the person who is male to count 0.685 animals less per 60 seconds than a person who is female, while age remains fixed.  
+
+
+For both `sex` and `age` variables, we can see that the p-values are very small, indicating that there are significant changes in average count of animals per 60 seconds even when both of these variables are in the model. This can indicate that both variables help to explain the trends in the average count of animals per 60 seconds in our data well.
+---
+
+### Confidence Intervals
+
+```{r}
+confint(model3)
+```
+

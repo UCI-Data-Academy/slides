@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Linear Regression Practice</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Lynn Gao" />
+    <script src="libs/header-attrs-2.22/header-attrs.js"></script>
+    <link rel="stylesheet" href="slide-style.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+class: title-slide
+
+
+
+&lt;br&gt;
+&lt;br&gt;
+.right-panel[ 
+
+# Linear Regression Practice
+## Lynn Gao
+
+]
+
+
+---
+
+Let's first load in the libraries we need:
+
+
+```r
+library(tidyverse)
+library(ggplot2)
+```
+
+Next, we can read in our dataset and make some changes to our columns to make it easier for us to understand. 
+
+
+```r
+AD &lt;- read_csv("./data/alzheimer_data.csv") %&gt;% 
+  janitor::clean_names() %&gt;%
+  mutate(sex = case_when(female == 1 ~ "female",
+                   female == 0 ~ "male")) %&gt;%
+  mutate(sex = as.factor(sex)) %&gt;%
+  mutate(diagnosis = case_when(diagnosis == 1 ~ "Mild cognitive impairment",
+                   diagnosis == 2 ~ "Dementia due to AD",
+                   diagnosis == 0 ~ "Normal cognition")) %&gt;%
+  mutate(diagnosis = as.factor(diagnosis))
+```
+
+```
+## Rows: 2700 Columns: 57
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: ","
+## chr  (1): id
+## dbl (56): diagnosis, age, educ, female, height, weight, bpsys, bpdias, hrate...
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```
+
+---
+
+Let's use `glimpse` to take a look at our data. 
+
+
+```r
+glimpse(AD)
+```
+
+```
+## Rows: 2,700
+## Columns: 58
+## $ id        &lt;chr&gt; "S060833", "S932623", "S755478", "S852291", "S011143", "S069…
+## $ diagnosis &lt;fct&gt; Normal cognition, Normal cognition, Normal cognition, Normal…
+## $ age       &lt;dbl&gt; 74, 56, 77, 74, 75, 72, 64, 78, 73, 81, 66, 65, 66, 73, 78, …
+## $ educ      &lt;dbl&gt; 12, 16, 18, 20, 14, 16, 16, 17, 18, 13, 16, 16, 17, 20, 13, …
+## $ female    &lt;dbl&gt; 0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, …
+## $ height    &lt;dbl&gt; 65.0, 62.0, 65.0, 62.0, 62.0, 61.8, 60.0, 69.0, 65.0, 71.0, …
+## $ weight    &lt;dbl&gt; 233, 110, 137, 112, 127, 141, 124, 152, 131, 197, 134, 144, …
+## $ bpsys     &lt;dbl&gt; 148, 110, 144, 120, 145, 107, 112, 134, 122, 120, 150, 126, …
+## $ bpdias    &lt;dbl&gt; 100, 75, 60, 60, 61, 65, 70, 74, 60, 70, 85, 78, 60, 72, 80,…
+## $ hrate     &lt;dbl&gt; 72, 60, 64, 72, 58, 83, 76, 70, 60, 76, 60, 60, 76, 60, 68, …
+## $ cdrglob   &lt;dbl&gt; 0.5, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.5, 0.0, 1.0, 0.0, 0.0, …
+## $ naccgds   &lt;dbl&gt; 5, 1, 0, 0, 4, 1, 2, 0, 0, 5, 0, 1, 0, 0, 0, 6, 3, 1, 3, 4, …
+## $ delsev    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ hallsev   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ agitsev   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 0, …
+## $ depdsev   &lt;dbl&gt; 2, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 0, 0, 0, 3, 0, 0, 0, 0, …
+## $ anxsev    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 2, 0, …
+## $ elatsev   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ apasev    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 1, 0, 0, 0, 2, 1, 0, 0, 0, …
+## $ disnsev   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, …
+## $ irrsev    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, …
+## $ motsev    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ nitesev   &lt;dbl&gt; 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ appsev    &lt;dbl&gt; 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ bills     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 8, 1, 3, 2, …
+## $ taxes     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1, 8, 2, 3, 3, …
+## $ shopping  &lt;dbl&gt; 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 2, 1, …
+## $ games     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 8, 0, 0, 8, 3, 0, 1, 0, …
+## $ stove     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, …
+## $ mealprep  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 8, 0, 0, 1, 3, 8, 0, 0, …
+## $ events    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 3, 0, 0, 2, …
+## $ payattn   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 2, 1, 1, 1, …
+## $ remdates  &lt;dbl&gt; 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 3, 0, 1, 2, …
+## $ travel    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 3, 0, 3, 1, …
+## $ naccmmse  &lt;dbl&gt; 30, 29, 30, 30, 27, 30, 30, 26, 29, 28, 30, 30, 29, 30, 29, …
+## $ memunits  &lt;dbl&gt; 8, 17, 19, 11, 6, 16, 11, 6, 4, 3, 14, 9, 13, 17, 14, 12, 9,…
+## $ digif     &lt;dbl&gt; 7, 11, 7, 6, 8, 7, 8, 9, 4, 7, 12, 9, 6, 10, 7, 6, 1, 8, 5, …
+## $ animals   &lt;dbl&gt; 17, 25, 19, 23, 19, 14, 28, 14, 14, 16, 16, 21, 11, 14, 21, …
+## $ traila    &lt;dbl&gt; 49, 16, 38, 54, 40, 44, 31, 69, 53, 34, 46, 27, 22, 38, 38, …
+## $ trailb    &lt;dbl&gt; 130, 47, 83, 100, 67, 100, 55, 168, 123, 90, 118, 72, 47, 85…
+## $ naccicv   &lt;dbl&gt; 1389.520, 1366.945, 1367.420, 1359.850, 1367.420, 1240.390, …
+## $ csfvol    &lt;dbl&gt; 381.840, 366.622, 343.176, 332.880, 390.415, 345.600, 310.43…
+## $ lhippo    &lt;dbl&gt; 2.2900, 3.2606, 2.6990, 3.0600, 2.9342, 3.2100, 3.6800, 1.73…
+## $ rhippo    &lt;dbl&gt; 2.9200, 3.3321, 2.5028, 3.0000, 3.2890, 3.0600, 3.8200, 2.30…
+## $ frcort    &lt;dbl&gt; 160.570, 187.874, 163.214, 165.120, 149.138, 140.220, 195.24…
+## $ lparcort  &lt;dbl&gt; 46.7100, 43.1023, 40.1172, 46.0700, 40.2664, 42.9700, 48.740…
+## $ rparcort  &lt;dbl&gt; 47.7300, 43.8414, 38.2377, 46.3700, 42.1025, 43.1300, 48.240…
+## $ ltempcor  &lt;dbl&gt; 57.9700, 60.3437, 58.8357, 54.2100, 57.3215, 55.2600, 66.770…
+## $ rtempcor  &lt;dbl&gt; 58.5800, 58.7091, 51.5753, 56.1600, 54.4138, 51.6100, 60.530…
+## $ lcac      &lt;dbl&gt; 3.3200, 3.7060, 3.2748, 2.6300, 3.8628, 2.2600, 2.7800, 2.98…
+## $ rcac      &lt;dbl&gt; 1.9800, 2.1906, 1.7054, 1.4400, 1.5277, 1.9300, 1.8600, 1.36…
+## $ lent      &lt;dbl&gt; 3.2000, 3.6755, 3.6207, 4.3300, 4.2328, 3.8200, 4.5000, 2.73…
+## $ rent      &lt;dbl&gt; 3.7300, 4.6463, 2.5787, 4.1000, 4.4572, 3.4900, 4.3700, 2.58…
+## $ lparhip   &lt;dbl&gt; 3.5800, 3.5534, 3.7515, 3.6000, 3.7079, 4.0700, 5.1100, 3.63…
+## $ rparhip   &lt;dbl&gt; 3.6800, 4.1952, 3.6703, 3.9200, 3.4988, 4.0100, 5.1300, 3.12…
+## $ lposcin   &lt;dbl&gt; 3.7500, 3.9091, 3.8686, 3.4500, 3.1321, 3.4500, 4.3700, 4.38…
+## $ rposcin   &lt;dbl&gt; 3.4400, 4.2362, 3.7062, 3.5300, 2.9051, 2.9200, 4.1800, 3.85…
+## $ sex       &lt;fct&gt; male, female, female, female, male, female, female, male, fe…
+```
+
+---
+
+According to the data dictionary, `animals` is a variable that represents the total number of animals named in 60 seconds by the patients. This can be used to measure how well these patients can remember (how much impairment caused by AD). 
+
+
+```r
+summary(AD$animals)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    0.00   13.00   18.00   17.94   22.00   40.00
+```
+
+
+---
+
+### First, let's consider the question of whether the sex of a person significantly changes the amount of animals a person can remember.  
+
+### How can we test this?
+
+---
+
+We can test this informally by looking at plots (comparing histograms of `animals` stratified by sex). 
+
+
+```r
+ggplot(AD,
+       aes(x = animals))  +
+  geom_histogram(binwidth = 1) +
+  facet_grid(female~.) + # facet_grid makes a 'grid' of graphs
+  theme(text = element_text(size=20)) # this changes the text size
+```
+
+![](Lab-07-Linear_regression_files/figure-html/unnamed-chunk-6-1.png)&lt;!-- --&gt;
+
+
+---
+
+We can formally test this by creating a linear model with y = `animals` and x = `female`. Here, our explanatory variable is binary. 
+
+
+```r
+model1 &lt;- glm(animals~sex, data = AD)
+model1
+```
+
+```
+## 
+## Call:  glm(formula = animals ~ sex, data = AD)
+## 
+## Coefficients:
+## (Intercept)      sexmale  
+##     18.3602      -0.9866  
+## 
+## Degrees of Freedom: 2699 Total (i.e. Null);  2698 Residual
+## Null Deviance:	    128400 
+## Residual Deviance: 127800 	AIC: 18080
+```
+
+---
+
+
+```r
+summary(model1)
+```
+
+```
+## 
+## Call:
+## glm(formula = animals ~ sex, data = AD)
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  18.3602     0.1749 105.003  &lt; 2e-16 ***
+## sexmale      -0.9866     0.2678  -3.684 0.000234 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for gaussian family taken to be 47.35891)
+## 
+##     Null deviance: 128417  on 2699  degrees of freedom
+## Residual deviance: 127774  on 2698  degrees of freedom
+## AIC: 18082
+## 
+## Number of Fisher Scoring iterations: 2
+```
+
+--
+
+In the above output, we are interested in the `Estimates` and `Pr(&gt;|t|)` section of the `coefficients` table.  
+`Estimates` gives you the coefficients for the regression line.  
+`Pr(&gt;|t|)` is the p-value for the t-test for that coefficient, which gives you information about whether a certain variable is needed in the model. Here, we can see that `Pr(&gt;|t|) = 0.000234` for the sex variable, which indicates that the scores for `animals` is expected to change significantly based on the sex of the person. This indicates that we should keep this variable in our model. 
+
+---
+
+### What if we only want to know certain parts of our model?
+
+We can use `$` to access different parts of our model, including residuals, the original data, fitted (predicted) values, etc. 
+
+```r
+head(model1$residuals)
+```
+
+```
+##          1          2          3          4          5          6 
+## -0.3735882  6.6397676  0.6397676  4.6397676  1.6264118 -4.3602324
+```
+
+```r
+head(model1$fitted.values)
+```
+
+```
+##        1        2        3        4        5        6 
+## 17.37359 18.36023 18.36023 18.36023 17.37359 18.36023
+```
+
+
+---
+
+We can use the function summary to give us even more information about the model. 
+
+
+```r
+summary(model1)
+```
+
+```
+## 
+## Call:
+## glm(formula = animals ~ sex, data = AD)
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  18.3602     0.1749 105.003  &lt; 2e-16 ***
+## sexmale      -0.9866     0.2678  -3.684 0.000234 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for gaussian family taken to be 47.35891)
+## 
+##     Null deviance: 128417  on 2699  degrees of freedom
+## Residual deviance: 127774  on 2698  degrees of freedom
+## AIC: 18082
+## 
+## Number of Fisher Scoring iterations: 2
+```
+
+Let's try to interpret the estimated coefficient for sex:  Comparing two people, one who is female and one who is male, we expect the person who is male to count 0.98 animals less per 60 seconds than a person who is female.  
+
+---
+
+
+```r
+summary(model1)
+```
+
+```
+## 
+## Call:
+## glm(formula = animals ~ sex, data = AD)
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  18.3602     0.1749 105.003  &lt; 2e-16 ***
+## sexmale      -0.9866     0.2678  -3.684 0.000234 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for gaussian family taken to be 47.35891)
+## 
+##     Null deviance: 128417  on 2699  degrees of freedom
+## Residual deviance: 127774  on 2698  degrees of freedom
+## AIC: 18082
+## 
+## Number of Fisher Scoring iterations: 2
+```
+
+Let's try to interpret the estimated intercept:  The expected count of animals per 60 seconds is 18.36 for a person who is female. 
+
+Because `sex` is a binary variable, we only have to consider the effects of male, female, and how they differ from each other.  
+
+---
+
+### What if we only want to know certain parts of the summary instead of printing out the entire summary all the time?
+
+We can assign `summary(model1)` to a variable name. And because of the way summary is formatted for models, we can use `$` to actually access certain parts of the output (ex: coefficients, covariance, etc.). 
+
+
+```r
+model1_summary &lt;- summary(model1)
+model1_summary$coefficients
+```
+
+```
+##               Estimate Std. Error    t value     Pr(&gt;|t|)
+## (Intercept) 18.3602324  0.1748538 105.003317 0.0000000000
+## sexmale     -0.9866442  0.2678054  -3.684183 0.0002339473
+```
+
+```r
+model1_summary$cov.unscaled
+```
+
+```
+##               (Intercept)       sexmale
+## (Intercept)  0.0006455778 -0.0006455778
+## sexmale     -0.0006455778  0.0015143875
+```
+
+
+---
+
+### Now let's try to see if the amount of animals a person can remember in 60 seconds changes based on the age of the person.  
+
+Here, we can create a linear model with y = `animals` and x = `age`.  
+`age` is a numerical explanatory variable.  
+
+
+```r
+model2 &lt;- glm(animals~age, data = AD)
+model2
+```
+
+```
+## 
+## Call:  glm(formula = animals ~ age, data = AD)
+## 
+## Coefficients:
+## (Intercept)          age  
+##     32.3954      -0.2064  
+## 
+## Degrees of Freedom: 2699 Total (i.e. Null);  2698 Residual
+## Null Deviance:	    128400 
+## Residual Deviance: 113100 	AIC: 17750
+```
+
+---
+
+
+```r
+model2_summary &lt;- summary(model2)
+model2_summary
+```
+
+```
+## 
+## Call:
+## glm(formula = animals ~ age, data = AD)
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 32.39537    0.76630   42.27   &lt;2e-16 ***
+## age         -0.20636    0.01079  -19.12   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for gaussian family taken to be 41.91803)
+## 
+##     Null deviance: 128417  on 2699  degrees of freedom
+## Residual deviance: 113095  on 2698  degrees of freedom
+## AIC: 17753
+## 
+## Number of Fisher Scoring iterations: 2
+```
+Looking at our coefficients table, we can see that the estimated value for age in the regression equation is -0.20636 and we have a p-value of &lt;2e-16. 
+- 2e-16 is scientific notation which means `\(2 \times 10^{-16}\)`, aka a very small number.  
+
+
+---
+
+
+```r
+model2_summary$coefficients
+```
+
+```
+##               Estimate Std. Error   t value      Pr(&gt;|t|)
+## (Intercept) 32.3953714 0.76629656  42.27524 4.058717e-300
+## age         -0.2063643 0.01079376 -19.11886  1.616762e-76
+```
+
+Focusing on our coefficients, let's interpret the effect of age on the number of animals a person can name in a minute:  
+- For a year increase in age, we expect the average count of animals per 60 seconds to decrease by 0.206.  
+- Comparing two people, one who is one year older than the other, the older person is expected to number 0.206 less animals than the younger person.  
+
+To make this interpretation make more sense, we can use a 5 year gap:  
+- For a five year increase in age, we expect the average count of animals per 60 seconds to decrease by 1.03.  
+- Comparing two people, one who is five years older than the other, the older person is expected to number `\(5 \times 0.206 = 1.03\)` less animals than the younger person. 
+
+Looking at the p-value, which is 1.616762e-76 (a very small number that is very close to 0), we can conclude that the amount of animals a person can remember in 60 seconds does change based on the age of the person.  
+
+---
+
+### Now let's try multiple linear regression with both age and sex.
+
+
+```r
+model3 &lt;- glm(animals ~ age + sex, data = AD)
+model3
+```
+
+```
+## 
+## Call:  glm(formula = animals ~ age + sex, data = AD)
+## 
+## Coefficients:
+## (Intercept)          age      sexmale  
+##     32.5575      -0.2045      -0.6850  
+## 
+## Degrees of Freedom: 2699 Total (i.e. Null);  2697 Residual
+## Null Deviance:	    128400 
+## Residual Deviance: 112800 	AIC: 17750
+```
+
+---
+
+
+```r
+model3_summary &lt;- summary(model3)
+model3_summary
+```
+
+```
+## 
+## Call:
+## glm(formula = animals ~ age + sex, data = AD)
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  32.5575     0.7677  42.408  &lt; 2e-16 ***
+## age          -0.2045     0.0108 -18.932  &lt; 2e-16 ***
+## sexmale      -0.6850     0.2522  -2.717  0.00664 ** 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for gaussian family taken to be 41.81913)
+## 
+##     Null deviance: 128417  on 2699  degrees of freedom
+## Residual deviance: 112786  on 2697  degrees of freedom
+## AIC: 17747
+## 
+## Number of Fisher Scoring iterations: 2
+```
+
+---
+
+
+```r
+model3_summary$coefficients
+```
+
+```
+##               Estimate Std. Error    t value      Pr(&gt;|t|)
+## (Intercept) 32.5575102  0.7677156  42.408298 1.451115e-301
+## age         -0.2045101  0.0108026 -18.931560  3.788798e-75
+## sexmale     -0.6850274  0.2521591  -2.716648  6.636779e-03
+```
+
+Interpreting coefficients in a multiple linear regression requires us to condition on the other variables staying the same (fixed). 
+
+For example, let's interpret `age`:  
+- For a year increase in age, we expect the average count of animals per 60 seconds to decrease by 0.205, while all other explanatory variables in the model remain fixed (while sex remains fixed).
+
+Now let's interpret `sex`:  
+- Comparing two people, one who is female and one who is male, we expect the person who is male to count 0.685 animals less per 60 seconds than a person who is female, while age remains fixed.  
+
+
+For both `sex` and `age` variables, we can see that the p-values are very small, indicating that there are significant changes in average count of animals per 60 seconds even when both of these variables are in the model. This can indicate that both variables help to explain the trends in the average count of animals per 60 seconds in our data well.
+---
+
+### Confidence Intervals
+
+
+```r
+confint(model3)
+```
+
+```
+## Waiting for profiling to be done...
+```
+
+```
+##                  2.5 %     97.5 %
+## (Intercept) 31.0528153 34.0622050
+## age         -0.2256828 -0.1833374
+## sexmale     -1.1792501 -0.1908047
+```
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="cols_macro.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "pygments",
+"highlightLines": true,
+"highlightLanguage": "r"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
