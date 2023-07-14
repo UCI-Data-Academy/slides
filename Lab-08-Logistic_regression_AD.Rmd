@@ -1,0 +1,125 @@
+---
+title: "Logistic Regression Examples in R using the Alzheimer's Data"
+author: "Brian Schetzsle"
+output: 
+  xaringan::moon_reader:
+    css: ["slide-style.css", "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"]
+    lib_dir: libs
+    seal: false
+    nature:
+      beforeInit: "cols_macro.js"
+      ratio: 16:9
+      highlightStyle: "pygments"
+      highlightLines: true
+      highlightLanguage: "r"
+
+---
+
+class: title-slide
+
+```{r include=FALSE}
+library(fabricerin)
+```
+
+<br>
+<br>
+.right-panel[ 
+
+# `r rmarkdown::metadata$title`
+## `r rmarkdown::metadata$author`
+
+]
+
+---
+
+class: middle
+
+### Preparation
+
+Load the `tidyverse` package into your environment and load your data into a variable. The code will look different and depends where you saved your data.
+
+
+```{r message = FALSE, fontsize=1}
+library(tidyverse)
+AD <- readr::read_csv("./data/alzheimer_data.csv")
+```
+
+---
+
+### Logistic Regression with a One Binary Explanatory Variable
+
+A very simple way to start is with one binary predictor (and a binary response, which is a precondition for a logistic regression). We will bin `diagnosis=1` and `diagnosis=2` together as a binary indicator of cognitive impairment.
+
+```{r}
+AD <- AD %>% 
+  mutate(cog_imp = ifelse(diagnosis == 1 | diagnosis == 2, 1, 0))
+table(AD$cog_imp, AD$female)
+```
+
+---
+
+### Logistic Regression with a One Binary Explanatory Variable
+
+```{r}
+fit <- glm(formula = cog_imp ~ female, data = AD, family = 'binomial')
+fit %>% summary() %>% coefficients
+```
+
+---
+
+### Interpreting the results
+
+The baseline in our model is `female=0`, i.e. male, and the odds of cognitive impairment are $\text{exp}(0.162)=1.176$. From the odds we can derive the probability of cognitive impairment at baseline as $\frac{\text{exp}(0.162)}{1+\text{exp}(0.162)} = 54\%$.
+
+The odds of cognitive impairment decrease for `female=1` because the fitted coefficient is negative. The odds for females is $\text{exp}(-0.776)=0.46$ times the odds for males. We can derive the probability of cognitive impairment for females as $\frac{\text{exp}(0.162-0.776)}{1+\text{exp}(0.162-0.776)} = 35\%$.
+
+---
+
+### Logistic Regression with a One Continuous Explanatory Variable
+
+Now lets model the log-odds of cognitive impairment as a linear function of the continuous variable `age`.
+
+```{r fig.align="center", fig.height=3}
+AD %>% 
+  ggplot() +
+  geom_point(aes(x = jitter(age, 1), 
+                 y = jitter(cog_imp, 0.2) ))
+```
+
+---
+
+### Logistic Regression with a One Continuous Explanatory Variable
+
+```{r}
+fit2 <- glm(formula = cog_imp ~ age, family='binomial', data = AD)
+fit2 %>% summary() %>% coefficients()
+```
+
+Interpreting the baseline odds doesn't make sense because it corresponds to a person with `age=0`. The coefficient for age indicates that for every year increase in age a person's odds of cognitive impairment increase by $\text{exp}(0.048)=1.049$ times.
+
+---
+
+### Practice
+
+- Create your own binary response variable using `mutate()`
+- Select a numeric (continuous) variable from the data
+- Fit a logistic regression, interpret the fitted coefficients, check for significant by looking at the p-value
+
+---
+
+### Logistic Regression with Multiple Explanatory Variables
+
+```{r}
+fit3 <- glm(cog_imp ~ female + age, 
+            family = 'binomial', data = AD)
+fit3 %>%  summary() %>% coefficients()
+```
+
+---
+
+### Practice
+
+- Use your previous binary response or create a new one
+- Select several continuous and/or binary predictor variables from the data
+- Fit a logistic regression and check for significance of your fitted coefficients
+
