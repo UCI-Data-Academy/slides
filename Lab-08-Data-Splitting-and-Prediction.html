@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Data Splitting and Precision</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Lynn Gao" />
+    <script src="libs/header-attrs-2.22/header-attrs.js"></script>
+    <link rel="stylesheet" href="slide-style.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+class: title-slide
+
+
+
+&lt;br&gt;
+&lt;br&gt;
+.right-panel[ 
+
+# Data Splitting and Precision
+## Lynn Gao
+
+]
+
+
+---
+
+## Load in libraries and the data
+
+
+```r
+library(tidyverse)
+library(tidymodels)
+
+AD &lt;- read_csv("./data/alzheimer_data.csv") 
+```
+
+
+---
+
+## Let's split the data  
+
+We split data to form a training dataset and a testing dataset to see how good your model is. We fit the model using the training dataset and we then we use the testing dataset to see how well our model predicts our outcome of interest.
+
+
+```r
+# sets the rng state (you can use any number you want)
+set.seed(123) 
+
+# for our future model
+AD &lt;- AD %&gt;% 
+  mutate(has_AD = as.factor(ifelse(diagnosis == 0, 0, 1)))
+
+# prop is the proportion of data for the training dataset
+data_split &lt;- initial_split(AD, prop = 0.7) 
+train_data &lt;- training(data_split)
+test_data &lt;- testing(data_split)
+```
+
+---
+
+## Now let's look at our splitted dataset (training dataset)
+
+
+```r
+glimpse(train_data)
+```
+
+```
+## Rows: 1,889
+## Columns: 58
+## $ id        &lt;chr&gt; "S832100", "S694714", "S838087", "S879026", "S636234", "S424…
+## $ diagnosis &lt;dbl&gt; 0, 2, 0, 0, 0, 0, 0, 1, 0, 1, 1, 2, 0, 0, 0, 1, 0, 0, 0, 0, …
+## $ age       &lt;dbl&gt; 71, 68, 37, 79, 68, 77, 64, 76, 59, 82, 84, 77, 61, 65, 63, …
+## $ educ      &lt;dbl&gt; 18, 16, 14, 13, 18, 13, 20, 18, 16, 12, 13, 18, 19, 10, 12, …
+## $ female    &lt;dbl&gt; 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, …
+## $ height    &lt;dbl&gt; 64.0, 65.0, 65.5, 65.5, 73.0, 62.0, 72.2, 63.5, 64.1, 63.7, …
+## $ weight    &lt;dbl&gt; 158, 164, 136, 164, 180, 240, 167, 209, 158, 134, 133, 169, …
+## $ bpsys     &lt;dbl&gt; 131, 137, 119, 130, 116, 111, 113, 120, 114, 126, 158, 179, …
+## $ bpdias    &lt;dbl&gt; 71, 53, 73, 74, 76, 78, 62, 80, 66, 70, 81, 68, 71, 68, 75, …
+## $ hrate     &lt;dbl&gt; 66, 76, 85, 66, 64, 80, 62, 68, 65, 60, 61, 70, 57, 60, 64, …
+## $ cdrglob   &lt;dbl&gt; 0.0, 0.5, 0.0, 0.0, 0.5, 0.0, 0.0, 0.5, 0.0, 0.5, 0.5, 1.0, …
+## $ naccgds   &lt;dbl&gt; 0, 1, 2, 2, 0, 1, 2, 1, 1, 4, 1, 1, 4, 0, 0, 3, 0, 1, 1, 0, …
+## $ delsev    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ hallsev   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ agitsev   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, …
+## $ depdsev   &lt;dbl&gt; 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ anxsev    &lt;dbl&gt; 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ elatsev   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ apasev    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ disnsev   &lt;dbl&gt; 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ irrsev    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ motsev    &lt;dbl&gt; 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ nitesev   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ appsev    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ bills     &lt;dbl&gt; 0, 8, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 0, 8, 0, 0, 0, 0, 0, 0, …
+## $ taxes     &lt;dbl&gt; 0, 8, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ shopping  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ games     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 8, …
+## $ stove     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ mealprep  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 0, 0, 0, 8, 0, 0, 0, 0, …
+## $ events    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ payattn   &lt;dbl&gt; 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ remdates  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 2, 3, 0, 1, 0, 0, 0, 0, 0, 0, …
+## $ travel    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 1, 0, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ naccmmse  &lt;dbl&gt; 30, 22, 28, 29, 30, 29, 30, 30, 30, 26, 25, 12, 29, 26, 29, …
+## $ memunits  &lt;dbl&gt; 13, 4, 14, 14, 14, 16, 15, 3, 15, 6, 16, 0, 12, 4, 15, 12, 1…
+## $ digif     &lt;dbl&gt; 9, 6, 11, 9, 7, 8, 11, 9, 6, 7, 8, 9, 8, 10, 10, 6, 7, 10, 1…
+## $ animals   &lt;dbl&gt; 23, 14, 26, 18, 26, 19, 35, 19, 27, 15, 12, 8, 20, 24, 24, 1…
+## $ traila    &lt;dbl&gt; 32, 50, 14, 26, 26, 39, 15, 41, 23, 57, 42, 148, 21, 28, 27,…
+## $ trailb    &lt;dbl&gt; 137, 140, 30, 93, 45, 137, 46, 129, 43, 300, 91, 90, 42, 68,…
+## $ naccicv   &lt;dbl&gt; 1367.420, 1367.420, 1367.420, 1274.250, 1539.446, 1454.966, …
+## $ csfvol    &lt;dbl&gt; 355.860, 302.090, 290.261, 376.530, 348.379, 410.206, 453.33…
+## $ lhippo    &lt;dbl&gt; 3.6700, 1.9800, 3.1702, 2.0100, 3.0258, 2.9712, 3.0100, 2.90…
+## $ rhippo    &lt;dbl&gt; 3.7300, 1.9900, 3.3585, 2.7300, 3.1684, 2.9220, 3.2200, 2.93…
+## $ frcort    &lt;dbl&gt; 218.780, 143.840, 185.480, 143.890, 190.368, 177.164, 220.04…
+## $ lparcort  &lt;dbl&gt; 56.9700, 41.6100, 51.9760, 46.1000, 59.0046, 46.5612, 54.790…
+## $ rparcort  &lt;dbl&gt; 58.7700, 44.3300, 56.2234, 50.8300, 55.1789, 46.9584, 56.450…
+## $ ltempcor  &lt;dbl&gt; 69.1100, 42.9600, 63.9201, 47.6700, 70.9612, 58.2612, 75.020…
+## $ rtempcor  &lt;dbl&gt; 66.6800, 40.0400, 58.6982, 48.7300, 72.3744, 59.7936, 73.460…
+## $ lcac      &lt;dbl&gt; 3.5800, 2.3500, 4.3943, 3.4800, 2.9457, 4.0860, 3.1900, 2.36…
+## $ rcac      &lt;dbl&gt; 1.7500, 1.9100, 2.6750, 2.7700, 2.2913, 1.7460, 2.4800, 1.83…
+## $ lent      &lt;dbl&gt; 5.0600, 2.4700, 4.1006, 2.4100, 4.7623, 4.1520, 5.2600, 4.21…
+## $ rent      &lt;dbl&gt; 4.6200, 2.5900, 3.7629, 3.9800, 4.1421, 3.7152, 5.8600, 4.03…
+## $ lparhip   &lt;dbl&gt; 4.5700, 3.0200, 3.8871, 3.3100, 4.0318, 3.6648, 5.2100, 4.31…
+## $ rparhip   &lt;dbl&gt; 4.7700, 3.0400, 4.2141, 3.4100, 4.2437, 3.6012, 5.0700, 4.11…
+## $ lposcin   &lt;dbl&gt; 6.4100, 3.6500, 5.1511, 3.9000, 4.3287, 3.7284, 5.9600, 3.94…
+## $ rposcin   &lt;dbl&gt; 5.5100, 3.7100, 4.5598, 3.9000, 3.6567, 4.7592, 5.1500, 4.48…
+## $ has_AD    &lt;fct&gt; 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, …
+```
+
+---
+
+## Now let's look at our split dataset (testing dataset)
+
+
+```r
+glimpse(test_data)
+```
+
+```
+## Rows: 811
+## Columns: 58
+## $ id        &lt;chr&gt; "S755478", "S264496", "S328084", "S763522", "S667711", "S516…
+## $ diagnosis &lt;dbl&gt; 0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 2, 1, …
+## $ age       &lt;dbl&gt; 77, 78, 73, 81, 69, 80, 71, 78, 62, 70, 67, 81, 72, 80, 73, …
+## $ educ      &lt;dbl&gt; 18, 13, 18, 14, 18, 7, 18, 22, 18, 16, 18, 18, 14, 18, 17, 1…
+## $ female    &lt;dbl&gt; 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, …
+## $ height    &lt;dbl&gt; 65.0, 61.0, 69.5, 73.5, 67.0, 66.0, 70.0, 63.5, 65.5, 65.0, …
+## $ weight    &lt;dbl&gt; 137, 122, 159, 212, 147, 144, 168, 101, 116, 200, 248, 187, …
+## $ bpsys     &lt;dbl&gt; 144, 128, 118, 124, 122, 140, 124, 147, 130, 106, 122, 150, …
+## $ bpdias    &lt;dbl&gt; 60, 80, 80, 60, 70, 85, 70, 81, 80, 68, 70, 60, 84, 70, 60, …
+## $ hrate     &lt;dbl&gt; 64, 68, 60, 64, 64, 80, 75, 55, 68, 56, 80, 62, 80, 64, 76, …
+## $ cdrglob   &lt;dbl&gt; 0.0, 0.0, 0.0, 1.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 1.0, 0.5, …
+## $ naccgds   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 1, 5, 0, 1, 1, 0, 0, 4, 10, 0, 1, 5, 0,…
+## $ delsev    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ hallsev   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, …
+## $ agitsev   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 3, 0, 0, 0, 0, 0, 0, 1, 0, …
+## $ depdsev   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1, 0, …
+## $ anxsev    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 1, 0, 2, …
+## $ elatsev   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ apasev    &lt;dbl&gt; 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 1, 0, 1, …
+## $ disnsev   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ irrsev    &lt;dbl&gt; 0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, …
+## $ motsev    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, …
+## $ nitesev   &lt;dbl&gt; 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ appsev    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, …
+## $ bills     &lt;dbl&gt; 0, 0, 0, 8, 2, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 8, 0, 2, 0, 0, …
+## $ taxes     &lt;dbl&gt; 0, 0, 0, 8, 2, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 8, 0, 3, 0, 0, …
+## $ shopping  &lt;dbl&gt; 0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 1, 0, 0, …
+## $ games     &lt;dbl&gt; 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ stove     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 1, 0, 0, 0, 0, 0, …
+## $ mealprep  &lt;dbl&gt; 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 8, 8, 0, 0, 0, 0, 0, 1, 0, 0, …
+## $ events    &lt;dbl&gt; 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 2, 0, 0, …
+## $ payattn   &lt;dbl&gt; 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1, 0, 1, 0, 0, …
+## $ remdates  &lt;dbl&gt; 0, 0, 0, 3, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1, 0, 2, 0, 0, …
+## $ travel    &lt;dbl&gt; 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 2, 0, 0, …
+## $ naccmmse  &lt;dbl&gt; 30, 29, 30, 27, 29, 30, 30, 29, 27, 29, 25, 29, 28, 29, 30, …
+## $ memunits  &lt;dbl&gt; 19, 14, 8, 2, 9, 9, 12, 9, 16, 8, 0, 0, 16, 10, 20, 14, 11, …
+## $ digif     &lt;dbl&gt; 7, 7, 9, 11, 7, 3, 10, 8, 8, 11, 10, 7, 11, 10, 9, 10, 7, 9,…
+## $ animals   &lt;dbl&gt; 19, 21, 26, 19, 20, 18, 15, 18, 14, 22, 10, 15, 25, 19, 16, …
+## $ traila    &lt;dbl&gt; 38, 38, 64, 56, 23, 93, 59, 34, 31, 21, 97, 40, 22, 50, 38, …
+## $ trailb    &lt;dbl&gt; 83, 138, 124, 209, 65, 295, 90, 90, 89, 69, 198, 84, 49, 99,…
+## $ naccicv   &lt;dbl&gt; 1367.420, 1097.500, 1505.645, 1367.420, 1326.579, 1179.590, …
+## $ csfvol    &lt;dbl&gt; 343.176, 318.510, 440.521, 415.198, 335.280, 340.360, 269.23…
+## $ lhippo    &lt;dbl&gt; 2.6990, 2.0000, 2.9492, 2.3414, 2.5530, 2.7600, 2.7227, 2.54…
+## $ rhippo    &lt;dbl&gt; 2.5028, 2.0600, 2.8955, 2.1178, 3.0870, 2.8100, 2.7158, 2.99…
+## $ frcort    &lt;dbl&gt; 163.214, 135.770, 182.924, 165.127, 139.216, 145.080, 136.27…
+## $ lparcort  &lt;dbl&gt; 40.1172, 39.2900, 46.3281, 44.6787, 36.3465, 40.0400, 37.354…
+## $ rparcort  &lt;dbl&gt; 38.2377, 37.5800, 47.3613, 45.6732, 38.5260, 42.9600, 43.245…
+## $ ltempcor  &lt;dbl&gt; 58.8357, 42.2400, 68.5829, 56.9384, 51.2070, 54.2900, 55.640…
+## $ rtempcor  &lt;dbl&gt; 51.5753, 37.1100, 64.1494, 54.5664, 55.6485, 44.7200, 53.201…
+## $ lcac      &lt;dbl&gt; 3.2748, 2.1600, 4.0664, 2.7253, 2.2590, 3.6900, 1.7188, 2.91…
+## $ rcac      &lt;dbl&gt; 1.7054, 1.0000, 1.9766, 2.7570, 1.2225, 2.4100, 1.4502, 2.02…
+## $ lent      &lt;dbl&gt; 3.6207, 2.6100, 4.0918, 3.9319, 2.7720, 3.5500, 3.5752, 4.06…
+## $ rent      &lt;dbl&gt; 2.5787, 2.5000, 4.0693, 2.8445, 2.9190, 3.1000, 3.4863, 3.87…
+## $ lparhip   &lt;dbl&gt; 3.7515, 3.1600, 4.1406, 3.2295, 3.1605, 4.2400, 3.3574, 3.78…
+## $ rparhip   &lt;dbl&gt; 3.6703, 3.3100, 3.9453, 2.9711, 3.4965, 3.5400, 4.0352, 3.33…
+## $ lposcin   &lt;dbl&gt; 3.8686, 3.4300, 4.4443, 3.9488, 2.9340, 4.0300, 2.8936, 3.43…
+## $ rposcin   &lt;dbl&gt; 3.7062, 2.7000, 4.0352, 3.8380, 2.7435, 3.3900, 2.7959, 2.94…
+## $ has_AD    &lt;fct&gt; 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, …
+```
+
+---
+
+## Let's create a linear regression model with the training data
+
+
+```r
+linear_model &lt;- lm(animals ~ age + female, 
+                   data = train_data)
+linear_model %&gt;% summary() %&gt;% coefficients()
+```
+
+```
+##               Estimate Std. Error   t value      Pr(&gt;|t|)
+## (Intercept) 33.1162005 0.96253764  34.40510 9.410107e-202
+## age         -0.2228160 0.01318766 -16.89580  9.561866e-60
+## female       0.7599467 0.30326781   2.50586  1.229903e-02
+```
+
+---
+
+## Let's predict and calculate the MSE
+
+$$
+\text{MSE} = \frac{\sum (\text{observed} - \text{predicted})^2}{\text{total responses}}
+$$
+
+
+```r
+linear_model_response &lt;- predict(linear_model, test_data, type = "response")
+
+# let's calculate the mse
+mse &lt;- (1 / length(linear_model_response) *
+          sum((test_data$animals -
+                 linear_model_response)^2))
+mse
+```
+
+```
+## [1] 41.23631
+```
+
+---
+
+## Let's create a logistic regression model with the training data
+
+
+```r
+logistic_model &lt;- glm(has_AD ~ animals + age, 
+                      data = train_data, 
+                      family = "binomial")
+logistic_model %&gt;% summary() %&gt;% coefficients()
+```
+
+```
+##                Estimate  Std. Error    z value     Pr(&gt;|z|)
+## (Intercept)  2.93387821 0.489797395   5.989983 2.098626e-09
+## animals     -0.24358217 0.012529375 -19.440888 3.480891e-84
+## age          0.01365471 0.005518577   2.474318 1.334908e-02
+```
+
+---
+
+## Let's predict and calculate the accuracy rate
+
+$$
+\text{accuracy} = \frac{\text{total correct responses}}{\text{total responses}}
+$$
+
+
+```r
+logistic_model_response &lt;- predict(logistic_model,
+                                   test_data, 
+                                   type = "response")
+logistic_model_response &lt;- 
+  ifelse(logistic_model_response &gt;= 0.5, 1, 0)
+
+# let's calculate the accuracy
+accuracy_rate &lt;- 
+  sum(logistic_model_response == test_data$has_AD) /
+  length(logistic_model_response)
+```
+
+---
+
+## Let's predict and calculate the accuracy rate
+
+
+```r
+accuracy_rate
+```
+
+```
+## [1] 0.7435265
+```
+
+---
+
+## Let's practice!
+
+- Select a response variable.  
+- Select several continuous and/or binary predictor variables from the data.  
+- Split your data into training and testing datasets.  
+- Fit a linear or logistic regression using your training dataset and check for significance of your fitted coefficients.  
+- Predict using your testing dataset.  
+- Calculate accuracy or MSE, depending on your model.  
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="cols_macro.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "pygments",
+"highlightLines": true,
+"highlightLanguage": "r"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

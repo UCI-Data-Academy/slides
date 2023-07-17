@@ -1,0 +1,159 @@
+---
+title: "Data Splitting and Precision"
+author: "Lynn Gao"
+output: 
+  xaringan::moon_reader:
+    css: ["slide-style.css", "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"]
+    lib_dir: libs
+    seal: false
+    nature:
+      beforeInit: "cols_macro.js"
+      ratio: 16:9
+      highlightStyle: "pygments"
+      highlightLines: true
+      highlightLanguage: "r"
+
+---
+
+class: title-slide
+
+```{r echo = FALSE, warning=FALSE}
+library(fabricerin)
+```
+
+<br>
+<br>
+.right-panel[ 
+
+# `r rmarkdown::metadata$title`
+## `r rmarkdown::metadata$author`
+
+]
+
+
+---
+
+## Load in libraries and the data
+
+```{r message = FALSE}
+library(tidyverse)
+library(tidymodels)
+
+AD <- read_csv("./data/alzheimer_data.csv") 
+```
+
+
+---
+
+## Let's split the data  
+
+We split data to form a training dataset and a testing dataset to see how good your model is. We fit the model using the training dataset and we then we use the testing dataset to see how well our model predicts our outcome of interest.
+
+```{r}
+# sets the rng state (you can use any number you want)
+set.seed(123) 
+
+# for our future model
+AD <- AD %>% 
+  mutate(has_AD = as.factor(ifelse(diagnosis == 0, 0, 1)))
+
+# prop is the proportion of data for the training dataset
+data_split <- initial_split(AD, prop = 0.7) 
+train_data <- training(data_split)
+test_data <- testing(data_split)
+```
+
+---
+
+## Now let's look at our splitted dataset (training dataset)
+
+```{r}
+glimpse(train_data)
+```
+
+---
+
+## Now let's look at our split dataset (testing dataset)
+
+```{r}
+glimpse(test_data)
+```
+
+---
+
+## Let's create a linear regression model with the training data
+
+```{r}
+linear_model <- lm(animals ~ age + female, 
+                   data = train_data)
+linear_model %>% summary() %>% coefficients()
+```
+
+---
+
+## Let's predict and calculate the MSE
+
+$$
+\text{MSE} = \frac{\sum (\text{observed} - \text{predicted})^2}{\text{total responses}}
+$$
+
+```{r}
+linear_model_response <- predict(linear_model, test_data, type = "response")
+
+# let's calculate the mse
+mse <- (1 / length(linear_model_response) *
+          sum((test_data$animals -
+                 linear_model_response)^2))
+mse
+```
+
+---
+
+## Let's create a logistic regression model with the training data
+
+```{r}
+logistic_model <- glm(has_AD ~ animals + age, 
+                      data = train_data, 
+                      family = "binomial")
+logistic_model %>% summary() %>% coefficients()
+```
+
+---
+
+## Let's predict and calculate the accuracy rate
+
+$$
+\text{accuracy} = \frac{\text{total correct responses}}{\text{total responses}}
+$$
+
+```{r}
+logistic_model_response <- predict(logistic_model,
+                                   test_data, 
+                                   type = "response")
+logistic_model_response <- 
+  ifelse(logistic_model_response >= 0.5, 1, 0)
+
+# let's calculate the accuracy
+accuracy_rate <- 
+  sum(logistic_model_response == test_data$has_AD) /
+  length(logistic_model_response)
+```
+
+---
+
+## Let's predict and calculate the accuracy rate
+
+```{r}
+accuracy_rate
+```
+
+---
+
+## Let's practice!
+
+- Select a response variable.  
+- Select several continuous and/or binary predictor variables from the data.  
+- Split your data into training and testing datasets.  
+- Fit a linear or logistic regression using your training dataset and check for significance of your fitted coefficients.  
+- Predict using your testing dataset.  
+- Calculate accuracy or MSE, depending on your model.  
