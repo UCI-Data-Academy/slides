@@ -1,0 +1,173 @@
+---
+title: "Lasso Regression Examples in R using the Alzheimer's Data"
+author: "Brian Schetzsle"
+output: 
+  xaringan::moon_reader:
+    css: ["slide-style.css", "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"]
+    lib_dir: libs
+    seal: false
+    nature:
+      beforeInit: "cols_macro.js"
+      ratio: 16:9
+      highlightStyle: "pygments"
+      highlightLines: true
+      highlightLanguage: "r"
+
+---
+
+class: title-slide
+
+```{r include=FALSE}
+library(fabricerin)
+```
+
+<br>
+<br>
+.right-panel[ 
+
+# `r rmarkdown::metadata$title`
+## `r rmarkdown::metadata$author`
+
+]
+
+---
+
+class: middle
+
+### Preparation
+
+Load the `tidyverse` package into your environment and load your data into a variable. The code will look different and depends where you saved your data.
+
+
+```{r message = FALSE, fontsize=1}
+library(tidyverse)
+library(glmnet)
+AD <- readr::read_csv("./data/alzheimer_data.csv")
+```
+
+---
+
+### Multicolinearity
+
+The predictors in your model are usually correlated with each other (multicolinearity). For instance, `weight` tends to increase with `height`, i.e. taller people tend to be heavier. If you have a model that has both height and weight as predictors the multicolinearity between them will result in large variances of their fitted coefficients. This in turn inflates their p-values and the model may fail to find significance of either `height` or `weight`.
+
+---
+
+### Solutions to Multicolinearity
+
+You could remove `height` and keep `weight`, which solves the problem of multicolinearity but means you lose out on any additional information about your response that `height` had but `weight` did not.
+
+You could transform your data so your variables are no longer correlated (principal component analysis). This can be good because you don't throw out any information contained in your predictors but the results become difficult to interpret.
+
+You could take information from less-important variables and shift it to more-important variables (lasso regression). This makes the fitted coefficients of the less-important variables go to 0 and it biases the more-important variables in a way that boosts the fit of the model.
+
+---
+
+### Linear Regression
+
+```{r}
+model1 <- lm(naccicv ~ csfvol + lhippo + 
+               rhippo + height + weight, 
+             data = AD)
+model1 %>% summary()
+```
+
+---
+
+### Lasso Regression
+
+The `glmnet` package wants the data for the model to be structures as a *data.matrix* rather than a *data.frame*. And the response needs to be a vector.
+
+```{r}
+X <- AD %>% 
+  select(csfvol, lhippo, rhippo, height, weight) %>% 
+  data.matrix()
+
+Y <- AD$naccicv
+```
+
+---
+
+### Lasso Regression
+
+```{r fig.align="center", fig.height=3}
+#perform k-fold cross-validation to find optimal lambda value
+cv_model <- cv.glmnet(X, Y, alpha = 1)
+
+#find optimal lambda value that minimizes test MSE
+best_lambda <- cv_model$lambda.1se
+
+#produce plot of test MSE by lambda value
+plot(cv_model) 
+```
+
+---
+
+### Lasso Regression
+
+
+```{r}
+#find coefficients of best model
+model2 <- glmnet(X, Y, alpha = 1, lambda = best_lambda)
+
+#how do the fitted coefficients of the linear regression model
+#compare to the coefficients in the lasso regression?
+cbind(coef(model1), coef(model2))
+```
+
+---
+
+### Lasso Regression with Categorical Predictors
+
+```{r}
+X <- AD %>% 
+  select(naccicv, csfvol, hallsev, 
+         delsev, agitsev, depdsev) %>% 
+  mutate(hallsev = as.factor(hallsev),
+         delsev = as.factor(delsev),
+         agitsev = as.factor(agitsev),
+         depdsev = as.factor(depdsev))
+
+model3 <- lm(naccicv ~ ., data = X)
+model3 %>% summary()
+```
+
+---
+
+### Lasso Regression with Categorical Predictors
+
+`glmnet` does like categorical predictors; I don't know why. You have to transform your data so that there is a new column for every level of every categorical predictor.
+
+```{r}
+X_matrix <- model.matrix(~ ., X[,-1])[, -1]
+Y = AD$naccicv
+```
+
+---
+
+### Lasso Regression with Categorical Predictors
+
+```{r fig.align="center", fig.height=3}
+#perform k-fold cross-validation to find optimal lambda value
+cv_model <- cv.glmnet(X_matrix, Y, alpha = 1)
+
+#find optimal lambda value that minimizes test MSE
+best_lambda <- cv_model$lambda.1se
+
+#produce plot of test MSE by lambda value
+plot(cv_model) 
+```
+
+---
+
+### Lasso Regression with Categorical Predictors
+
+```{r}
+#find coefficients of best model
+model4 <- glmnet(X_matrix, Y, alpha = 1, lambda = best_lambda)
+
+#how do the fitted coefficients of the linear regression model
+#compare to the coefficients in the lasso regression?
+cbind(coef(model3), coef(model4))
+```
+
