@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>K Nearest Neighbors Algorithm Examples in R using the Alzheimer’s Data</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Brian Schetzsle" />
+    <script src="libs/header-attrs-2.22/header-attrs.js"></script>
+    <link rel="stylesheet" href="slide-style.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+class: title-slide
+
+
+
+&lt;br&gt;
+&lt;br&gt;
+.right-panel[ 
+
+# K Nearest Neighbors Algorithm
+Examples in R using the Alzheimer's Data
+## Brian Schetzsle
+
+]
+
+---
+
+class: middle
+
+### Preparation
+
+Load the `tidyverse` package into your environment and load your data into a variable. The code will look different and depends where you saved your data. We will also be using the `class` package which contains an implementation of the K Nearest Neighbors algorithm.
+
+
+
+```r
+library(tidyverse)
+library(class)
+AD &lt;- readr::read_csv("./data/alzheimer_data.csv")
+```
+
+---
+
+### Clusters within data
+
+Let's visualize two continuous and one categorical variable to see if the different levels of our categorical variable tend to cluster across the two continuous variables.
+
+
+```r
+AD %&gt;% 
+  select(female, height, weight) %&gt;% 
+  mutate(sex = ifelse(female == 0, "Male", "Female")) %&gt;% 
+  ggplot() +
+  geom_point(aes(x = height, y = weight, color = sex))
+```
+
+---
+
+### Clusters within data
+
+&lt;img src="Lab-10-KNN_files/figure-html/unnamed-chunk-4-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Normalizing our data
+
+K-Nearest Neighbor uses euclidean distance between data points to classify unknown points. This means the continuous variables must be normalized to be meaningfully compared. In this context normalizing means subtracting the minimum value and dividing by the range of values in the data so each variable is in the range [0,1].
+
+$$
+\frac{X_i - min(X)}{max(X) - min(X)}
+$$
+
+---
+
+### Normalizing our data
+
+
+```r
+AD_subset &lt;- AD %&gt;% 
+  mutate(height_norm = (height - min(height)) / 
+           (max(height) - min(height)),
+         weight_norm = (weight - min(weight)) / 
+           (max(weight) - min(weight)),
+         sex = ifelse(female == 0, "Male", "Female")) %&gt;% 
+  select(sex, height_norm, weight_norm)
+```
+
+---
+
+### Normalizing our data
+
+
+```r
+AD_subset %&gt;% 
+  ggplot() +
+  geom_point(aes(x = height_norm, 
+                 y = weight_norm, 
+                 color = sex))
+```
+
+---
+
+### Normalizing our data
+
+&lt;img src="Lab-10-KNN_files/figure-html/unnamed-chunk-7-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Seperating our data into Training and Testing subsets
+
+If our goal is classification then we need some data for which the categorical label is not known. All of our data does have a categorical label so we randomly sample some records and pretend we don't know their labels. We then use the K Nearest Neighbors algorithm to predict labels and evaluate the accuracy of these predictions. I use a 70-30 split but the choice is up to you.
+
+---
+
+### Seperating our data into Training and Testing subsets
+
+
+```r
+n_total &lt;- nrow(AD_subset)
+n_train &lt;- floor(n_total * 0.7)
+train_indices &lt;- sample(1:n_total, n_train, 
+                        replace = FALSE)
+
+data_train &lt;- AD_subset %&gt;% slice(train_indices) %&gt;% 
+  select(height_norm, weight_norm) %&gt;% as.matrix()
+data_test &lt;- AD_subset %&gt;% slice(-train_indices) %&gt;% 
+  select(height_norm, weight_norm) %&gt;% as.matrix()
+train_class &lt;- AD_subset %&gt;% slice(train_indices) %&gt;% 
+  select(sex) %&gt;% as.matrix()
+test_class &lt;- AD_subset %&gt;% slice(-train_indices) %&gt;% 
+  select(sex) %&gt;% as.matrix()
+```
+
+---
+
+### Executing the `knn()` function from the `class` package
+
+
+```r
+predictions &lt;- knn(train = data_train, 
+                   test = data_test, 
+                   cl = train_class, k = 5)
+
+confusion_matrix &lt;- table(predictions, test_class)
+
+accuracy &lt;- sum(diag(confusion_matrix)) / 
+  sum(confusion_matrix)
+```
+
+---
+
+### Evaluating accuracy
+
+
+```r
+confusion_matrix
+```
+
+```
+##            test_class
+## predictions Female Male
+##      Female    410   83
+##      Male       56  262
+```
+
+```r
+accuracy
+```
+
+```
+## [1] 0.8286067
+```
+
+---
+
+### Evaluating accuracy
+
+Where are these misclassifications happening?
+
+
+```r
+data.frame(data_test) %&gt;% 
+  mutate(correct = ifelse(predictions == test_class, 
+                          "correct", "incorrect")) %&gt;% 
+  ggplot() +
+  geom_point(aes(x = height_norm, y = weight_norm, 
+                 color = correct)) +
+  scale_colour_manual(values = c("black", "red"))
+```
+
+---
+
+### Evaluating accuracy
+
+&lt;img src="Lab-10-KNN_files/figure-html/unnamed-chunk-12-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Practice
+
+- Select a categorical variable and *three* continuous variables
+- Normalize the continuous variables
+- Split your data into training and testing subsets
+- Perform K Nearest Neighbor prediction on your test data using *two* of the continuous variables
+- Find the prediction accuracy
+- Perform K Nearest Neighbor prediction using *all three* of the continuous variables
+- Did the accuracy improve? (I don't think this is guaranteed)
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="cols_macro.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "pygments",
+"highlightLines": true,
+"highlightLanguage": "r"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

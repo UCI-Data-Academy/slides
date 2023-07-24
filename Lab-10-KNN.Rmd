@@ -1,0 +1,211 @@
+---
+title: "K Nearest Neighbors Algorithm\nExamples in R using the Alzheimer's Data"
+author: "Brian Schetzsle"
+output: 
+  xaringan::moon_reader:
+    css: ["slide-style.css", "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"]
+    lib_dir: libs
+    seal: false
+    nature:
+      beforeInit: "cols_macro.js"
+      ratio: 16:9
+      highlightStyle: "pygments"
+      highlightLines: true
+      highlightLanguage: "r"
+
+---
+
+class: title-slide
+
+```{r include=FALSE}
+library(fabricerin)
+```
+
+<br>
+<br>
+.right-panel[ 
+
+# `r rmarkdown::metadata$title`
+## `r rmarkdown::metadata$author`
+
+]
+
+---
+
+class: middle
+
+### Preparation
+
+Load the `tidyverse` package into your environment and load your data into a variable. The code will look different and depends where you saved your data. We will also be using the `class` package which contains an implementation of the K Nearest Neighbors algorithm.
+
+
+```{r message = FALSE, fontsize=1}
+library(tidyverse)
+library(class)
+AD <- readr::read_csv("./data/alzheimer_data.csv")
+```
+
+---
+
+### Clusters within data
+
+Let's visualize two continuous and one categorical variable to see if the different levels of our categorical variable tend to cluster across the two continuous variables.
+
+```{r eval=FALSE}
+AD %>% 
+  select(female, height, weight) %>% 
+  mutate(sex = ifelse(female == 0, "Male", "Female")) %>% 
+  ggplot() +
+  geom_point(aes(x = height, y = weight, color = sex))
+```
+
+---
+
+### Clusters within data
+
+```{r echo=FALSE, fig.align = "center", fig.width = 15}
+AD %>% 
+  select(female, height, weight) %>% 
+  mutate(sex = ifelse(female == 0, "Male", "Female")) %>% 
+  ggplot() +
+  geom_point(aes(x = height, y = weight, color = sex))
+```
+
+---
+
+### Normalizing our data
+
+K-Nearest Neighbor uses euclidean distance between data points to classify unknown points. This means the continuous variables must be normalized to be meaningfully compared. In this context normalizing means subtracting the minimum value and dividing by the range of values in the data so each variable is in the range [0,1].
+
+$$
+\frac{X_i - min(X)}{max(X) - min(X)}
+$$
+
+---
+
+### Normalizing our data
+
+```{r}
+AD_subset <- AD %>% 
+  mutate(height_norm = (height - min(height)) / 
+           (max(height) - min(height)),
+         weight_norm = (weight - min(weight)) / 
+           (max(weight) - min(weight)),
+         sex = ifelse(female == 0, "Male", "Female")) %>% 
+  select(sex, height_norm, weight_norm)
+```
+
+---
+
+### Normalizing our data
+
+```{r eval=FALSE}
+AD_subset %>% 
+  ggplot() +
+  geom_point(aes(x = height_norm, 
+                 y = weight_norm, 
+                 color = sex))
+```
+
+---
+
+### Normalizing our data
+
+```{r echo=FALSE, fig.align = "center", fig.width = 15}
+AD_subset %>% 
+  ggplot() +
+  geom_point(aes(x = height_norm, y = weight_norm, color = sex))
+```
+
+---
+
+### Seperating our data into Training and Testing subsets
+
+If our goal is classification then we need some data for which the categorical label is not known. All of our data does have a categorical label so we randomly sample some records and pretend we don't know their labels. We then use the K Nearest Neighbors algorithm to predict labels and evaluate the accuracy of these predictions. I use a 70-30 split but the choice is up to you.
+
+---
+
+### Seperating our data into Training and Testing subsets
+
+```{r}
+n_total <- nrow(AD_subset)
+n_train <- floor(n_total * 0.7)
+train_indices <- sample(1:n_total, n_train, 
+                        replace = FALSE)
+
+data_train <- AD_subset %>% slice(train_indices) %>% 
+  select(height_norm, weight_norm) %>% as.matrix()
+data_test <- AD_subset %>% slice(-train_indices) %>% 
+  select(height_norm, weight_norm) %>% as.matrix()
+train_class <- AD_subset %>% slice(train_indices) %>% 
+  select(sex) %>% as.matrix()
+test_class <- AD_subset %>% slice(-train_indices) %>% 
+  select(sex) %>% as.matrix()
+```
+
+---
+
+### Executing the `knn()` function from the `class` package
+
+```{r}
+predictions <- knn(train = data_train, 
+                   test = data_test, 
+                   cl = train_class, k = 5)
+
+confusion_matrix <- table(predictions, test_class)
+
+accuracy <- sum(diag(confusion_matrix)) / 
+  sum(confusion_matrix)
+```
+
+---
+
+### Evaluating accuracy
+
+```{r}
+confusion_matrix
+
+accuracy
+```
+
+---
+
+### Evaluating accuracy
+
+Where are these misclassifications happening?
+
+```{r eval=FALSE}
+data.frame(data_test) %>% 
+  mutate(correct = ifelse(predictions == test_class, 
+                          "correct", "incorrect")) %>% 
+  ggplot() +
+  geom_point(aes(x = height_norm, y = weight_norm, 
+                 color = correct)) +
+  scale_colour_manual(values = c("black", "red"))
+```
+
+---
+
+### Evaluating accuracy
+
+```{r echo=FALSE, fig.align = "center", fig.width = 15}
+data.frame(data_test) %>% 
+  mutate(correct = ifelse(predictions == test_class, 
+                          "correct", "incorrect")) %>% 
+  ggplot() +
+  geom_point(aes(x = height_norm, y = weight_norm, 
+                 color = correct)) +
+  scale_colour_manual(values = c("black", "red"))
+```
+
+---
+
+### Practice
+
+- Select a categorical variable and *three* continuous variables
+- Normalize the continuous variables
+- Split your data into training and testing subsets
+- Perform K Nearest Neighbor prediction on your test data using *two* of the continuous variables
+- Find the prediction accuracy
+- Perform K Nearest Neighbor prediction using *all three* of the continuous variables
+- Did the accuracy improve? (I don't think this is guaranteed)
