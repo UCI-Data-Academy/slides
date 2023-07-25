@@ -1,0 +1,243 @@
+---
+title: "Concept Learning Algorithms\nExamples in R using the Alzheimer's Data"
+author: "Lynn Gao"
+output: 
+  xaringan::moon_reader:
+    css: ["slide-style.css", "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"]
+    lib_dir: libs
+    seal: false
+    nature:
+      beforeInit: "cols_macro.js"
+      ratio: 16:9
+      highlightStyle: "pygments"
+      highlightLines: true
+      highlightLanguage: "r"
+
+---
+
+class: title-slide
+
+```{r echo = FALSE, warning=FALSE}
+library(fabricerin)
+```
+
+<br>
+<br>
+.right-panel[ 
+
+# `r rmarkdown::metadata$title`
+## `r rmarkdown::metadata$author`
+
+]
+
+
+---
+
+## Load in libraries and the data
+
+
+```{r message = FALSE}
+library(tidyverse)
+AD <- read_csv("./data/alzheimer_data.csv") 
+```
+
+---
+
+## Load in libraries and the data
+
+We'll also use some practice data:
+
+|Time |	Weather |	Temperature |	Company |	Humidity |	Wind |	Goes on a walk |
+|-------|-------|-------|-------|-------|-------|-------------------|
+|Morning |	Sunny |	Warm |	Yes |	Mild |	Strong |	Yes |
+| Evening |	Rainy |	Cold |	No |	Mild |	Normal |	No |
+| Morning |	Sunny |	Moderate |	Yes |	Normal |	Normal |	Yes |
+| Evening |	Sunny |	Cold |	Yes |	High |	Strong |	Yes |
+
+```{r}
+Walk <- as.data.frame(rbind(
+              c("Morning",	"Sunny",	"Warm",	"Yes",	"Mild",	"Strong",	"Yes"),
+              c("Evening",	"Rainy",	"Cold",	"No",	"Mild",	"Normal",	"No"),
+              c("Morning",	"Sunny",	"Moderate",	"Yes",	"Normal",	"Normal",	"Yes"),
+              c("Evening",	"Sunny",	"Cold",	"Yes",	"High",	"Strong",	"Yes")))
+colnames(Walk) = c("Time",	"Weather",	"Temperature",	"Company",	"Humidity",	"Wind",	"Goes")
+```
+
+---
+
+Before we start, let's quickly go over for loops in R.
+
+```{r}
+walk_columns = colnames(Walk)
+```
+
+.pull-left[
+```{r}
+for(i in 1:length(walk_columns)){
+  print(i)
+}
+```
+]
+
+.pull-right[
+```{r}
+for(i in walk_columns){
+  print(i)
+}
+```
+
+]
+
+
+---
+
+I wasn't able to find any libraries in R that implemented the specific concept learning algorithms we learned today, so let's implement the algorithms ourselves! 
+
+```{r}
+# first, let's subset the data and choose which categorical variables we want to include and which rows we want to include
+AD_subset <- AD %>% 
+  select(diagnosis, travel, bills, taxes) %>% 
+  mutate(has_ad = ifelse(diagnosis == 2, "AD", "No AD"),
+         travel = as.factor(travel), 
+         bills = as.factor(bills), 
+         taxes = as.factor(taxes)) %>% 
+  slice(1:20)
+```
+
+---
+class: middle
+
+.pull-left[
+```{r}
+# the attributes
+data <- AD_subset[,2:4]
+data
+```
+]
+
+.pull-right[
+```{r}
+# the target
+target <- AD_subset %>% 
+  pull(has_ad) 
+target
+```
+]
+
+---
+
+## Find-S Algorithm
+
+```{r}
+finds <- function(data, target, positive_factor){
+  for (i in 1:length(target)){
+    if (target[i] == positive_factor){
+      specific_hypothesis = data[i,]
+      break
+    }
+  }
+  for (i in 1:length(target)){
+    if (target[i] == positive_factor){
+      for (j in 1:length(specific_hypothesis)){
+        if (data[i,j] != specific_hypothesis[j]){
+          specific_hypothesis[j] = '?'
+        }
+      }
+    }
+  }
+  return(specific_hypothesis)
+}
+```
+
+---
+
+As our result, we get a final hypothesis that is very general, which makes sense because not all people with Alzheimer's may have trouble travelling, paying bills, or paying taxes.
+
+```{r}
+finds(data, target, "AD")
+```
+
+---
+
+Now let's use our practice data to see the implemented algorithm with different results.
+
+```{r}
+walk_target <- Walk$Goes
+walk_data <- Walk[,1:6]
+finds(walk_data, walk_target, "Yes")
+```
+
+Looking at our final hypothesis, we can see that if it is Sunny and the person has Company, then they will go on a walk.
+---
+
+### Practice
+
+- Select a categorical variable for the target (ex: sex, has_ad) and *at least three* other categorical variables for the attributes.
+- Perform the Find-S Algorithm on your data. 
+- Are there any trends in your final hypotheses? Were there any attributes that were consistent among positive examples?
+
+Extra:
+- Implement the Find-S Algorithm with the EnjoySport data from lecture this morning.
+
+---
+
+## Candidate-Elimination Algorithm
+
+
+```{r}
+cea <- function(data, target, positive_factor){
+  specific_h <- as.matrix(data[1,])
+  general_h <- matrix(rep("?", length(specific_h)*length(specific_h)), 
+                      nrow = length(specific_h),
+                      ncol = length(specific_h))
+  for (i in 1:length(target)){
+    if (target[i] == positive_factor){
+      for (j in 1:length(specific_h)){
+        if (data[i,j] != specific_h[j]){
+          specific_h[j] = "?"
+          general_h[j,j] = "?"
+        }
+      }
+    }
+    if (target[i] != positive_factor){
+      for (j in 1:length(specific_h)){
+        if (data[i,j] != specific_h[j]){
+          general_h[j,j] = specific_h[j]
+        }
+        else {
+          general_h[j,j] = "?"
+        }
+      }
+    }
+  }
+  print(specific_h)
+  return(general_h)
+}
+```
+
+---
+
+Again, we see that the resulting hypotheses for our Alzheimer's data are very general. 
+
+```{r}
+cea(data, target, "AD")
+```
+
+---
+
+The results of the Candidate-Elimination Algorithm for the walking data gives us the same results as for the Find-S Algorithm.
+
+```{r}
+cea(walk_data, walk_target, "Yes")
+```
+
+---
+
+### Practice
+
+- Select a categorical variable for the target (ex: sex, has_ad) and *at least three* other categorical variables for the attributes.
+- Perform the Candidate-Elimination Algorithm on your data. 
+- Were you able to find any consistent attributes in your final hypotheses? If not, why do you think you didn't find any? If yes, which attributes?
+
+Extra:
+- Implement the Candidate-Elimination Algorithm with the EnjoySport data from lecture this morning.
