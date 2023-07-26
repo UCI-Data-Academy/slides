@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Decision Trees Examples in R using the Alzheimer’s Data</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Brian Schetzsle" />
+    <script src="libs/header-attrs-2.22/header-attrs.js"></script>
+    <link rel="stylesheet" href="slide-style.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+class: title-slide
+
+
+
+&lt;br&gt;
+&lt;br&gt;
+.right-panel[ 
+
+# Decision Trees    
+Examples in R using the Alzheimer's Data
+## Brian Schetzsle
+
+]
+
+---
+
+class: middle
+
+### Preparation
+
+Load the `tidyverse` package into your environment and load your data into a variable. The code will look different and depends where you saved your data. We will also use the `tidymodels` package to fit decision trees. Finally, the `rpart.plot` package allows us to visualize fitted tree models.
+
+
+
+```r
+library(tidyverse)
+library(tidymodels)
+library(rpart.plot)
+AD &lt;- readr::read_csv("./data/alzheimer_data.csv")
+```
+
+---
+
+### Decision Trees
+
+Decision trees can be used for both classification and regression tasks. We will start with classification. We will return to the setup we had for the K Nearest Neighbors Algorithm Lab. We want to predict a person's sex (classification) as a function of their weight and height.
+
+
+```r
+AD &lt;- AD %&gt;% 
+  mutate(sex = ifelse(female == 0, "Male", "Female")) %&gt;% 
+  mutate(sex = as.factor(sex))
+
+AD %&gt;% 
+  ggplot() +
+  geom_point(aes(x = height, y = weight, color = sex))
+```
+
+---
+
+### Clusters within data
+
+&lt;img src="Lab-12-DecisionTrees_files/figure-html/unnamed-chunk-4-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Pre-processing and Splitting Data
+
+Ordinarily you have to do some data pre-processing to deal with missing values. That issue has been graciously ameliorated by whomever cleaned this data for you from the much larger and messier NACC dataset. We do have to split our data into training and testing to avoid over-fitting. I'm using a 70-30 train-test split.
+
+
+```r
+n_total &lt;- nrow(AD)
+n_train &lt;- floor(n_total * 0.7)
+set.seed(123)
+train_indices &lt;- sample(1:n_total, n_train, 
+                        replace = FALSE)
+
+data_train &lt;- AD %&gt;% slice(train_indices)
+data_test &lt;- AD %&gt;% slice(-train_indices)
+```
+
+---
+
+### Fitting a Decision Tree
+
+Using the `decision_tree()` function from the `tidymodels` package we can fit a decision tree.
+
+
+```r
+#Create a decision tree model specification
+tree_spec &lt;- 
+  decision_tree(mode = "classification", 
+                engine = "rpart",
+                cost_complexity = 0.005)
+  
+
+#Fit the model to the training data
+tree_fit &lt;- tree_spec %&gt;% 
+  fit(sex ~ height + weight, data = data_train)
+
+rpart.plot(tree_fit$fit, roundint=FALSE)
+```
+
+---
+
+### Fitting a Decision Tree
+
+&lt;img src="Lab-12-DecisionTrees_files/figure-html/unnamed-chunk-7-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Fitting a Decision Tree
+
+The decision tree made a single partition in the data. It classifies all those individuals taller than 67 as male and all those less than 67 as female.
+
+
+```r
+data_train %&gt;% 
+  ggplot() +
+  geom_point(aes(x = height, y = weight, color = sex)) +
+  geom_vline(xintercept = 67)
+```
+
+---
+
+### Fitting a Decision Tree
+
+&lt;img src="Lab-12-DecisionTrees_files/figure-html/unnamed-chunk-9-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Evaluating Accuracy
+
+We now can make predictions on our test data using the fitted decision tree and compare the predicted sex to the actual sex.
+
+
+```r
+predictions &lt;- predict(tree_fit, new_data = data_test) %&gt;%
+  pull(.pred_class)
+
+confusion_matrix &lt;- table(predictions, data_test$sex)
+
+accuracy &lt;- sum(diag(confusion_matrix)) / 
+  sum(confusion_matrix)
+```
+
+---
+
+### Evaluating Accuracy
+
+
+```r
+confusion_matrix
+```
+
+```
+##            
+## predictions Female Male
+##      Female    397   78
+##      Male       56  280
+```
+
+```r
+accuracy
+```
+
+```
+## [1] 0.8347719
+```
+
+---
+
+### Evaluating accuracy
+
+Where are these misclassifications happening?
+
+
+```r
+cbind(data_test, predictions) %&gt;% 
+  mutate(correct = ifelse(predictions == sex, 
+                          "correct", "incorrect")) %&gt;% 
+  ggplot() +
+  geom_point(aes(x = height, y = weight, 
+                 color = correct)) +
+  scale_colour_manual(values = c("black", "red"))
+```
+
+---
+
+### Evaluating accuracy
+
+&lt;img src="Lab-12-DecisionTrees_files/figure-html/unnamed-chunk-13-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Practice
+
+* Fit a decision tree that classifies diagnosis (with three levels) as a function of any number of numeric and categorical predictors
+* You may need to recode your categorical predictors using `as.factor()`
+* Evaluate your accuracy
+* Play around with the `cost_complexity` parameter in the `decision_tree()` function to see how it impacts accuracy
+
+---
+
+### Decision Trees for Regression
+
+With classification we have a categorical response. We can also use tree-based models to predict a numeric response. The primary difference is the use of the `mode` parameter in the `decision_tree()` function being set to "regression" and not "classification". We will model age as a function of height and weight.
+
+---
+
+### Decision Trees for Regression
+
+
+```r
+#Create a decision tree model specification
+tree_spec &lt;- 
+  decision_tree(mode = "regression", 
+                engine = "rpart",
+                cost_complexity = 0.005)
+
+#Fit the model to the training data
+tree_fit &lt;- tree_spec %&gt;% 
+  fit(age ~ height + weight, data = data_train)
+
+rpart.plot(tree_fit$fit, roundint=FALSE)
+```
+---
+
+### Decision Trees for Regression
+
+&lt;img src="Lab-12-DecisionTrees_files/figure-html/unnamed-chunk-15-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Evaluating Accuracy
+
+One way to evaluate how well your model is doing is with `\(R^2\)`, the amount of variance in our response (in the test subset) that is explained by your model. To do this we compare the variance of the residuals (difference between true and predicted values) to the variance of the response.
+
+---
+
+### Evaluating Accuracy
+
+When getting predictions from a regression tree, the column we need to pull is `.pred` and not `.pred_class` as in decision trees.
+
+
+```r
+predictions &lt;- predict(tree_fit, new_data = data_test) %&gt;%
+  pull(.pred)
+
+R2 &lt;- 1 - var(data_test$age - predictions) /
+  var(data_test$age)
+```
+
+---
+
+### Evaluating Accuracy
+
+The `\(R^2\)` value is really bad! It indicates that our regression tree does a terrible job modeling age; it is only able to explain about 4.5% of the variance of age. We can make our model more complicated by adjusting the `cost_complexity` parameter but run the risk of overfitting to our training data.
+
+
+```r
+R2
+```
+
+```
+## [1] 0.04540266
+```
+
+---
+
+### Practice
+
+* Select a numeric variable as your response and any number of numeric and categorical variables as your predictors
+* Fit a regression tree to a training subset
+* Evaluate how well the model fits the test data subset using `\(R^2\)`
+* Adjust the `cost_complexity` parameter and see how this alters your `\(R^2\)`
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="cols_macro.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "pygments",
+"highlightLines": true,
+"highlightLanguage": "r"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
