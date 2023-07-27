@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Random Forests Examples in R using the Alzheimer’s Data</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Brian Schetzsle" />
+    <script src="libs/header-attrs-2.22/header-attrs.js"></script>
+    <link rel="stylesheet" href="slide-style.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+class: title-slide
+
+
+
+&lt;br&gt;
+&lt;br&gt;
+.right-panel[ 
+
+# Random Forests    
+Examples in R using the Alzheimer's Data
+## Brian Schetzsle
+
+]
+
+---
+
+class: middle
+
+### Preparation
+
+Load the `tidyverse` package into your environment and load your data into a variable. The code will look different and depends where you saved your data. We will use the `randomForest` package to fit our random forest models. There are other packages that we could use that allow for more customization but this package is the easiest to begin with. Finally, we will use the `vip` package to extract variable important from our fitted models.
+
+
+
+```r
+library(tidyverse)
+library(randomForest)
+library(vip)
+AD &lt;- readr::read_csv("./data/alzheimer_data.csv")
+
+AD &lt;- AD %&gt;% 
+  mutate(female = as.factor(female)) %&gt;% 
+  select(-id)
+```
+
+---
+
+### Random Forests
+
+Random forest models help correct decision and regression tree models' tendency to overfit data. A bunch of trees are fit with the limitation that at each node in each tree only a random subset of the predictors can be used. This results in a bunch of similar trees whose predictions are then aggregated. In the case of classification, the most-predicted level from all the trees in the forest is selected. For regression the average prediction across all trees is calculated.
+
+---
+
+### Fitting a Random Forest Model
+
+We will start by fitting a simple random forest model to predict sex as a factor of age, height and weight. We divide our data into training and testing subsets.
+
+
+```r
+n_total &lt;- nrow(AD)
+n_train &lt;- floor(n_total * 0.7)
+set.seed(123)
+
+train_indices &lt;- sample(1:n_total, n_train, 
+                        replace = FALSE)
+
+data_train &lt;- AD %&gt;% slice(train_indices)
+data_test &lt;- AD %&gt;% slice(-train_indices)
+```
+
+---
+
+### Fitting a Random Forest Model
+
+Now we can fit the model using the `randomForest()` function. To evaluate its performance we can get predictions on the test data and see how often the prediction is correct.
+
+
+```r
+rf_fit &lt;- randomForest(female ~ age + height + weight, 
+                       data = data_train, 
+                       proximity = TRUE)
+
+predictions &lt;- predict(rf_fit, data_test)
+
+accuracy &lt;- sum(predictions == data_test$female) / 
+  length(predictions)
+```
+
+---
+
+### Evaluating Accuracy
+
+
+```r
+accuracy
+```
+
+```
+## [1] 0.8434032
+```
+
+---
+
+### Comparing Accuracy to Logistic Regression
+
+Out of curiosity we could compare this accuracy to a logistic regression model which can also be used for classification.
+
+
+```r
+logistic_model &lt;- glm(female ~ age + height + weight, 
+                      data = data_train,
+                      family = "binomial")
+
+logistic_predictions &lt;- predict(logistic_model, 
+                                data_test,
+                                type = "response")
+logistic_predictions &lt;- 
+  ifelse(logistic_predictions &gt;= 0.5, 1, 0)
+```
+
+---
+
+### Comparing Accuracy to Logistic Regression
+
+The logistic regression performs comparably but with the added benefit that you can explain how the different predictors relate to the response.
+
+
+```r
+logistic_accuracy &lt;- 
+  sum(logistic_predictions == data_test$female) / 
+  length(logistic_predictions)
+
+logistic_accuracy
+```
+
+```
+## [1] 0.8532676
+```
+
+---
+
+### Comparing Accuracy to Logistic Regression
+
+
+```r
+summary(logistic_model)
+```
+
+```
+## 
+## Call:
+## glm(formula = female ~ age + height + weight, family = "binomial", 
+##     data = data_train)
+## 
+## Coefficients:
+##              Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept) 53.898604   2.506014  21.508  &lt; 2e-16 ***
+## age         -0.071408   0.006963 -10.256  &lt; 2e-16 ***
+## height      -0.708490   0.034874 -20.316  &lt; 2e-16 ***
+## weight      -0.010422   0.002261  -4.609 4.04e-06 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 2569.9  on 1888  degrees of freedom
+## Residual deviance: 1309.7  on 1885  degrees of freedom
+## AIC: 1317.7
+## 
+## Number of Fisher Scoring iterations: 6
+```
+
+---
+
+### Evaluating Predictor Importance in a Random Forest Model
+
+A random forest model can give you a sense of which predictors are important based on how often they show up in different trees. The `vip()` function graphically displays this importance.
+
+
+```r
+vip(rf_fit)
+```
+
+&lt;img src="Lab-13-RandomForests_files/figure-html/unnamed-chunk-9-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Practice
+
+- Select a categorical response and several numeric or categorical predictors from the data
+- Fit a random forest model and evaluate its predictive accuracy on a test subset
+
+---
+
+### Random Forest for Regression
+
+We can also use random forest models for modeling a numeric response. I'm going to model age as a function of all other predictors in the data.
+
+
+```r
+rf_fit &lt;- randomForest(age ~ ., 
+                       data = data_train, 
+                       proximity = TRUE)
+```
+
+---
+
+### Evaluating Model Fit
+
+How well does this random forest model predict age? I can evaluate this using `\(R^2\)`, the amount of variation in the response that is explained by the model.
+
+
+```r
+predictions &lt;- predict(rf_fit, data_test)
+
+1 - var(data_test$age - predictions) / 
+  var(data_test$age)
+```
+
+```
+## [1] 0.550183
+```
+
+---
+
+### Comparing to a Linear Regression
+
+We can compare a random forest regression model to a linear regression by comparing their `\(R^2\)`
+
+
+```r
+linear_model &lt;- lm(age ~ ., data = data_train)
+lm_predictions &lt;- predict(linear_model, 
+                          newdata = data_test)
+
+1 - var(data_test$age - lm_predictions) / 
+  var(data_test$age)
+```
+
+```
+## [1] 0.5433203
+```
+
+---
+
+### Practice
+
+- Select a continuous response and any number of predictors from the data
+- Fit a random forest model and evaluate its `\(R^2\)`
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="cols_macro.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "pygments",
+"highlightLines": true,
+"highlightLanguage": "r"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

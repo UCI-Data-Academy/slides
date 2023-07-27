@@ -1,0 +1,196 @@
+---
+title: "Naive Bayes Classifiers\nExamples in R using the Alzheimer's Data"
+author: "Lynn Gao"
+output: 
+  xaringan::moon_reader:
+    css: ["slide-style.css", "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"]
+    lib_dir: libs
+    seal: false
+    nature:
+      beforeInit: "cols_macro.js"
+      ratio: 16:9
+      highlightStyle: "pygments"
+      highlightLines: true
+      highlightLanguage: "r"
+
+---
+
+class: title-slide
+
+```{r echo = FALSE, warning=FALSE}
+library(fabricerin)
+```
+
+<br>
+<br>
+.right-panel[ 
+
+# `r rmarkdown::metadata$title`
+## `r rmarkdown::metadata$author`
+
+]
+
+
+---
+
+### Preparation
+
+Load the `tidyverse` package into your environment and load your data into a variable. The code will look different and depends where you saved your data. We will also use the `e1071` package to fit the Naive Bayes Classifier. 
+
+When you install the `e1071` library, you might get a question in the console asking, "Do you want to install from sources the package which needs compilation? (Yes/no/cancel)". Just type in no and it should download normally. 
+
+```{r, warning = FALSE, message=FALSE}
+library(tidyverse)
+library(e1071)
+
+AD <- readr::read_csv("./data/alzheimer_data.csv")
+```
+
+---
+
+### Naive Bayes Classifier
+
+We will return to the setup we had for the K Nearest Neighbors Algorithm Lab and the Decision Trees Lab. We want to predict a person's sex (classification) as a function of their weight and height.
+
+```{r eval=FALSE}
+AD <- AD %>% 
+  mutate(sex = ifelse(female == 0, "Male", "Female")) %>% 
+  mutate(sex = as.factor(sex))
+
+AD %>% 
+  ggplot() +
+  geom_point(aes(x = height, y = weight, color = sex))
+```
+
+---
+
+### Clusters within data
+
+```{r echo=FALSE, fig.align = "center", fig.width = 15}
+AD <- AD %>% 
+  mutate(sex = ifelse(female == 0, "Male", "Female")) %>% 
+  mutate(sex = as.factor(sex))
+
+AD %>% 
+  ggplot() +
+  geom_point(aes(x = height, y = weight, color = sex))
+```
+
+---
+
+### Pre-processing and Splitting Data
+
+Ordinarily you have to do some data pre-processing to deal with missing values. That issue has been graciously ameliorated by whomever cleaned this data for you from the much larger and messier NACC dataset. We do have to split our data into training and testing to avoid over-fitting. I'm using a 70-30 train-test split.
+
+```{r}
+n_total <- nrow(AD)
+n_train <- floor(n_total * 0.7)
+set.seed(123)
+train_indices <- sample(1:n_total, n_train, 
+                        replace = FALSE)
+
+data_train <- AD %>% slice(train_indices)
+data_test <- AD %>% slice(-train_indices)
+```
+
+---
+
+### Fitting a Naive Bayes Classifier
+
+Using the `naiveBayes` function from the `e1071` package we can fit a Naive Bayes Classifier.
+
+```{r, eval = FALSE}
+set.seed(123)
+
+nb_classifier <- naiveBayes(sex ~ height + weight, data = data_train)
+nb_classifier
+```
+
+---
+
+### Fitting a Naive Bayes Classifier
+
+According to the help file of the `naiveBayes` function, for categorical variables, the output includes the conditional probabilities given each target class.
+
+```{r, echo=FALSE}
+set.seed(123)
+nb_classifier <- naiveBayes(sex ~ height + weight, data = data_train)
+# since nb_classifier$apriori only gives the counts, the below code will divide by the total to get the probabilities/ratios.
+nb_classifier$apriori / sum(nb_classifier$apriori)
+```
+
+
+---
+
+### Fitting a Naive Bayes Classifier
+
+According to the help file of the `naiveBayes` function, for numeric variables, the output includes the mean and standard deviation of the variable for each target class.
+
+```{r, echo=FALSE}
+set.seed(123)
+nb_classifier <- naiveBayes(sex ~ height + weight, data = data_train)
+nb_classifier$tables
+```
+
+---
+
+### Evaluating Accuracy
+
+We now can make predictions on our test data using the fitted model and compare the predicted sex to the actual sex.
+
+```{r}
+predictions <- predict(nb_classifier, newdata = data_test) 
+
+confusion_matrix <- table(predictions, data_test$sex)
+
+accuracy <- sum(diag(confusion_matrix)) / 
+  sum(confusion_matrix)
+```
+
+---
+
+### Evaluating Accuracy
+
+```{r}
+confusion_matrix
+
+accuracy
+```
+
+---
+
+### Evaluating accuracy
+
+Where are these misclassifications happening?
+
+```{r eval=FALSE}
+cbind(data_test, predictions) %>% 
+  mutate(correct = ifelse(predictions == sex, 
+                          "correct", "incorrect")) %>% 
+  ggplot() +
+  geom_point(aes(x = height, y = weight, 
+                 color = correct)) +
+  scale_colour_manual(values = c("black", "red"))
+```
+
+---
+
+### Evaluating accuracy
+
+```{r echo=FALSE, fig.align = "center", fig.width = 15}
+cbind(data_test, predictions) %>% 
+  mutate(correct = ifelse(predictions == sex, 
+                          "correct", "incorrect")) %>% 
+  ggplot() +
+  geom_point(aes(x = height, y = weight, 
+                 color = correct)) +
+  scale_colour_manual(values = c("black", "red"))
+```
+
+---
+
+### Practice
+
+* Fit a Naive Bayes Classifier that classifies diagnosis (with three levels) as a function of any number of numeric and categorical predictors
+* You may need to recode your categorical predictors using `as.factor()`
+* Evaluate your accuracy

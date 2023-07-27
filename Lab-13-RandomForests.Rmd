@@ -1,0 +1,204 @@
+---
+title: "Random Forests    \nExamples in R using the Alzheimer's Data"
+author: "Brian Schetzsle"
+output: 
+  xaringan::moon_reader:
+    css: ["slide-style.css", "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"]
+    lib_dir: libs
+    seal: false
+    nature:
+      beforeInit: "cols_macro.js"
+      ratio: 16:9
+      highlightStyle: "pygments"
+      highlightLines: true
+      highlightLanguage: "r"
+
+---
+
+class: title-slide
+
+```{r include=FALSE}
+library(fabricerin)
+```
+
+<br>
+<br>
+.right-panel[ 
+
+# `r rmarkdown::metadata$title`
+## `r rmarkdown::metadata$author`
+
+]
+
+---
+
+class: middle
+
+### Preparation
+
+Load the `tidyverse` package into your environment and load your data into a variable. The code will look different and depends where you saved your data. We will use the `randomForest` package to fit our random forest models. There are other packages that we could use that allow for more customization but this package is the easiest to begin with. Finally, we will use the `vip` package to extract variable important from our fitted models.
+
+
+```{r message = FALSE, fontsize=1}
+library(tidyverse)
+library(randomForest)
+library(vip)
+AD <- readr::read_csv("./data/alzheimer_data.csv")
+
+AD <- AD %>% 
+  mutate(female = as.factor(female)) %>% 
+  select(-id)
+```
+
+---
+
+### Random Forests
+
+Random forest models help correct decision and regression tree models' tendency to overfit data. A bunch of trees are fit with the limitation that at each node in each tree only a random subset of the predictors can be used. This results in a bunch of similar trees whose predictions are then aggregated. In the case of classification, the most-predicted level from all the trees in the forest is selected. For regression the average prediction across all trees is calculated.
+
+---
+
+### Fitting a Random Forest Model
+
+We will start by fitting a simple random forest model to predict sex as a factor of age, height and weight. We divide our data into training and testing subsets.
+
+```{r}
+n_total <- nrow(AD)
+n_train <- floor(n_total * 0.7)
+set.seed(123)
+
+train_indices <- sample(1:n_total, n_train, 
+                        replace = FALSE)
+
+data_train <- AD %>% slice(train_indices)
+data_test <- AD %>% slice(-train_indices)
+```
+
+---
+
+### Fitting a Random Forest Model
+
+Now we can fit the model using the `randomForest()` function. To evaluate its performance we can get predictions on the test data and see how often the prediction is correct.
+
+```{r}
+rf_fit <- randomForest(female ~ age + height + weight, 
+                       data = data_train, 
+                       proximity = TRUE)
+
+predictions <- predict(rf_fit, data_test)
+
+accuracy <- sum(predictions == data_test$female) / 
+  length(predictions)
+```
+
+---
+
+### Evaluating Accuracy
+
+```{r}
+accuracy
+```
+
+---
+
+### Comparing Accuracy to Logistic Regression
+
+Out of curiosity we could compare this accuracy to a logistic regression model which can also be used for classification.
+
+```{r}
+logistic_model <- glm(female ~ age + height + weight, 
+                      data = data_train,
+                      family = "binomial")
+
+logistic_predictions <- predict(logistic_model, 
+                                data_test,
+                                type = "response")
+logistic_predictions <- 
+  ifelse(logistic_predictions >= 0.5, 1, 0)
+```
+
+---
+
+### Comparing Accuracy to Logistic Regression
+
+The logistic regression performs comparably but with the added benefit that you can explain how the different predictors relate to the response.
+
+```{r}
+logistic_accuracy <- 
+  sum(logistic_predictions == data_test$female) / 
+  length(logistic_predictions)
+
+logistic_accuracy
+```
+
+---
+
+### Comparing Accuracy to Logistic Regression
+
+```{r}
+summary(logistic_model)
+```
+
+---
+
+### Evaluating Predictor Importance in a Random Forest Model
+
+A random forest model can give you a sense of which predictors are important based on how often they show up in different trees. The `vip()` function graphically displays this importance.
+
+```{r fig.align = "center", fig.height = 3}
+vip(rf_fit)
+```
+
+---
+
+### Practice
+
+- Select a categorical response and several numeric or categorical predictors from the data
+- Fit a random forest model and evaluate its predictive accuracy on a test subset
+
+---
+
+### Random Forest for Regression
+
+We can also use random forest models for modeling a numeric response. I'm going to model age as a function of all other predictors in the data.
+
+```{r}
+rf_fit <- randomForest(age ~ ., 
+                       data = data_train, 
+                       proximity = TRUE)
+```
+
+---
+
+### Evaluating Model Fit
+
+How well does this random forest model predict age? I can evaluate this using $R^2$, the amount of variation in the response that is explained by the model.
+
+```{r}
+predictions <- predict(rf_fit, data_test)
+
+1 - var(data_test$age - predictions) / 
+  var(data_test$age)
+```
+
+---
+
+### Comparing to a Linear Regression
+
+We can compare a random forest regression model to a linear regression by comparing their $R^2$
+
+```{r}
+linear_model <- lm(age ~ ., data = data_train)
+lm_predictions <- predict(linear_model, 
+                          newdata = data_test)
+
+1 - var(data_test$age - lm_predictions) / 
+  var(data_test$age)
+```
+
+---
+
+### Practice
+
+- Select a continuous response and any number of predictors from the data
+- Fit a random forest model and evaluate its $R^2$
