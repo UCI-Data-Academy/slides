@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Bayesian Networks Examples in R using the Alzheimer’s Data</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Lynn Gao" />
+    <script src="libs/header-attrs-2.22/header-attrs.js"></script>
+    <link rel="stylesheet" href="slide-style.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+class: title-slide
+
+
+
+&lt;br&gt;
+&lt;br&gt;
+.right-panel[ 
+
+# Bayesian Networks
+Examples in R using the Alzheimer's Data
+## Lynn Gao
+
+]
+
+
+---
+
+### Preparation
+
+Load the `tidyverse` package into your environment and load your data into a variable. The code will look different and depends where you saved your data. We will also use the `bnlearn` package. 
+
+When you install the `bnlearn` library, you might get a question in the console asking, "Do you want to install from sources the package which needs compilation? (Yes/no/cancel)". Please type in *Yes* for it to fully download. 
+
+
+```r
+library(tidyverse)
+library(bnlearn)
+
+AD &lt;- readr::read_csv("./data/alzheimer_data.csv")
+```
+
+---
+
+We will return to the setup we had for the K Nearest Neighbors Algorithm Lab and the Decision Trees Lab. We want to predict a person's sex (classification) as a function of their weight and height.
+
+
+```r
+AD &lt;- AD %&gt;% 
+  mutate(sex = ifelse(female == 0, "male", "female")) %&gt;% 
+  mutate(sex = as.factor(sex),
+         height = as.numeric(height),
+         weight = as.numeric(weight))
+
+AD_subset &lt;- AD %&gt;% 
+  select(-id)
+```
+
+
+---
+
+We'll first create a structure (network). The function `hc` (hill-climbing) is a type of greedy search algorithm that allows us to learn the structure of a Bayesian network.
+
+
+```r
+AD_bn &lt;- hc(AD_subset)
+plot(AD_bn)
+```
+
+![](Lab-15-BayesianNetworks_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
+
+---
+
+So that's a bit too many nodes, let's only use the ones we are interested in.
+
+
+```r
+AD_subset &lt;- AD_subset %&gt;% 
+  select(sex, height, weight)
+AD_subset &lt;- as.data.frame(AD_subset)
+AD_bn &lt;- hc(AD_subset)
+plot(AD_bn)
+```
+
+![](Lab-15-BayesianNetworks_files/figure-html/unnamed-chunk-5-1.png)&lt;!-- --&gt;
+
+---
+
+The graph on the previous slide looks reasonable! But in events where the graph does not look as reasonable, or R is making the nodes more related than they should be, we can use this code to change the structure.  
+
+
+```r
+AD_bn$arcs &lt;- AD_bn$arcs[-which((AD_bn$arcs[,'from'] == "height" &amp; AD_bn$arcs[,'to'] == "weight")),]
+plot(AD_bn)
+```
+
+![](Lab-15-BayesianNetworks_files/figure-html/unnamed-chunk-6-1.png)&lt;!-- --&gt;
+
+---
+
+But let's change it back just in case.
+
+
+```r
+AD_bn &lt;- hc(AD_subset)
+```
+
+---
+
+
+### Pre-processing and Splitting Data
+
+
+```r
+n_total &lt;- nrow(AD_subset)
+n_train &lt;- floor(n_total * 0.7)
+set.seed(123)
+train_indices &lt;- sample(1:n_total, n_train, 
+                        replace = FALSE)
+
+data_train &lt;- AD_subset %&gt;% slice(train_indices)
+data_train &lt;- as.data.frame(data_train)
+data_test &lt;- AD_subset %&gt;% slice(-train_indices)
+data_test &lt;- as.data.frame(data_test)
+```
+
+We use as.data.frame to make sure that our testing and training datasets are dataframes, because the function we use requires a dataframe instead of a tibble (which is what r seems to make automatically).
+
+---
+
+Now let's fit the model with our training data to find the conditional probability tables for each node.  
+`method = "mle-cg"` specifies which type of bayesian network model we want to fit, "mle-cg" indicates that we have both discrete and continuous variables. You can take a look at the help file for `bn.fit` to see what other methods there are.
+
+
+
+```r
+AD_bn &lt;- hc(data_train)
+fitted_bn &lt;- bn.fit(AD_bn, data = data_train, method = 'mle-cg')
+```
+
+---
+
+
+```r
+fitted_bn
+```
+
+```
+## 
+##   Bayesian network parameters
+## 
+##   Parameters of node sex (multinomial distribution)
+## 
+## Conditional probability table:
+##     female      male 
+## 0.5802012 0.4197988 
+## 
+##   Parameters of node height (conditional Gaussian distribution)
+## 
+## Conditional density: height | sex
+## Coefficients:
+##                     0         1
+## (Intercept)  63.47847  68.74262
+## Standard deviation of the residuals:
+##        0         1  
+## 2.761809  3.035992  
+## Discrete parents' configurations:
+##       sex
+## 0  female
+## 1    male
+## 
+##   Parameters of node weight (conditional Gaussian distribution)
+## 
+## Conditional density: weight | sex + height
+## Coefficients:
+##                        0            1
+## (Intercept)   -94.358536  -134.862013
+## height          3.914440     4.639004
+## Standard deviation of the residuals:
+##        0         1  
+## 31.82886  27.66247  
+## Discrete parents' configurations:
+##       sex
+## 0  female
+## 1    male
+```
+
+
+---
+
+### Predictions
+
+There are two methods for predicting in the `bnlearn` library: `parents` and `bayes-lw`. Here we use `bayes-lw` because we are predicting a root node (which doesn't have any parents).
+
+
+```r
+pred_bn &lt;- predict(fitted_bn, node = "sex", data = data_test, method = "bayes-lw")
+confusion_matrix &lt;- table(data_test$sex, pred_bn)
+accuracy &lt;- sum(diag(confusion_matrix)) / 
+  sum(confusion_matrix)
+```
+
+---
+
+.pull-left[
+
+```r
+confusion_matrix
+```
+
+```
+##         pred_bn
+##          female male
+##   female    396   57
+##   male       82  276
+```
+]
+
+.pull-right[
+
+```r
+accuracy
+```
+
+```
+## [1] 0.8286067
+```
+]
+
+
+---
+
+### Practice
+
+* Fit a Bayesian Network model that classifies diagnosis (with three levels) as a function of any number of numeric and categorical predictors
+* You may need to recode your categorical predictors using `as.factor()`
+* Evaluate your accuracy
+
+
+---
+
+### Regression
+
+We want to predict a person's age as a function of their weight and height.
+
+
+```r
+AD_subset &lt;- AD %&gt;% 
+  select(age, height, weight)
+AD_subset &lt;- as.data.frame(AD_subset)
+```
+
+---
+
+### Split the data
+
+
+```r
+n_total &lt;- nrow(AD_subset)
+n_train &lt;- floor(n_total * 0.7)
+set.seed(123)
+train_indices &lt;- sample(1:n_total, n_train, 
+                        replace = FALSE)
+
+data_train &lt;- AD_subset %&gt;% slice(train_indices)
+data_train &lt;- as.data.frame(data_train)
+data_test &lt;- AD_subset %&gt;% slice(-train_indices)
+data_test &lt;- as.data.frame(data_test)
+```
+
+---
+
+### Building the network
+
+
+```r
+AD_bn &lt;- hc(data_train)
+plot(AD_bn)
+```
+
+![](Lab-15-BayesianNetworks_files/figure-html/unnamed-chunk-16-1.png)&lt;!-- --&gt;
+
+---
+
+### Fitting the model
+
+
+```r
+fitted_bn &lt;- bn.fit(AD_bn, data = data_train, method = 'mle-g')
+fitted_bn
+```
+
+```
+## 
+##   Bayesian network parameters
+## 
+##   Parameters of node age (Gaussian distribution)
+## 
+## Conditional density: age
+## Coefficients:
+## (Intercept)  
+##    69.99629  
+## Standard deviation of the residuals: 11.35229 
+## 
+##   Parameters of node height (Gaussian distribution)
+## 
+## Conditional density: height | age
+## Coefficients:
+## (Intercept)          age  
+## 69.90334457  -0.06021734  
+## Standard deviation of the residuals: 3.818897 
+## 
+##   Parameters of node weight (Gaussian distribution)
+## 
+## Conditional density: weight | age + height
+## Coefficients:
+## (Intercept)          age       height  
+## -134.952522    -0.191142     4.795561  
+## Standard deviation of the residuals: 30.21119
+```
+
+---
+
+### Prediction and R^2
+
+
+```r
+pred_bn &lt;- predict(fitted_bn, node = "age", data = data_test, method = "bayes-lw")
+R2 &lt;- 1 - var(data_test$age - pred_bn) /
+  var(data_test$age)
+R2
+```
+
+```
+## [1] 0.04425022
+```
+
+---
+
+### Prediction and R^2
+
+We can tell R to predict values of a different node.
+
+
+
+```r
+pred_bn &lt;- predict(fitted_bn, node = "height", data = data_test, method = "bayes-lw")
+R2 &lt;- 1 - var(data_test$height - pred_bn) /
+  var(data_test$height)
+R2
+```
+
+```
+## [1] 0.2992483
+```
+
+---
+
+### Practice
+
+* Apply these methods to your project!
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="cols_macro.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "pygments",
+"highlightLines": true,
+"highlightLanguage": "r"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

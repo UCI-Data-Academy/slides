@@ -1,0 +1,254 @@
+---
+title: "Bayesian Networks\nExamples in R using the Alzheimer's Data"
+author: "Lynn Gao"
+output: 
+  xaringan::moon_reader:
+    css: ["slide-style.css", "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"]
+    lib_dir: libs
+    seal: false
+    nature:
+      beforeInit: "cols_macro.js"
+      ratio: 16:9
+      highlightStyle: "pygments"
+      highlightLines: true
+      highlightLanguage: "r"
+
+---
+
+class: title-slide
+
+```{r echo = FALSE, warning=FALSE}
+library(fabricerin)
+```
+
+<br>
+<br>
+.right-panel[ 
+
+# `r rmarkdown::metadata$title`
+## `r rmarkdown::metadata$author`
+
+]
+
+
+---
+
+### Preparation
+
+Load the `tidyverse` package into your environment and load your data into a variable. The code will look different and depends where you saved your data. We will also use the `bnlearn` package. 
+
+When you install the `bnlearn` library, you might get a question in the console asking, "Do you want to install from sources the package which needs compilation? (Yes/no/cancel)". Please type in *Yes* for it to fully download. 
+
+```{r, warning = FALSE, message=FALSE}
+library(tidyverse)
+library(bnlearn)
+
+AD <- readr::read_csv("./data/alzheimer_data.csv")
+```
+
+---
+
+We will return to the setup we had for the K Nearest Neighbors Algorithm Lab and the Decision Trees Lab. We want to predict a person's sex (classification) as a function of their weight and height.
+
+```{r}
+AD <- AD %>% 
+  mutate(sex = ifelse(female == 0, "male", "female")) %>% 
+  mutate(sex = as.factor(sex),
+         height = as.numeric(height),
+         weight = as.numeric(weight))
+
+AD_subset <- AD %>% 
+  select(-id)
+```
+
+
+---
+
+We'll first create a structure (network). The function `hc` (hill-climbing) is a type of greedy search algorithm that allows us to learn the structure of a Bayesian network.
+
+```{r}
+AD_bn <- hc(AD_subset)
+plot(AD_bn)
+```
+
+---
+
+So that's a bit too many nodes, let's only use the ones we are interested in.
+
+```{r}
+AD_subset <- AD_subset %>% 
+  select(sex, height, weight)
+AD_subset <- as.data.frame(AD_subset)
+AD_bn <- hc(AD_subset)
+plot(AD_bn)
+```
+
+---
+
+The graph on the previous slide looks reasonable! But in events where the graph does not look as reasonable, or R is making the nodes more related than they should be, we can use this code to change the structure.  
+
+```{r}
+AD_bn$arcs <- AD_bn$arcs[-which((AD_bn$arcs[,'from'] == "height" & AD_bn$arcs[,'to'] == "weight")),]
+plot(AD_bn)
+```
+
+---
+
+But let's change it back just in case.
+
+```{r}
+AD_bn <- hc(AD_subset)
+```
+
+---
+
+
+### Pre-processing and Splitting Data
+
+```{r}
+n_total <- nrow(AD_subset)
+n_train <- floor(n_total * 0.7)
+set.seed(123)
+train_indices <- sample(1:n_total, n_train, 
+                        replace = FALSE)
+
+data_train <- AD_subset %>% slice(train_indices)
+data_train <- as.data.frame(data_train)
+data_test <- AD_subset %>% slice(-train_indices)
+data_test <- as.data.frame(data_test)
+```
+
+We use as.data.frame to make sure that our testing and training datasets are dataframes, because the function we use requires a dataframe instead of a tibble (which is what r seems to make automatically).
+
+---
+
+Now let's fit the model with our training data to find the conditional probability tables for each node.  
+`method = "mle-cg"` specifies which type of bayesian network model we want to fit, "mle-cg" indicates that we have both discrete and continuous variables. You can take a look at the help file for `bn.fit` to see what other methods there are.
+
+
+```{r}
+AD_bn <- hc(data_train)
+fitted_bn <- bn.fit(AD_bn, data = data_train, method = 'mle-cg')
+```
+
+---
+
+```{r}
+fitted_bn
+```
+
+
+---
+
+### Predictions
+
+There are two methods for predicting in the `bnlearn` library: `parents` and `bayes-lw`. Here we use `bayes-lw` because we are predicting a root node (which doesn't have any parents).
+
+```{r}
+pred_bn <- predict(fitted_bn, node = "sex", data = data_test, method = "bayes-lw")
+confusion_matrix <- table(data_test$sex, pred_bn)
+accuracy <- sum(diag(confusion_matrix)) / 
+  sum(confusion_matrix)
+```
+
+---
+
+.pull-left[
+```{r}
+confusion_matrix
+```
+]
+
+.pull-right[
+```{r}
+accuracy
+```
+]
+
+
+---
+
+### Practice
+
+* Fit a Bayesian Network model that classifies diagnosis (with three levels) as a function of any number of numeric and categorical predictors
+* You may need to recode your categorical predictors using `as.factor()`
+* Evaluate your accuracy
+
+
+---
+
+### Regression
+
+We want to predict a person's age as a function of their weight and height.
+
+```{r}
+AD_subset <- AD %>% 
+  select(age, height, weight)
+AD_subset <- as.data.frame(AD_subset)
+```
+
+---
+
+### Split the data
+
+```{r}
+n_total <- nrow(AD_subset)
+n_train <- floor(n_total * 0.7)
+set.seed(123)
+train_indices <- sample(1:n_total, n_train, 
+                        replace = FALSE)
+
+data_train <- AD_subset %>% slice(train_indices)
+data_train <- as.data.frame(data_train)
+data_test <- AD_subset %>% slice(-train_indices)
+data_test <- as.data.frame(data_test)
+```
+
+---
+
+### Building the network
+
+```{r}
+AD_bn <- hc(data_train)
+plot(AD_bn)
+```
+
+---
+
+### Fitting the model
+
+```{r}
+fitted_bn <- bn.fit(AD_bn, data = data_train, method = 'mle-g')
+fitted_bn
+```
+
+---
+
+### Prediction and R^2
+
+```{r}
+pred_bn <- predict(fitted_bn, node = "age", data = data_test, method = "bayes-lw")
+R2 <- 1 - var(data_test$age - pred_bn) /
+  var(data_test$age)
+R2
+```
+
+---
+
+### Prediction and R^2
+
+We can tell R to predict values of a different node.
+
+
+```{r}
+pred_bn <- predict(fitted_bn, node = "height", data = data_test, method = "bayes-lw")
+R2 <- 1 - var(data_test$height - pred_bn) /
+  var(data_test$height)
+R2
+```
+
+---
+
+### Practice
+
+* Apply these methods to your project!
