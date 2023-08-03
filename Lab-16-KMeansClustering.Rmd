@@ -1,0 +1,305 @@
+---
+title: "K Means Clustering Algorithm\nExamples in R using the Alzheimer's Data"
+author: "Brian Schetzsle"
+output: 
+  xaringan::moon_reader:
+    css: ["slide-style.css", "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"]
+    lib_dir: libs
+    seal: false
+    nature:
+      beforeInit: "cols_macro.js"
+      ratio: 16:9
+      highlightStyle: "pygments"
+      highlightLines: true
+      highlightLanguage: "r"
+
+---
+
+class: title-slide
+
+```{r include=FALSE}
+library(fabricerin)
+```
+
+<br>
+<br>
+.right-panel[ 
+
+# `r rmarkdown::metadata$title`
+## `r rmarkdown::metadata$author`
+
+]
+
+---
+
+class: middle
+
+### Preparation
+
+Load the `tidyverse` package into your environment and load your data into a variable. The code will look different and depends where you saved your data. The function that performs the K-Means clustering algorithm is built into R, so there are no additional packages necessary.
+
+
+```{r message = FALSE, fontsize=1}
+library(tidyverse)
+AD <- readr::read_csv("./data/alzheimer_data.csv")
+```
+
+---
+
+### Clusters within data
+
+Let's visualize two continuous and one categorical variable to see if the different levels of our categorical variable tend to cluster across the two continuous variables.
+
+```{r eval=FALSE}
+AD %>% 
+  select(female, height, weight) %>% 
+  mutate(sex = ifelse(female == 0, "Male", "Female")) %>% 
+  ggplot() +
+  geom_point(aes(x = height, y = weight, color = sex))
+```
+
+---
+
+### Clusters within data
+
+```{r echo=FALSE, fig.align = "center", fig.width = 15}
+AD %>% 
+  select(female, height, weight) %>% 
+  mutate(sex = ifelse(female == 0, "Male", "Female")) %>% 
+  ggplot() +
+  geom_point(aes(x = height, y = weight, color = sex))
+```
+
+---
+
+### Normalizing our data
+
+K-Means Clustering, like K-Nearest Neighbor, calculates euclidean distance between points. This means we must first normalize the continuous variables to be meaningfully compared (this is also why categorical variables can't be used). In this context normalizing means subtracting the minimum value and dividing by the range of values in the data so each variable is in the range [0,1]. I have also seen data "standardized", which means subtracting the mean and dividing by the standard deviation.
+
+$$
+\frac{X_i - min(X)}{max(X) - min(X)}
+$$
+
+---
+
+### Normalizing our data
+
+```{r}
+AD_subset <- AD %>% 
+  select(height, weight) %>% 
+  apply(2, function(x){(x - min(x))/(max(x)-min(x))}) %>% 
+  data.frame() %>% 
+  mutate(sex = ifelse(AD$female == 0, "Male", "Female"))
+```
+
+---
+
+### Normalizing our data
+
+```{r eval=FALSE}
+AD_subset %>% 
+  ggplot() +
+  geom_point(aes(x = height, 
+                 y = weight, 
+                 color = sex))
+```
+
+---
+
+### Normalizing our data
+
+```{r echo=FALSE, fig.align = "center", fig.width = 15}
+AD_subset %>% 
+  ggplot() +
+  geom_point(aes(x = height, y = weight, color = sex))
+```
+
+---
+
+### Seperating our data into Training and Testing subsets
+
+I don't think there's a reason why you would do this.
+
+---
+
+### Running the K Means Clustering Algorithm
+
+```{r message = FALSE}
+model <- AD_subset %>% 
+  select(height, weight) %>% 
+  kmeans(centers = 2, nstart = 20)
+
+AD_subset <- AD_subset %>% 
+  mutate(cluster = model$cluster)
+
+AD_subset %>% 
+  group_by(sex, cluster) %>% 
+  summarise(n = n()) %>% 
+  reshape2::dcast(sex ~ cluster)
+```
+
+---
+
+### Plotting the Clustered Data
+
+```{r eval = FALSE}
+AD_subset %>% 
+  ggplot() +
+  geom_point(aes(x = height, y = weight, 
+                 color = factor(cluster) ))
+```
+
+---
+
+### Plotting the Clustered Data
+
+```{r echo=FALSE, fig.align = "center", fig.width = 15}
+AD_subset %>% 
+  ggplot() +
+  geom_point(aes(x = height, y = weight, color = factor(cluster) ))
+```
+
+---
+
+### Plotting the Clustered Data
+
+```{r echo=FALSE, fig.align = "center", fig.width = 15}
+model <- AD_subset %>% 
+  select(height, weight) %>% 
+  kmeans(centers = 3, nstart = 20)
+
+AD_subset <- AD_subset %>% 
+  mutate(cluster = model$cluster)
+
+AD_subset %>% 
+  ggplot() +
+  geom_point(aes(x = height, y = weight, color = factor(cluster) ))
+```
+---
+
+### Determining a Good Value for K
+
+Now let's expand our focus to include more variables and naively cluster the data. How do we know what K to specify? We could run the algorithm on a range of K and see if there is a value that accounts for a noteworthy drop in sum of squared distances from the nearest centroid.
+
+```{r}
+AD_subset <- AD %>% 
+  select(age, educ, height, weight, 
+         bpsys, bpdias, hrate) %>% 
+  apply(2, function(x){(x - min(x))/(max(x)-min(x))}) %>% 
+  data.frame()
+```
+
+---
+
+### Clustering the Data
+
+```{r}
+# Decide how many clusters to look at
+n_clusters <- 10
+
+# Initialize the total sum of squared distances
+ss <- numeric(n_clusters)
+
+# Look over 1 to n possible clusters
+for (i in 1:n_clusters) {
+  model <- kmeans(AD_subset, centers = i, 
+                  nstart = 20, iter.max = 20)
+  # Save the within cluster sum of squares
+  ss[i] <- model$tot.withinss
+}
+```
+
+---
+
+### Evaluating the Performance of Different Ks
+
+```{r eval = FALSE, fig.align = "center", fig.height = 3}
+data.frame(K = 1:n_clusters, ss = ss) %>% 
+  ggplot(aes(x = K, y = ss)) +
+  geom_point(size = 4) +
+  geom_line() +
+  ggtitle("Scree Plot") +
+  xlab("Number of Clusters") +
+  scale_x_continuous(breaks = seq(0,10,2))
+```
+
+---
+
+### Evaluating the Performance of Different Ks
+
+It doesn't look like there's a noteable drop in the sum of squared distances from the nearest centroid for any particular value of K. Let's work with K=3.
+
+```{r echo=FALSE, fig.align = "center", fig.width = 10, fig.height = 5}
+data.frame(K = 1:n_clusters, ss = ss) %>% 
+  ggplot(aes(x = K, y = ss)) +
+  geom_point(size = 4) +
+  geom_line() +
+  ggtitle("Scree Plot") +
+  xlab("Number of Clusters") +
+  scale_x_continuous(breaks = seq(0,10,2))
+```
+
+
+
+---
+
+### Cluster the Data using K=3
+
+```{r}
+model <- kmeans(AD_subset, centers = 3, nstart = 20)
+AD_subset <- AD_subset %>% 
+  mutate(cluster = model$cluster)
+```
+
+---
+
+### Evaluate the Characteristics of Each Cluster
+
+```{r fig.align = "center", fig.height = 4}
+AD_subset %>% 
+  ggplot() +
+  geom_density(aes(x = age, fill = as.factor(cluster)), 
+               alpha=0.5)
+```
+
+---
+
+### Evaluate the Characteristics of Each Cluster
+
+```{r fig.align = "center", fig.height = 4}
+AD_subset %>% 
+  ggplot() +
+  geom_density(aes(x = weight, fill = as.factor(cluster)), 
+               alpha=0.5)
+```
+
+---
+
+### Evaluate the Characteristics of Each Cluster
+
+```{r fig.align = "center", fig.height = 4}
+AD_subset %>% 
+  ggplot() +
+  geom_density(aes(x = height, fill = as.factor(cluster)), 
+               alpha=0.5)
+```
+
+---
+
+### Evaluate the Characteristics of Each Cluster
+
+```{r fig.align = "center", fig.height = 4}
+AD_subset %>% 
+  ggplot() +
+  geom_point(aes(x = age, y = educ, 
+                 color = factor(cluster)))
+```
+
+---
+
+### Practice
+
+- Choose a subset of your continuous variables and normalize them
+- Choose a K
+- Cluster your normalized data
+- Visualize the results
